@@ -1,60 +1,56 @@
 import SocketIO from 'socket.io';
+import util from 'util';
 
 export default class WebSocketServer {
 
-    constructor(telemetryDataHandler) {
+    constructor(boardManager) {
         this.io = null;
-        this.observingNs = null;
-        this.telemetryDataHandler = telemetryDataHandler;
-        this.onObserverConnection = this.onObserverConnection.bind(this);
-        this.onReporterConnection = this.onReporterConnection.bind(this);
-        let heading = 20;
+        this.boardManager = boardManager;
+        this.namespaces = {};
+
+        // Register our handler to be called when a board is created
+        if (boardManager) {
+            boardManager.registerBoardCreationEventHandler(this.registerNewBoardNamespace);
+        }
+
+        // Bind the current context to the following functions (weird JS thing)
+        this.registerNewBoardNamespace = this.registerNewBoardNamespace.bind(this);
+        this.onClientConnection = this.onClientConnection.bind(this);
+        this.boardUpdateReceived = this.boardUpdateReceived.bind(this);
     }
 
     start(httpServer) {
         this.io = new SocketIO(httpServer);
-        this.reportingNs = this.io.of('/reporting');
-        this.reportingNs.on('connection', this.onReporterConnection);
-        this.observingNs = this.io.of('/observing');
-        this.observingNs.on('connection', this.onObserverConnection);
-
         console.log(`WebSocket server started successfully.`)
     }
 
-    onReporterConnection(socket) {
-        console.log('Reporter connected');
-        socket.on('report', (data) => this.onReportMsgReceive(socket, data));
-        socket.on('disconnect', () => this.onDisconnect(socket));
+    registerNewBoardNamespace(board) {
+        const name = board.getName();
+        if (this.namespaces.hasOwnProperty(name)) {
+            console.warn(`Attempted to register board named ${name} twice.`);
+            return;
+        }
+        // Register the new namespace with sockets.io
+        let newNs = this.io.of(name);
+        newNs = this.io.of(`/${newNs}`);
+        newNs.on('connection', this.onClientConnect);
+        this.namespaces[name] = newNs; // Keep track of the ns just in case
+    }
+
+    onClientConnect(socket) {
+        console.log('Client connected');
+        socket.on('boardUpdate', (data) => this.boardUpdateReceived(socket, data));
+        socket.on('disconnect', () => this.onClientDisconnect(socket));
 
     }
 
-    onObserverConnection(socket) {
-        console.log('Observer connected');
-        socket.on('Hello', (data) => console.log(data));
-        socket.on('disconnect', () => this.onDisconnect(socket));
-
+    boardUpdateReceived(socket, msg) {
+        console.log('Received board update:');
+        console.log(util.inspect(msg));
+        // TODO Something interesting
     }
 
-    onDisconnect(socket) {
+    onClientDisconnect(socket) {
         console.log('Client disconnected');
     }
-
-    onReportMsgReceive(socket, msg) {
-        if (this.telemetryDataHandler) {
-            this.telemetryDataHandler(msg);
-        }
-        // Push the msg to any observers
-        if (this.observingNs) {
-            this.observingNs.emit('update', msg);
-        }
-    }
-
-    broadcastDevices(msg) {
-        const connectedDevices = Object.values(io.sockets.connected);
-        if (connectedDevices.length > 0) {
-            connectedDevices.forEach((ws) => {
-                ws.emit('devices', msg);
-            });
-        }
-    };
 }
