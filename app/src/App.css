@@ -1,3 +1,7 @@
+textarea {
+  resize: none;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -33,6 +37,28 @@ body {
   width: 200px;
   height: 200px;
   background-color: #ff0000;
+  min-width: 200px;
+  min-height: 200px;
+  padding: 20px 20px 20px 20px;
+}
+
+.Text-box {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  padding: 0px 0px 0px 0px;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+  color: #ffffff;
+  font-size: 24px;
+  white-space: normal;
+}
+
+.Text-box:focus {
+  outline: none;
 }
 
 
