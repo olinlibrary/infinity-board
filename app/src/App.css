@@ -2,6 +2,10 @@ textarea {
   resize: none;
 }
 
+* {
+  transition: all 0.2s ease;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -65,4 +69,18 @@ body {
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.board-li {
+  padding: 1em;
+  border-bottom: 1px solid gray;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.board-li:hover {
+  background-color: #eee;
 }

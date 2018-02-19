@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import fs from 'fs';
 import HttpServer from './http-server.mjs';
+import DatabaseConnection from './database.mjs';
 // import WebSocketServer from './websocket-server.mjs';
 
 // Try loading environment variables from a .env file
@@ -12,8 +13,8 @@ if (fs.existsSync('./.env')) {
 const port = process.env.PORT || 1234;
 
 // Connect to MongoDB
-// const dbConn = new DatabaseConnection();
-// dbConn.connect();
+const dbConn = new DatabaseConnection();
+dbConn.connect();
 
 // Start the HTTP server
 const httpServer = new HttpServer(port);
