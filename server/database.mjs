@@ -1,7 +1,7 @@
 // This file is responsible for connecting to and interacting with the MongoDB database.
 
 import MongoClient from 'mongodb';
-
+import Names from './names.mjs';
 export default class DatabaseConnection {
 
     constructor() {
@@ -56,6 +56,9 @@ export default class DatabaseConnection {
                         console.log('Successfully reconnected to MongoDB instance.');
                         this.connected = true;
                     });
+		    this.createBoard((board) => {
+			this.updateBoardLastUsed(null,board._id);
+		    });
                 } else {
                     console.error(err);
                     console.error('Error connecting to MongoDB instance.');
@@ -72,4 +75,37 @@ export default class DatabaseConnection {
         return this.connected;
     }
 
+    createBoard(cb=null,name=null) {
+	var now = new Date();
+	if (!name){
+	    name = Names.toName(now.getTime());
+	}
+	var obj = {'created': now, 'lastUsed': now, 'name': name};
+	this.db.collection("boards").insertOne(obj, function(err, res){
+	    if (err) throw err;
+	    if (cb){
+		cb(res.ops[0])
+	    }
+	});
+    }
+
+    updateBoardLastUsed(name=null,id=null) {
+	var now = new Date();
+	var query = {};
+	if(name){
+	    query.name = name;
+	}else if(id){
+	    query._id = id;
+	}else{
+	    
+	}
+	var updatedVals = {$set: {'lastUsed':now}};
+	this.db.collection("boards").updateOne(query, updatedVals, function(err, res){
+	    if(err) throw err;
+	});
+    }
+
+    listBoards() {
+	return this.db.collection("boards").find();
+    }
 }
