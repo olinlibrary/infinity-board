@@ -8,7 +8,7 @@ class DraggableBox extends React.Component {
       super(props);
       this.state = {x: 0, y: 0, draggable: false, downX: 0, downY: 0, elemX: 0,
                     elemY: 0, cursor: 'default', xSize: 240, ySize: 240,
-                    resizing: false, editing: false, mouseMoved: false, value: ''};
+                    resizing: false, editing: false, mouseMoved: false, value: '', mouseDown: false};
     }
 
     componentDidMount(props, state) {
@@ -18,9 +18,7 @@ class DraggableBox extends React.Component {
     }
 
     onInput(e) {
-      if (this.state.editing) {
-        this.setState({value: e.target.value})
-      }
+      this.setState({value: e.target.value})
     }
 
     mouseMove(e) {
@@ -29,12 +27,6 @@ class DraggableBox extends React.Component {
       }
 
       this.setState({x: e.screenX, y: e.screenY})
-      if (this.cursorInDraggingPosition(e) || this.state.resizing) {
-        this.setState({cursor: 'se-resize'});
-      }
-      else if (this.state.cursor != 'move'){
-        this.setState({cursor: 'default'})
-      }
 
       if (this.state.resizing) {
         var xVal = e.clientX-this.state.elemX;
@@ -53,12 +45,12 @@ class DraggableBox extends React.Component {
     }
 
     mouseDown(e) {
-      this.setState({draggable: true, downX: this.state.elemX - e.screenX, downY: this.state.elemY - e.screenY, mouseMoved: false});
+      this.setState({downX: this.state.elemX - e.screenX, downY: this.state.elemY - e.screenY, mouseMoved: false, mouseDown: true});
       if (this.cursorInDraggingPosition(e)) {
         this.setState({resizing: true})
       }
       else {
-        this.setState({cursor: 'move'})
+        this.setState({draggable: true})
       }
     }
 
@@ -66,15 +58,33 @@ class DraggableBox extends React.Component {
       if (!this.state.mouseMoved) {
         this.setState({editing: true})
       }
-      this.setState({draggable: false, cursor: 'default', resizing: false, mouseMoved: true});
+      else {
+        this.setState({editing: false})
+       }
+      this.setState({draggable: false, resizing: false, mouseMoved: true});
     }
 
 
     cursorInDraggingPosition(e) {
       var cornerX = Math.pow((e.clientX-this.state.elemX)-this.state.xSize, 2);
       var cornerY = Math.pow((e.clientY-this.state.elemY)-this.state.ySize, 2);
-      var dist = Math.sqrt(cornerX+cornerY)
-      return (dist<15)
+      var dist = Math.sqrt(cornerX+cornerY);
+      return (dist<20);
+    }
+
+    getCursor() {
+      if (this.state.editing) {
+        return 'text';
+      }
+      else if (this.state.draggable) {
+        return 'move';
+      }
+      else if (this.state.resizing) {
+        return 'se-resize';
+      }
+      else {
+        return 'default';
+      }
     }
 
 
@@ -85,30 +95,43 @@ class DraggableBox extends React.Component {
         top: this.state.elemY + 'px',
         width: this.state.xSize - 40 + 'px',
         height: this.state.ySize - 40 + 'px',
-        cursor: this.state.cursor
+        cursor: this.getCursor()
       };
       return boxStyle;
     }
 
+    getTextStyle() {
+      var textStyle = {
+        color: 'white',
+        textShadow: 'none',
+        cursor: this.getCursor()
+      };
+      return textStyle
+    }
+
     render() {
-      // if (this.state.editing) {
+      if (this.state.editing) {
         return (
+
           <div onMouseDown={this.mouseDown.bind(this)} className={'Box'} style={this.getBoxStyle()}>
-            <textarea value={this.state.value} className={'Text-box'} onChange = {this.onInput.bind(this)} style={{cursor: this.state.cursor}}>
+            <textarea autoFocus="autofocus" value={this.state.value} className={'Text-box'} onChange = {this.onInput.bind(this)} style={this.getTextStyle()}>
             </textarea>
           </div>
         )
-      // }
-      // else {
-      //   return (
-      //     <div onMouseDown={this.mouseDown.bind(this)} className={'Box'} style={this.getBoxStyle()}>
-      //     </div>
-      //   )
-      // }
-
+      }
+      else{
+        return (
+          <div onMouseDown={this.mouseDown.bind(this)} className={'Box'} style={this.getBoxStyle()}>
+            <div className={'Text-box unselectable'} style={this.getTextStyle()}>{this.state.value}</div>
+          </div>
+        )
+      }
     }
 
+
 }
+
+
 
 
 

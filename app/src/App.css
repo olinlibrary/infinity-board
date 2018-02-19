@@ -2,9 +2,6 @@ textarea {
   resize: none;
 }
 
-* {
-  transition: all 0.2s ease;
-}
 
 body {
   margin: 0;
@@ -44,6 +41,7 @@ body {
   min-width: 200px;
   min-height: 200px;
   padding: 20px 20px 20px 20px;
+
 }
 
 .Text-box {
@@ -52,13 +50,20 @@ body {
   background: transparent;
   border: none;
   padding: 0px 0px 0px 0px;
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE10+/Edge */
-  user-select: none; /* Standard */
   color: #ffffff;
   font-size: 24px;
-  white-space: normal;
+  overflow: hidden;
+  font-family: "Verdana", "Geneva", sans-serif;
+}
+
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  word-wrap: break-word;
 }
 
 .Text-box:focus {
