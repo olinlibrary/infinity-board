@@ -114,6 +114,6 @@ export default class DatabaseConnection {
     }
 
     listBoards() {
-	return this.db.collection("boards").find();
+	return this.db.collection("boards").find({}).toArray();
     }
 }
