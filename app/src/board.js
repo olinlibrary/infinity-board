@@ -6,9 +6,10 @@ import ReactDOM from 'react-dom';
 class DraggableBox extends React.Component {
   constructor(props) {
     super(props);
+    console.log(this.props.children.props)
     this.state = {x: 0, y: 0, draggable: false, downX: 0, downY: 0, elemX: 0,
                   elemY: 0, xSize: 200, ySize: 200,
-                  resizing: false, editing: false, value: '', hasMoved: false, cursor: 'default'};
+                  resizing: false, cursor: 'default'};
   }
 
   componentDidMount(props, state) {
@@ -17,12 +18,8 @@ class DraggableBox extends React.Component {
     document.addEventListener('mouseup', this.mouseUp.bind(this));
   }
 
-  onInput(e) {
-    this.setState({value: e.target.value})
-  }
-
   mouseMove(e) {
-    this.setState({x: e.clientX, y: e.clientY, hasMoved: true})
+    this.setState({x: e.clientX, y: e.clientY})
 
     if (this.state.resizing) {
       this.setState({xSize: this.getResize(this.state.x, this.state.elemX, this.props.minX),
@@ -44,23 +41,18 @@ class DraggableBox extends React.Component {
   }
 
   mouseDown(e) {
-    this.setState({downX: this.state.elemX - e.screenX, downY: this.state.elemY - e.screenY, hasMoved: false});
-    if (this.cursorInDraggingPosition(e)) {
-      this.setState({resizing: true})
-    }
-    else if (!this.state.editing) {
-      this.setState({draggable: true})
+    if (e.button == 0) { // Check to make sure it's left mouse click
+      this.setState({downX: this.state.elemX - e.screenX, downY: this.state.elemY - e.screenY});
+      if (this.cursorInDraggingPosition(e)) {
+        this.setState({resizing: true})
+      }
+      else {
+        this.setState({draggable: true})
+      }
     }
   }
 
-
   mouseUp(e) {
-    if (!this.state.hasMoved) {
-      this.setState({editing: true})
-    }
-    else {
-      this.setState({editing: false})
-     }
     this.setState({draggable: false, resizing: false});
   }
 
@@ -73,10 +65,7 @@ class DraggableBox extends React.Component {
   }
 
   getCursor() {
-    if (this.state.editing) {
-      return 'text';
-    }
-    else if (this.state.draggable) {
+    if (this.state.draggable) {
       return 'move';
     }
     else if (this.state.resizing || this.cursorInDraggingPosition()) {
@@ -95,36 +84,18 @@ class DraggableBox extends React.Component {
       top: this.state.elemY + 'px',
       width: this.state.xSize - 2*this.props.padding + 'px',
       height: this.state.ySize - 2*this.props.padding + 'px',
-      cursor: this.getCursor()
+      cursor: this.getCursor(),
+      padding: this.props.padding + 'px'
     };
     return boxStyle;
   }
 
-  getTextStyle() {
-    var textStyle = {
-      color: 'white',
-      textShadow: 'none'
-    };
-    return textStyle
-  }
-
   render() {
-    if (this.state.editing) {
       return (
-
         <div onMouseDown={this.mouseDown.bind(this)} className={'Box'} style={this.getBoxStyle()}>{this.state.text}
-          <textarea autoFocus="autofocus" value={this.state.value} className={'Text-box unselectable'} onChange = {this.onInput.bind(this)} style={this.getTextStyle()}>
-          </textarea>
+          {this.props.children}
         </div>
       )
-    }
-    else{
-      return (
-        <div onMouseDown={this.mouseDown.bind(this)} className={'Box'} style={this.getBoxStyle()}>
-          <div className={'Text-box unselectable'} style={this.getTextStyle()}>{this.state.value}</div>
-        </div>
-      )
-    }
   }
 }
 
@@ -134,4 +105,74 @@ DraggableBox.defaultProps = {
   minY: 200
 };
 
-export default DraggableBox;
+class TextField extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {value: '', editing: false, cursor: 'inherit'};
+  }
+
+  onInput(e) {
+    this.setState({value: e.target.value})
+  }
+
+  onFocus(e) {
+    this.setState({editing: true, cursor: 'text'})
+  }
+
+  onBlur(e) {
+    this.setState({editing: false, cursor: 'inherit'})
+  }
+
+  render() {
+    var textStyle  = {cursor: this.state.cursor};
+    if (this.state.editing) {
+      return (<textarea autoFocus="autofocus" value={this.state.value} className={'Text-box unselectable'} onChange = {this.onInput.bind(this)}
+                onFocus = {this.onFocus.bind(this)} onBlur = {this.onBlur.bind(this)} style={textStyle} ></textarea>)
+    } else {
+      return (<div className={'Text-box unselectable'} onClick = {this.onFocus.bind(this)}>{this.state.value}</div>)
+    }
+  }
+}
+
+class ImageBox extends React.Component {
+  constructor(props) {
+    super(props);
+    // this.state = {width: this.img.clientWidth, height: this.img.clientWidth}
+  }
+
+  render() {
+    var imgStyle = {
+      background: "url(" + this.props.src + ")"
+    }
+    return (
+      <DraggableBox padding={0}>
+        <div className={'Box-image'} style={imgStyle}>
+          <img src={this.props.src} style={{visibility: "hidden"}}/>
+        </div>
+      </DraggableBox>
+    )
+  }
+}
+
+
+class Board extends React.Component {
+    constructor(props) {
+      super(props);
+    }
+
+    render() {
+      return (
+        <div>
+          <DraggableBox>
+            <TextField></TextField>
+          </DraggableBox>
+          <ImageBox src="http://cdn1-www.dogtime.com/assets/uploads/gallery/30-impossibly-cute-puppies/impossibly-cute-puppy-2.jpg"></ImageBox>
+        </div>
+      )
+    }
+}
+
+
+
+export default Board;
