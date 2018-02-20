@@ -35,11 +35,9 @@ body {
 
 .Box {
   position: absolute;
-  width: 200px;
-  height: 200px;
   background-color: #ff0000;
-  min-width: 200px;
-  min-height: 200px;
+  min-width: 150px;
+  min-height: 150px;
   padding: 20px 20px 20px 20px;
 
 }
