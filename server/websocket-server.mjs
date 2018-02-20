@@ -19,18 +19,26 @@ export default class WebSocketServer {
 
     start(httpServer) {
         this.io = new SocketIO(httpServer);
-        console.log(`WebSocket server started successfully.`)
+        console.log(`WebSocket server started successfully.`);
         this.io.on('connection', this.onClientConnect);
     }
 
     onClientConnect(socket) {
         console.log('Client connected');
+        socket.on('createBoard', (msg) => {
+            this.boardManager.createBoard(msg.name).then((board) => {
+                // Let all the connected clients know about the new board
+                this.broadcastBoardListUpdate();
+                // Send a creation confirmation message to the primary client (should trigger displaying/opening board)
+                socket.emit('boardCreated', board.serialize());
+            });
+        });
         socket.on('boardUpdate', (data) => this.boardUpdateReceived(socket, data));
         socket.on('disconnect', () => this.onClientDisconnect(socket));
-        setTimeout(() => {
-            console.log('Saying hi')
-            socket.emit('update', 'Hello!');
-        }, 2000);
+    }
+
+    broadcastBoardListUpdate() {
+        this.io.emit('boardListUpdate', this.boardManager.getBoardList());
     }
 
     boardUpdateReceived(socket, msg) {
