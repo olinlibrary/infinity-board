@@ -1,7 +1,4 @@
 import React from 'react';
-import './App.css';
-import ReactDOM from 'react-dom';
-
 
 class DraggableBox extends React.Component {
   constructor(props) {
