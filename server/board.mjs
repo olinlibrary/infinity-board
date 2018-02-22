@@ -24,4 +24,8 @@ export default class Board {
         return this.data;
     }
 
+    applyElementUpdate(data) {
+        Object.assign(this.data.elements, data);
+    }
+
 }

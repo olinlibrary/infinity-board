@@ -22,3 +22,21 @@ let bm = new BoardManager();
 // Start the WebSockets server
 const wsServer = new WebSocketServer(bm);
 wsServer.start(httpServer.getHTTPServer());
+
+// Register the message handlers
+
+wsServer.registerMessageHandler('createBoard', (msg, socket) => {
+    bm.createBoard(msg.name).then((board) => {
+        // Let all the connected clients know about the new board
+        wsServer.broadcastBoardListUpdate(bm.getBoardList());
+        // Send a creation confirmation message to the primary client (should trigger displaying/opening board)
+        socket.emit('boardCreated', board.serialize());
+    });
+});
+
+wsServer.registerMessageHandler('boardUpdate', (msg, socket) => {
+    bm.receivedBoardUpdate(msg);
+
+    // TODO Get name and changed element info from msg
+    wsServer.broadcastBoardUpdate(msg, socket);
+});

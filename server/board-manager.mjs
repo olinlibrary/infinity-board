@@ -34,6 +34,11 @@ export default class BoardManager {
 
     }
 
+    receivedBoardUpdate(msg) {
+        // TODO Apply the update
+
+    }
+
     getBoardList() {
         return Object.values(this.boards).map((board) => {
             return {
