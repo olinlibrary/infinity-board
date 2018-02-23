@@ -208,7 +208,9 @@ class Board extends React.Component {
         <button onClick={this.generateBox.bind(this)}>Box</button>
           {allKeys.map((key, index) =>
               <DraggableBox uid={key} key={key} x={this.state[key].x} y={this.state[key].y} w={this.state[key].w}
-               h={this.state[key].h} callback={this.updateBoardState.bind(this)} color={this.state[key].color}></DraggableBox>
+               h={this.state[key].h} callback={this.updateBoardState.bind(this)} color={this.state[key].color}>
+               <TextField></TextField>
+               </DraggableBox>
           )}
         </div>
       )
