@@ -1,57 +1,52 @@
 import Board from './board.mjs';
-import DatabaseConnection from "./database.mjs";
+import DatabaseConnection from './database.mjs';
 
 export default class BoardManager {
+  constructor() {
+    this.boards = {};
+    this.boardListUpdateEventHandlers = [];
+    this.dbConn = new DatabaseConnection();
+    this.dbConn.connect();
 
-    constructor() {
-        this.boards = {};
-        this.boardListUpdateEventHandlers = [];
-        this.dbConn = new DatabaseConnection();
-        this.dbConn.connect();
+    // Bind contexts
+    this.getBoardList = this.getBoardList.bind(this);
+  }
 
-        // Bind contexts
-        this.getBoardList = this.getBoardList.bind(this);
-    }
+  createBoard(name = null) {
+    return new Promise((resolve, reject) => {
+      this.dbConn.createBoard(name).then((boardDbObj) => {
+        // Instantiate a Board object
+        const board = new Board(boardDbObj);
 
-    createBoard(name=null) {
+        // Save the board to our list of open boards
+        this.boards[board.getName()] = board;
 
-        return new Promise((resolve, reject) => {
-            this.dbConn.createBoard(name).then((boardDbObj) => {
-                // Instantiate a Board object
-                let board = new Board(boardDbObj);
+        // Register this board with the WebSockets server
+        // (or anything else that wants to be notified of board creation)
+        this.boardListUpdateEventHandlers.forEach(handler => handler());
 
-                // Save the board to our list of open boards
-                this.boards[board.getName()] = board;
+        resolve(board);
+      }, (err) => {
+        reject(err);
+      });
+    });
+  }
 
-                // Register this board with the WebSockets server (or anything else that wants to be notified of board creation)
-                this.boardListUpdateEventHandlers.forEach(handler => handler());
+  receivedBoardUpdate(msg) {
+    // TODO Apply the update
 
-                resolve(board);
-            }, (err) => {
-                reject(err);
-            });
-        });
+  }
 
-    }
+  getBoardList() {
+    return Object.values(this.boards).map(board => ({
+      name: board.getName(),
+      id: board.getId(),
+      created: board.getCreatedTime(),
+      lastUsed: board.getLastUsedTime(),
+    }));
+  }
 
-    receivedBoardUpdate(msg) {
-        // TODO Apply the update
-
-    }
-
-    getBoardList() {
-        return Object.values(this.boards).map((board) => {
-            return {
-                name: board.getName(),
-                id: board.getId(),
-                created: board.getCreatedTime(),
-                lastUsed: board.getLastUsedTime(),
-            }
-        })
-    }
-
-    registerBoardCreationEventHandler(handler) {
-        this.boardListUpdateEventHandlers.push(handler);
-    }
-
+  registerBoardCreationEventHandler(handler) {
+    this.boardListUpdateEventHandlers.push(handler);
+  }
 }
