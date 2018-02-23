@@ -39,3 +39,5 @@ export default class ImageBox extends React.Component {
 ImageBox.propTypes = {
   src: PropTypes.string.isRequired,
 };
+
+export default ImageBox;

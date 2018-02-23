@@ -39,3 +39,5 @@ class TextField extends React.Component {
     return (<div className="Text-box unselectable" onClick={this.onFocus}>{this.state.value}</div>);
   }
 }
+
+export default TextField;

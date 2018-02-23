@@ -30,6 +30,7 @@ class DraggableBox extends React.Component {
       height: `${this.props.h - (2 * this.props.padding)}px`,
       cursor: this.getCursor(),
       padding: `${this.props.padding}px`,
+      zIndex: this.props.z
     };
     return boxStyle;
   };
@@ -67,6 +68,7 @@ class DraggableBox extends React.Component {
         y: this.props.y,
         w: this.getResize(e.clientX, this.props.x, this.props.minX),
         h: this.getResize(e.clientY, this.props.y, this.props.minY),
+        z: this.props.z,
         color: this.props.color,
       });
     } else if (this.state.draggable) {
@@ -76,6 +78,7 @@ class DraggableBox extends React.Component {
         y: e.screenY + this.state.downY,
         w: this.props.w,
         h: this.props.h,
+        z: this.props.z,
         color: this.props.color,
       });
 
@@ -86,6 +89,16 @@ class DraggableBox extends React.Component {
 
   mouseDown = (e) => {
     if (e.button === 0) { // Check to make sure it's left mouse click
+      this.setState({z: this.state.z + 1});
+      this.props.callback(this.props.uid, { // Update z-index
+        x: this.props.x,
+        y: this.props.y,
+        w: this.props.w,
+        h: this.props.h,
+        z: this.props.clickCallback(),
+        color: this.props.color,
+      })
+
       // Update the down mouse X position
       this.setState({
         downX: this.props.x - e.screenX,
@@ -157,3 +170,5 @@ DraggableBox.defaultProps = {
   h: 200,
   color: '#ff0000',
 };
+
+export default DraggableBox;
