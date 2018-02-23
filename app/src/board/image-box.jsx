@@ -15,21 +15,23 @@ export default class ImageBox extends React.Component {
     this.onImgLoad = this.onImgLoad.bind(this);
   }
 
-  onImgLoad = ({ target: img }) => {
-    console.log(img.offsetWidth);
-    this.setState({ width: img.offsetWidth, height: img.offsetHeight });
+  /*
+    Update our state in the board to reflect the height of the image
+  */
+  onImgLoad({ target: img }) { //
+    this.props.imgCallback(this.props.uid, img.offsetWidth, img.offsetHeight);
   }
 
   render() {
+    var {src, imgCallback, ...other} = this.props; // Get the image src
     const imgStyle = {
-      background: `url(${this.props.src})`,
+      backgroundImage: `url(${src})`,
     };
-    var {source, ...other} = this.props; // Get the image src
     return (
       <div>
         <DraggableBox padding={0} defaultWidth={this.state.width} defaultHeight={this.state.height} {...other}>
           <div className="Box-image" style={imgStyle}>
-            <img src={source} onLoad={this.onImgLoad} style={{ visibility: 'hidden' }} alt="" />
+            <img src={src} onLoad={this.onImgLoad} style={{visibility: "hidden"}} alt="" />
           </div>
         </DraggableBox>
       </div>

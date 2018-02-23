@@ -54,8 +54,12 @@ class Board extends React.Component {
     // console.log("Gen box")
   };
 
-  renderBox = (key) => {
-
+  updateImage = (uuid, w, h) => {
+    console.log(w)
+    const initState = this.state.boxes;
+    initState[uuid].state.w = w;
+    initState[uuid].state.h = h;
+    this.setState({boxes: initState});
   }
 
   render() {
@@ -80,7 +84,7 @@ class Board extends React.Component {
         boxes.push(<TextBox {...propsIn}/>);
       }
       else if (this.state.boxes[key].type == "image") {
-        boxes.push(<ImageBox src="http://cdn.akc.org/content/hero/puppy-boundaries_header.jpg" {...propsIn}/>);
+        boxes.push(<ImageBox src="http://cdn.akc.org/content/hero/puppy-boundaries_header.jpg" imgCallback={this.updateImage} {...propsIn}/>);
       }
     }
     // console.log(this.state.zIndex);
