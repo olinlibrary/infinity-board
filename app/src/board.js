@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import ServerComm from './server-comm';
 
 const uuidv4 = require('uuid/v4');
+var randomColor = require('randomcolor');
 
 class DraggableBox extends React.Component {
   constructor(props) {
@@ -20,21 +21,21 @@ class DraggableBox extends React.Component {
 
   mouseMove(e) {
     this.setState({mouseX: e.clientX, mouseY: e.clientY}) // Fix this, the box should be less state-y
-    var id = this.props.uid
+    var id = this.props.uid // Get the UUID of the current board
     if (this.state.resizing) {
 
-      this.props.callback(id, {w: this.getResize(e.clientX, this.props.x, this.props.minX), h: this.getResize(e.clientY, this.props.y, this.props.minY)})
-
-      // this.setState({xSize: this.getResize(this.state.x, this.state.elemX, this.props.minX),
-      //                ySize: this.getResize(this.state.y, this.state.elemY, this.props.minY)})
+      this.props.callback(id, {x: this.props.x, y: this.props.y, w: this.getResize(e.clientX, this.props.x, this.props.minX),
+                                h: this.getResize(e.clientY, this.props.y, this.props.minY), color: this.props.color})
     }
     else if (this.state.draggable) {
-      this.props.callback(id, {x: e.screenX + this.props.x, y: e.screenY + this.props.y})
+      // console.log(e.screenX)
+      this.props.callback(id, {x: e.screenX + this.state.downX, y: e.screenY + this.state.downY, w: this.props.w, h: this.props.h, color: this.props.color})
 
       // this.setState({elemX: e.screenX + this.state.downX, elemY: e.screenY + this.state.downY});
     }
   }
 
+  // Gets the new width and height of the box based on the min width and height
   getResize(mouseVal, elemVal, min) {
     var newSize = mouseVal - elemVal
     if (newSize >= min) {
@@ -87,7 +88,7 @@ class DraggableBox extends React.Component {
 
   getBoxStyle() {
     var boxStyle = {
-      backgroundColor: 'red',
+      backgroundColor: this.props.color,
       left: this.props.x + 'px',
       top: this.props.y + 'px',
       width: this.props.w - 2*this.props.padding + 'px',
@@ -106,18 +107,8 @@ class DraggableBox extends React.Component {
       )
   }
 }
-
-DraggableBox.defaultProps = {
-  padding: 20,
-  minX: 200,
-  minY: 200,
-  defaultWidth: 200,
-  defaultHeight: 200,
-  x: 0,
-  y: 0,
-  w: 200,
-  h: 200
-};
+DraggableBox.defaultProps = {padding: 20, minX: 200, minY: 200, defaultWidth: 200, defaultHeight: 200,
+                              x: 0, y: 0,w: 200,h: 200, color: "#ff0000"};
 
 class TextField extends React.Component {
 
@@ -183,52 +174,43 @@ class Board extends React.Component {
       super(props);
       // this.socket = new ServerComm("TEST");
       // this.socket.setReceivedUpdateMessageHandler(this.onUpdate);
-      this.state = {}
+      this.state = {};
 
     }
 
-    componentDidMount(props, state) {
-      this.generateBox()
+    onUpdate(msg) {
+      uuidVal = msg.uuid;
+      state = msg.state;
+      var updatedState = {} // TODO: Seems redundant from updateBoardState, should change
+      updatedState[uuidVal] = state; // Doing this is necessary to index by UUID
+      this.setState(updatedState);
     }
 
-    // onUpdate(msg) {
-    //
-    //
-    // }
-
-    updateBoardState(uuid, state) {
-      this.state[uuid] = state
+    updateBoardState(uuidVal, curState) {
+      var updatedState = {}
+      updatedState[uuidVal] = curState; // Doing this is necessary to index by UUID
+      // this.socket.sendUpdateMessage(uuid: uuidVal, state: curState)
+      this.setState(updatedState);
     }
 
     generateBox() {
       var uuid = uuidv4();
-      // console.log(uuid)
-      this.state[uuid] = {x: 0, y: 0, w: 200, h: 200}
-      this.setState({test: "test"})
-      // console.log(this.state)
-      // console.log(Object.keys(this.state))
+      var initState = {};
+      initState[uuid] = {x: 0, y: 0, w: 200, h: 200, color: randomColor()};
+      this.setState(initState);
     }
 
-
-
     render() {
-      // var boxes = []
-      // console.log(Object.keys(this.state))
-      // for (var val in Object.keys(this.state)) {
-      //   console.log(val)
-      //   var boxObject = this.state[key];
-      //   boxes.push(<DraggableBox key={key} uid={key} x={boxObject.x} y={boxObject.y} w={boxObject.w} h={boxObject.h} callback={this.updateBoardState.bind(this)}></DraggableBox>);
-      // }
-      // console.log(boxes)
       var allKeys = Object.keys(this.state);
-      // console.log(allKeys);
-      var test
 
       return (
-          allKeys.map(key =>
+        <div>
+        <button onClick={this.generateBox.bind(this)}>Box</button>
+          {allKeys.map((key, index) =>
               <DraggableBox uid={key} key={key} x={this.state[key].x} y={this.state[key].y} w={this.state[key].w}
-               h={this.state[key].h} callback={this.updateBoardState.bind(this)}></DraggableBox>
-          )
+               h={this.state[key].h} callback={this.updateBoardState.bind(this)} color={this.state[key].color}></DraggableBox>
+          )}
+        </div>
       )
     }
 }

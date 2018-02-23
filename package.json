@@ -13,6 +13,7 @@
     "image-size": "^0.6.2",
     "mongodb": "^3.0.1",
     "node-es-module-loader": "^0.3.8",
+    "randomcolor": "^0.5.3",
     "raw-loader": "^0.5.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
