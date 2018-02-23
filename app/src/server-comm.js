@@ -12,7 +12,7 @@ export default class ServerComm {
 
     }
 
-    receivedUpdateMessage(socket, msg) {
+    receivedUpdateMessage = (socket, msg) => {
         console.log('Received update message');
         console.log(util.inspect(msg));
         if (this.receivedUpdateMessageHandler) {
@@ -20,10 +20,14 @@ export default class ServerComm {
         }
         // console.log(util.inspect(this))
         this.socket.emit('boardUpdate', 'Got your message, bro!')
-    }
+    };
 
-    setReceivedUpdateMessageHandler(callback) {
+    setReceivedUpdateMessageHandler = (callback) => {
         this.receivedUpdateMessageHandler = callback;
-    }
+    };
+
+    sendUpdateMessage = (data) => {
+        this.socket.emit('boardUpdate', data);
+    };
 
 }

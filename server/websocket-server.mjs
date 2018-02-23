@@ -3,40 +3,54 @@ import util from 'util';
 
 export default class WebSocketServer {
 
-    constructor(boardManager) {
+    constructor() {
         this.io = null;
-        this.boardManager = boardManager;
-
-        // Register our handler to be called when a board is created
-        // if (boardManager) {
-        //     boardManager.registerBoardCreationEventHandler(this.registerNewBoard);
-        // }
+        this.messageHandlers = {};
+        this.boardToClientsViewingMap = {};
 
         // Bind the current context to the following functions (weird JS thing)
+        this.start = this.start.bind(this);
         this.onClientConnect = this.onClientConnect.bind(this);
-        this.boardUpdateReceived = this.boardUpdateReceived.bind(this);
+        this.broadcastBoardUpdate = this.broadcastBoardUpdate.bind(this);
+        this.broadcastBoardListUpdate = this.broadcastBoardListUpdate.bind(this);
+        this.registerMessageHandler = this.registerMessageHandler.bind(this);
     }
 
     start(httpServer) {
         this.io = new SocketIO(httpServer);
-        console.log(`WebSocket server started successfully.`)
+        console.log(`WebSocket server started successfully.`);
         this.io.on('connection', this.onClientConnect);
     }
 
     onClientConnect(socket) {
         console.log('Client connected');
-        socket.on('boardUpdate', (data) => this.boardUpdateReceived(socket, data));
+        // Register the message handlers
+        Object.keys(this.messageHandlers).forEach((msgName) => {
+            socket.on(msgName, (data) => this.messageHandlers[msgName](data, socket));
+        });
+        socket.on('boardUpdate', (data) => this.boardUpdateReceived(data, socket));
         socket.on('disconnect', () => this.onClientDisconnect(socket));
-        setTimeout(() => {
-            console.log('Saying hi')
-            socket.emit('update', 'Hello!');
-        }, 2000);
     }
 
-    boardUpdateReceived(socket, msg) {
-        console.log('Received board update:');
-        console.log(util.inspect(msg));
-        // TODO Something interesting
+    broadcastBoardListUpdate(boardList) {
+        this.io.emit('boardListUpdate', boardList);
+    }
+
+    broadcastBoardUpdate(boardName, boardElement, originatingSocket) {
+        if (this.boardToClientsViewingMap.hasOwnProperty(boardName)) { // Should always be true
+            // Get the list of sockets with this board currently open
+            let clients = this.boardToClientsViewingMap[boardName];
+            // Broadcast the update to each client
+            clients.forEach((socket) => {
+                if (socket !== originatingSocket) { // Don't send the message to the sender
+                    socket.emit('boardUpdate', boardElement); // TODO Support having multiple boards open
+                }
+            });
+        }
+    }
+
+    registerMessageHandler(msgName, callback) {
+        this.messageHandlers[msgName] = callback;
     }
 
     onClientDisconnect(socket) {
