@@ -15,7 +15,8 @@ export default class ImageBox extends React.Component {
     this.onImgLoad = this.onImgLoad.bind(this);
   }
 
-  onImgLoad({ target: img }) {
+  onImgLoad = ({ target: img }) => {
+    console.log(img.offsetWidth);
     this.setState({ width: img.offsetWidth, height: img.offsetHeight });
   }
 
@@ -23,12 +24,12 @@ export default class ImageBox extends React.Component {
     const imgStyle = {
       background: `url(${this.props.src})`,
     };
+    var {source, ...other} = this.props; // Get the image src
     return (
       <div>
-        <DraggableBox padding={0} defaultWidth={this.state.width} defaultHeight={this.state.height}>
-          <div className="Box-image" style={imgStyle} >
-            {this.state.width}{this.state.height}
-            <img src={this.props.src} onLoad={this.onImgLoad} style={{ visibility: 'hidden' }} alt="" />
+        <DraggableBox padding={0} defaultWidth={this.state.width} defaultHeight={this.state.height} {...other}>
+          <div className="Box-image" style={imgStyle}>
+            <img src={source} onLoad={this.onImgLoad} style={{ visibility: 'hidden' }} alt="" />
           </div>
         </DraggableBox>
       </div>
@@ -39,5 +40,3 @@ export default class ImageBox extends React.Component {
 ImageBox.propTypes = {
   src: PropTypes.string.isRequired,
 };
-
-export default ImageBox;
