@@ -57,9 +57,13 @@ export default class DatabaseConnection {
                             console.log('Successfully reconnected to MongoDB instance.');
                             this.connected = true;
                         });
-                        this.createBoard((board) => {
-                            this.updateBoardLastUsed(null, board._id);
-                        });
+                        /*this.createBoard().then((board) => {
+			    this.getBoard(null, board._id).then((board) =>{
+				board.data="5";
+				console.log(board);
+				this.saveBoard(board);
+			    });
+                        });*/
                         resolve(this.db);
                     } else {
                         console.error(err);
@@ -85,7 +89,7 @@ export default class DatabaseConnection {
             if (!name){
                 name = Names.toName(now.getTime());
             }
-            let obj = {'created': now, 'lastUsed': now, 'name': name};
+            let obj = {'created': now, 'lastUsed': now, 'name': name, 'elements': []};
             this.db.collection("boards").insertOne(obj, function(err, res){
                 if (err) {
                     reject(err);
@@ -105,12 +109,35 @@ export default class DatabaseConnection {
 	}else if(id){
 	    query._id = id;
 	}else{
-
+	    throw "name or id must not be null";
 	}
 	var updatedVals = {$set: {'lastUsed':now}};
 	this.db.collection("boards").updateOne(query, updatedVals, function(err, res){
 	    if(err) throw err;
 	});
+    }
+
+    saveBoard(board){
+	var query = {'_id':board._id};
+	console.log(board);
+	var updatedVals = {$set: board};
+	this.db.collection("boards").updateOne(query, updatedVals, function(err, res){
+	    if(err) throw err;
+	});
+    }
+
+    getBoard(name=null, id=null){
+	var query = {};
+	if(name){
+	    query.name = name;
+	}else if(id){
+	    query._id = id;
+	}else{
+	    throw "name or id must not be null";
+	}
+	return this.db.collection("boards").find(query).toArray().then(function(res){
+	    return res[0];
+	})
     }
 
     listBoards() {
