@@ -34,16 +34,15 @@ class Board extends React.Component {
     return this.state.zIndex;
   }
 
-  generateBox = (event) => {
-    var boxType = event.target.dataset.type;
-
-    const uuid = uuidv4();
+  generateBox = (e) => {
+    var boxType = e.target.dataset.type; // Get the type of box we're making
+    const uuid = uuidv4(); // Gen unique UUID
     const initState = this.state.boxes;
     initState[uuid] = {
       type: boxType,
       state: {
-        x: 0,
-        y: 0,
+        x: e.clientX,
+        y: e.clientY,
         w: 200,
         h: 200,
         z: this.state.zIndex,
@@ -54,11 +53,29 @@ class Board extends React.Component {
     // console.log("Gen box")
   };
 
+  componentDidMount() {
+    document.addEventListener('ondrop', this.handleFileDrop)
+  }
+
+  handleFileDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.generateBox(e)
+  }
+
+  dragOverHandler = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  /*
+  Called on ImageBox load to resize image correctly
+  */
   updateImage = (uuid, w, h) => {
-    console.log(w)
     const initState = this.state.boxes;
     initState[uuid].state.w = w;
     initState[uuid].state.h = h;
+    initState[uuid].aspect = w/h; // Store the aspect ratio
     this.setState({boxes: initState});
   }
 
@@ -79,6 +96,9 @@ class Board extends React.Component {
         callback: this.updateBoardState,
         color: this.state.boxes[key].state.color
       };
+      if (typeof this.state.boxes[key].aspect !== 'undefined') {
+        propsIn.aspect = this.state.boxes[key].aspect;
+      }
 
       if (this.state.boxes[key].type == "text") {
         boxes.push(<TextBox {...propsIn}/>);
@@ -92,7 +112,7 @@ class Board extends React.Component {
 
     return (
 
-      <div>
+      <div className="Wrapper" data-type= "image" onDrop={this.handleFileDrop} onDragOver={this.dragOverHandler}>
         <button data-type = "text" onClick={this.generateBox}>Box</button>
         <button data-type = "image" onClick={this.generateBox}>Image</button>
         {boxes}

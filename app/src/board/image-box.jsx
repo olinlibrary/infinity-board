@@ -9,7 +9,7 @@ export default class ImageBox extends React.Component {
       width: 0,
       height: 0,
       imgStyle: {
-        visibility: 'visible',
+        visibility: 'hidden',
       },
     };
     this.onImgLoad = this.onImgLoad.bind(this);
@@ -20,12 +20,14 @@ export default class ImageBox extends React.Component {
   */
   onImgLoad({ target: img }) { //
     this.props.imgCallback(this.props.uid, img.offsetWidth, img.offsetHeight);
+    this.setState({visibility: 'visible'})
   }
 
   render() {
     var {src, imgCallback, ...other} = this.props; // Get the image src
     const imgStyle = {
       backgroundImage: `url(${src})`,
+      visibility: this.state.visibility
     };
     return (
       <div>

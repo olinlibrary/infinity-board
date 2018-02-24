@@ -15,6 +15,7 @@ class TextField extends React.Component {
   };
 
   onFocus = (e) => {
+    e.preventDefault();
     this.setState({ editing: true, cursor: 'text' });
   };
 

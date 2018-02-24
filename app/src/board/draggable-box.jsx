@@ -56,6 +56,7 @@ class DraggableBox extends React.Component {
   };
 
   mouseMove = (e) => {
+    e.preventDefault();
     // Fix this, the box should be less state-y
     this.setState({
       mouseX: e.clientX,
@@ -63,11 +64,20 @@ class DraggableBox extends React.Component {
     });
     const id = this.props.uid; // Get the UUID of the current board
     if (this.state.resizing) {
+      var width = this.getResize(e.clientX, this.props.x, this.props.minX); // Get new width
+      if (this.props.aspect != 0) {
+        console.log(this.props.aspect)
+        var height = width/this.props.aspect;
+      }
+      else {
+        var height = this.getResize(e.clientY, this.props.y, this.props.minY)
+      }
+
       this.props.callback(id, {
         x: this.props.x,
         y: this.props.y,
-        w: this.getResize(e.clientX, this.props.x, this.props.minX),
-        h: this.getResize(e.clientY, this.props.y, this.props.minY),
+        w: width,
+        h: height,
         z: this.props.z,
         color: this.props.color,
       });
@@ -88,6 +98,7 @@ class DraggableBox extends React.Component {
 
 
   mouseDown = (e) => {
+    e.preventDefault();
     if (e.button === 0) { // Check to make sure it's left mouse click
       this.setState({z: this.state.z + 1});
       this.props.callback(this.props.uid, { // Update z-index
@@ -113,6 +124,7 @@ class DraggableBox extends React.Component {
   };
 
   mouseUp = (e) => {
+    e.preventDefault();
     this.setState({ draggable: false, resizing: false });
   };
 
@@ -156,6 +168,7 @@ DraggableBox.propTypes = {
   color: PropTypes.string,
   callback: PropTypes.func.isRequired,
   uid: PropTypes.string.isRequired,
+  aspect: PropTypes.number
 };
 
 DraggableBox.defaultProps = {
@@ -169,6 +182,7 @@ DraggableBox.defaultProps = {
   w: 200,
   h: 200,
   color: '#ff0000',
+  aspect: 0
 };
 
 export default DraggableBox;
