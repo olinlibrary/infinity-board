@@ -10,8 +10,8 @@ import ImageBox from './image-box';
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    // this.socket = new ServerComm('TEST');
-    // this.socket.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.socket = new ServerComm(window.SERVER_URI);
+    this.socket.setReceivedUpdateMessageHandler(this.onUpdate);
     this.state = {
       zIndex: 1,
       boxes: {},
@@ -40,7 +40,7 @@ class Board extends React.Component {
   updateBoardState = (uuidVal, curState) => {
     const updatedState = this.state.boxes;
     updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
-    // this.socket.sendUpdateMessage({uuid: uuidVal, state: curState})
+    this.socket.sendUpdateMessage({uuid: uuidVal, state: curState})
     this.setState({
       boxes: updatedState,
     });
