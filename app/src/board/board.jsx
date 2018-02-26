@@ -40,7 +40,7 @@ class Board extends React.Component {
   updateBoardState = (uuidVal, curState) => {
     const updatedState = this.state.boxes;
     updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
-    this.socket.sendUpdateMessage({uuid: uuidVal, state: curState})
+    this.socket.sendUpdateMessage({ uuid: uuidVal, state: curState });
     this.setState({
       boxes: updatedState,
     });
