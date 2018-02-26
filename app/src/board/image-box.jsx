@@ -8,9 +8,8 @@ export default class ImageBox extends React.Component {
     this.state = {
       width: 0,
       height: 0,
-      imgStyle: {
-        visibility: 'hidden',
-      },
+      visibility: 'hidden'
+
     };
     this.onImgLoad = this.onImgLoad.bind(this);
   }
@@ -23,6 +22,9 @@ export default class ImageBox extends React.Component {
     this.setState({visibility: 'visible'})
   }
 
+  textFunc = () => {
+  }
+
   render() {
     var {src, imgCallback, ...other} = this.props; // Get the image src
     const imgStyle = {
@@ -31,7 +33,7 @@ export default class ImageBox extends React.Component {
     };
     return (
       <div>
-        <DraggableBox padding={0} defaultWidth={this.state.width} defaultHeight={this.state.height} {...other}>
+        <DraggableBox padding={0} textCallback={this.textFunc} defaultWidth={this.state.width} defaultHeight={this.state.height} style={{visibility: this.state.visibility}} {...other}>
           <div className="Box-image" style={imgStyle}>
             <img src={src} onLoad={this.onImgLoad} style={{visibility: "hidden"}} alt="" />
           </div>

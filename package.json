@@ -20,6 +20,8 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.0",
+    "react-test-renderer": "^16.2.0",
+    "regenerator-runtime": "^0.11.1",
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.4",
     "style-loader": "^0.20.1",
@@ -33,7 +35,7 @@
     "start": "webpack-dev-server --inline --hot",
     "build": "webpack --config=webpack.config.js",
     "dev": "webpack-dev-server --inline --hot",
-    "test": "react-scripts test --env=jsdom",
+    "test": "jest",
     "eject": "react-scripts eject",
     "lint": "./node_modules/.bin/eslint .",
     "validate": "npm ls"
@@ -45,9 +47,17 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
     "husky": "^0.14.3",
+    "jest": "20.0.4",
     "precommit-hook-eslint": "^3.0.0"
   },
   "pre-commit": [
     "lint"
-  ]
+  ],
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
+        "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+    }
+  }
 }

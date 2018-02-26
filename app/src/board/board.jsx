@@ -13,7 +13,7 @@ class Board extends React.Component {
     super(props);
     // this.socket = new ServerComm("TEST");
     // this.socket.setReceivedUpdateMessageHandler(this.onUpdate);
-    this.state = {zIndex: 1, boxes: {}};
+    this.state = {zIndex: 1, boxes: {}, dragOverState: {visibility: "visible", zIndex: 2}};
   }
 
   onUpdate = (msg) => {
@@ -54,10 +54,14 @@ class Board extends React.Component {
   };
 
   componentDidMount() {
-    document.addEventListener('ondrop', this.handleFileDrop)
+    document.addEventListener('ondrop', this.handleFileDrop);
+    document.addEventListener('ondragover', this.dragOverHandler);
+    document.addEventListener('ondragleave', this.dragLeaveHandler);
+    document.addEventListener('onmouseover', this.dragOverHandler);
   }
 
   handleFileDrop = (e) => {
+    debugger;
     e.preventDefault();
     e.stopPropagation();
     this.generateBox(e)
@@ -66,6 +70,13 @@ class Board extends React.Component {
   dragOverHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    this.setState({dragOverState: {visibility: "visible", zIndex: this.state.zIndex}})
+  }
+
+  dragLeaveHandler = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.setState({dragOverState: {visibility: "hidden", zIndex: this.state.zIndex}})
   }
 
   /*
@@ -112,10 +123,11 @@ class Board extends React.Component {
 
     return (
 
-      <div className="Wrapper" data-type= "image" onDrop={this.handleFileDrop} onDragOver={this.dragOverHandler}>
+      <div>
         <button data-type = "text" onClick={this.generateBox}>Box</button>
         <button data-type = "image" onClick={this.generateBox}>Image</button>
         {boxes}
+        // <div className="Wrapper" data-type= "image" style={this.state.dragOverState} onDrop = {this.handleFileDrop}></div>
       </div>
     );
   }

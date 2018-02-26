@@ -6,13 +6,19 @@ import TextField from './text-field';
 export default class TextBox extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {editing: false}
+  }
+
+  onClick = (e) => {
+    var editingState = !this.state.editing;
+    this.setState({editing: editingState});
   }
 
   render() {
     return (
       <div>
-        <DraggableBox {...this.props}>
-        <TextField></TextField>
+        <DraggableBox textCallback={this.onClick} {...this.props}>
+        <TextField edit={this.state.editing}></TextField>
         </DraggableBox>
       </div>
     );

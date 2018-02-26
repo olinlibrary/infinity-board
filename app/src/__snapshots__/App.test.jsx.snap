@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<div>
+  <button
+    data-type="text"
+    onClick={[Function]}
+  >
+    Box
+  </button>
+  <button
+    data-type="image"
+    onClick={[Function]}
+  >
+    Image
+  </button>
+  // 
+  <div
+    className="Wrapper"
+    data-type="image"
+    onDrop={[Function]}
+    style={
+      Object {
+        "visibility": "visible",
+        "zIndex": 2,
+      }
+    }
+  />
+</div>
+`;
