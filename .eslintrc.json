@@ -6,8 +6,10 @@
   },
   "rules": {
     "class-methods-use-this": "warn",
+    "import/no-extraneous-dependencies": "off",
     "jsx-a11y/no-static-element-interactions": "warn",
     "no-unused-vars": "warn",
+    "no-plusplus": "off",
     "react/no-unused-state": "warn"
   }
 }
