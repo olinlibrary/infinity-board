@@ -2,13 +2,12 @@ import React from 'react';
 import randomColor from 'randomcolor';
 import uuidv4 from 'uuid/v4';
 import '../App.css';
-import DraggableBox from './draggable-box';
 import ServerComm from '.././server-comm';
 import TextBox from './text-box';
 import ImageBox from './image-box';
 
 
-class Board extends React.Component {   
+class Board extends React.Component {
   constructor(props) {
     super(props);
     // this.socket = new ServerComm('TEST');
@@ -24,10 +23,9 @@ class Board extends React.Component {
   }
 
   componentDidMount() {
-    document.addEventListener('ondrop', this.handleFileDrop);
-    document.addEventListener('ondragover', this.dragOverHandler);
-    document.addEventListener('ondragleave', this.dragLeaveHandler);
-    document.addEventListener('onmouseover', this.dragOverHandler);
+    document.addEventListener('drop', this.handleFileDrop);
+    document.addEventListener('dragover', this.dragOverHandler);
+    document.addEventListener('dragleave', this.dragLeaveHandler);
   }
 
   onUpdate = (msg) => {
@@ -41,7 +39,7 @@ class Board extends React.Component {
     updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
     // this.socket.sendUpdateMessage(uuid: uuidVal, state: curState)
     this.setState({
-      textBoxes: updatedState,
+      boxes: updatedState,
     });
   };
 
@@ -74,7 +72,7 @@ class Board extends React.Component {
   handleFileDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    this.generateBox(e);
+    // this.generateBox(e);
   };
 
   dragOverHandler = (e) => {
@@ -94,7 +92,7 @@ class Board extends React.Component {
     this.setState({
       dragOverState: {
         visibility: 'hidden',
-        zIndex: this.state.zIndex,
+        zIndex: 0,
       },
     });
   };
@@ -149,7 +147,7 @@ class Board extends React.Component {
         <button data-type="text" onClick={this.generateBox}>Box</button>
         <button data-type="image" onClick={this.generateBox}>Image</button>
         {boxes}
-        <div className="Wrapper" data-type="image" style={this.state.dragOverState} onDrop={this.handleFileDrop} />
+        <div className="Wrapper" style={this.state.dragOverState} />
       </div>
     );
   }
