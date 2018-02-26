@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 
 class TextField extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       value: '',
-      editing: false,
       cursor: 'inherit',
     };
   }
@@ -16,15 +17,9 @@ class TextField extends React.Component {
 
   onFocus = (e) => {
     e.preventDefault();
-    // this.setState({ editing: true, cursor: 'text' });
-  };
-
-  onBlur = (e) => {
-    // this.setState({ editing: false, cursor: 'inherit' });
   };
 
   render() {
-    const textStyle = { cursor: this.state.cursor };
     if (this.props.edit) {
       return (<textarea
         // eslint-disable-next-line jsx-a11y/no-autofocus
@@ -34,11 +29,18 @@ class TextField extends React.Component {
         onChange={this.onInput}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
-        style={{cursor: "text"}}
+        style={{ cursor: 'text' }}
       />);
     }
     return (<div className="Text-box unselectable">{this.state.value}</div>);
   }
 }
 
+TextField.defaultProps = {
+  edit: false,
+};
+
+TextField.propTypes = {
+  edit: PropTypes.bool,
+};
 export default TextField;

@@ -2,7 +2,6 @@ import React from 'react';
 import randomColor from 'randomcolor';
 import uuidv4 from 'uuid/v4';
 import '../App.css';
-import DraggableBox from './draggable-box';
 import ServerComm from '.././server-comm';
 import TextBox from './text-box';
 import ImageBox from './image-box';
@@ -11,8 +10,8 @@ import ImageBox from './image-box';
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    // this.socket = new ServerComm('TEST');
-    // this.socket.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.socket = new ServerComm(window.SERVER_URI);
+    this.socket.setReceivedUpdateMessageHandler(this.onUpdate);
     this.state = {
       zIndex: 1,
       boxes: {},
@@ -24,24 +23,26 @@ class Board extends React.Component {
   }
 
   componentDidMount() {
-    document.addEventListener('ondrop', this.handleFileDrop);
-    document.addEventListener('ondragover', this.dragOverHandler);
-    document.addEventListener('ondragleave', this.dragLeaveHandler);
-    document.addEventListener('onmouseover', this.dragOverHandler);
+    document.addEventListener('drop', this.handleFileDrop);
+    document.addEventListener('dragover', this.dragOverHandler);
+    document.addEventListener('dragleave', this.dragLeaveHandler);
   }
 
   onUpdate = (msg) => {
-    const updatedState = {}; // TODO: Seems redundant from updateBoardState, should change
+    // eslint-disable-next-line
+    let updatedState = this.state.boxes; // TODO: Seems redundant from updateBoardState, should change
     updatedState[msg.uuid].state = msg.state; // Doing this is necessary to index by UUID
-    this.setState(updatedState);
+    this.setState({
+      boxes: updatedState,
+    });
   };
 
   updateBoardState = (uuidVal, curState) => {
     const updatedState = this.state.boxes;
     updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
-    // this.socket.sendUpdateMessage(uuid: uuidVal, state: curState)
+    this.socket.sendUpdateMessage({uuid: uuidVal, state: curState})
     this.setState({
-      textBoxes: updatedState,
+      boxes: updatedState,
     });
   };
 
@@ -74,7 +75,7 @@ class Board extends React.Component {
   handleFileDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    this.generateBox(e);
+    // this.generateBox(e);
   };
 
   dragOverHandler = (e) => {
@@ -94,7 +95,7 @@ class Board extends React.Component {
     this.setState({
       dragOverState: {
         visibility: 'hidden',
-        zIndex: this.state.zIndex,
+        zIndex: 0,
       },
     });
   };
@@ -149,7 +150,7 @@ class Board extends React.Component {
         <button data-type="text" onClick={this.generateBox}>Box</button>
         <button data-type="image" onClick={this.generateBox}>Image</button>
         {boxes}
-        <div className="Wrapper" data-type="image" style={this.state.dragOverState} onDrop={this.handleFileDrop} />
+        <div className="Wrapper" style={this.state.dragOverState} />
       </div>
     );
   }
