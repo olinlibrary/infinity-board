@@ -8,7 +8,7 @@ import TextBox from './text-box';
 import ImageBox from './image-box';
 
 
-class Board extends React.Component {
+class Board extends React.Component {   
   constructor(props) {
     super(props);
     // this.socket = new ServerComm("TEST");
