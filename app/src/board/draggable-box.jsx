@@ -12,6 +12,7 @@ class DraggableBox extends React.Component {
       cursor: 'default',
       mouseX: 0,
       mouseY: 0,
+      mouseMoved: 'false'
     };
   }
 
@@ -30,6 +31,8 @@ class DraggableBox extends React.Component {
       height: `${this.props.h - (2 * this.props.padding)}px`,
       cursor: this.getCursor(),
       padding: `${this.props.padding}px`,
+      zIndex: this.props.z,
+      visibility: this.props.style.visibility
     };
     return boxStyle;
   };
@@ -55,18 +58,29 @@ class DraggableBox extends React.Component {
   };
 
   mouseMove = (e) => {
+    e.preventDefault();
     // Fix this, the box should be less state-y
     this.setState({
       mouseX: e.clientX,
       mouseY: e.clientY,
+      mouseMoved: true
     });
     const id = this.props.uid; // Get the UUID of the current board
     if (this.state.resizing) {
+      var width = this.getResize(e.clientX, this.props.x, this.props.minX); // Get new width
+      if (this.props.aspect != 0) {
+        var height = width/this.props.aspect;
+      }
+      else {
+        var height = this.getResize(e.clientY, this.props.y, this.props.minY)
+      }
+
       this.props.callback(id, {
         x: this.props.x,
         y: this.props.y,
-        w: this.getResize(e.clientX, this.props.x, this.props.minX),
-        h: this.getResize(e.clientY, this.props.y, this.props.minY),
+        w: width,
+        h: height,
+        z: this.props.z,
         color: this.props.color,
       });
     } else if (this.state.draggable) {
@@ -76,6 +90,7 @@ class DraggableBox extends React.Component {
         y: e.screenY + this.state.downY,
         w: this.props.w,
         h: this.props.h,
+        z: this.props.z,
         color: this.props.color,
       });
 
@@ -85,12 +100,19 @@ class DraggableBox extends React.Component {
 
 
   mouseDown = (e) => {
+    e.preventDefault();
     if (e.button === 0) { // Check to make sure it's left mouse click
-      // Update the down mouse X position
-      this.setState({
-        downX: this.props.x - e.screenX,
-        downY: this.props.y - e.screenY,
-      });
+      this.setState({z: this.state.z + 1, mouseMoved: false,
+                    downX: this.props.x - e.screenX,
+                    downY: this.props.y - e.screenY});
+      this.props.callback(this.props.uid, { // Update z-index
+        x: this.props.x,
+        y: this.props.y,
+        w: this.props.w,
+        h: this.props.h,
+        z: this.props.clickCallback(),
+        color: this.props.color,
+      })
       if (this.cursorInDraggingPosition(e)) { // If we're resizing the box
         this.setState({ resizing: true });
       } else {
@@ -100,7 +122,11 @@ class DraggableBox extends React.Component {
   };
 
   mouseUp = (e) => {
+    e.preventDefault();
     this.setState({ draggable: false, resizing: false });
+    if (!this.state.mouseMoved) {
+      this.props.textCallback();
+    }
   };
 
 
@@ -117,7 +143,7 @@ class DraggableBox extends React.Component {
 
   render() {
     return (
-      <div onMouseDown={this.mouseDown} className="Box" style={this.getBoxStyle()}>
+      <div onMouseDown={this.mouseDown} onBlur={this.props.textCallback} className="Box" style={this.getBoxStyle()}>
         {this.props.children}
       </div>
     );
@@ -143,6 +169,7 @@ DraggableBox.propTypes = {
   color: PropTypes.string,
   callback: PropTypes.func.isRequired,
   uid: PropTypes.string.isRequired,
+  aspect: PropTypes.number
 };
 
 DraggableBox.defaultProps = {
@@ -156,4 +183,8 @@ DraggableBox.defaultProps = {
   w: 200,
   h: 200,
   color: '#ff0000',
+  aspect: 0,
+  style: {visibility: "visible"},
 };
+
+export default DraggableBox;

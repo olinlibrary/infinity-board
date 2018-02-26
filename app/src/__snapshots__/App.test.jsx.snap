@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generates boxes 1`] = `
+<div>
+  <button
+    data-type="text"
+    onClick={[Function]}
+  >
+    Box
+  </button>
+  <button
+    data-type="image"
+    onClick={[Function]}
+  >
+    Image
+  </button>
+  <div>
+    <div
+      className="Box"
+      onBlur={[Function]}
+      onMouseDown={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#ff000",
+          "cursor": "default",
+          "height": "160px",
+          "left": "50px",
+          "padding": "20px",
+          "top": "50px",
+          "visibility": "visible",
+          "width": "160px",
+          "zIndex": 1,
+        }
+      }
+    >
+      <div
+        className="Text-box unselectable"
+      >
+        
+      </div>
+    </div>
+  </div>
+  // 
+  <div
+    className="Wrapper"
+    data-type="image"
+    onDrop={[Function]}
+    style={
+      Object {
+        "visibility": "visible",
+        "zIndex": 2,
+      }
+    }
+  />
+</div>
+`;
+
+exports[`renders correctly 1`] = `
+<div>
+  <button
+    data-type="text"
+    onClick={[Function]}
+  >
+    Box
+  </button>
+  <button
+    data-type="image"
+    onClick={[Function]}
+  >
+    Image
+  </button>
+  // 
+  <div
+    className="Wrapper"
+    data-type="image"
+    onDrop={[Function]}
+    style={
+      Object {
+        "visibility": "visible",
+        "zIndex": 2,
+      }
+    }
+  />
+</div>
+`;

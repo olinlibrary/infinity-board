@@ -8,27 +8,34 @@ export default class ImageBox extends React.Component {
     this.state = {
       width: 0,
       height: 0,
-      imgStyle: {
-        visibility: 'visible',
-      },
+      visibility: 'hidden'
+
     };
     this.onImgLoad = this.onImgLoad.bind(this);
   }
 
-  onImgLoad({ target: img }) {
-    this.setState({ width: img.offsetWidth, height: img.offsetHeight });
+  /*
+    Update our state in the board to reflect the height of the image
+  */
+  onImgLoad({ target: img }) { //
+    this.props.imgCallback(this.props.uid, img.offsetWidth, img.offsetHeight);
+    this.setState({visibility: 'visible'})
+  }
+
+  textFunc = () => {
   }
 
   render() {
+    var {src, imgCallback, ...other} = this.props; // Get the image src
     const imgStyle = {
-      background: `url(${this.props.src})`,
+      backgroundImage: `url(${src})`,
+      visibility: this.state.visibility
     };
     return (
       <div>
-        <DraggableBox padding={0} defaultWidth={this.state.width} defaultHeight={this.state.height}>
-          <div className="Box-image" style={imgStyle} >
-            {this.state.width}{this.state.height}
-            <img src={this.props.src} onLoad={this.onImgLoad} style={{ visibility: 'hidden' }} alt="" />
+        <DraggableBox padding={0} textCallback={this.textFunc} defaultWidth={this.state.width} defaultHeight={this.state.height} style={{visibility: this.state.visibility}} {...other}>
+          <div className="Box-image" style={imgStyle}>
+            <img src={src} onLoad={this.onImgLoad} style={{visibility: "hidden"}} alt="" />
           </div>
         </DraggableBox>
       </div>

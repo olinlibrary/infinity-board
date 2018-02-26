@@ -1,10 +1,28 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './index';
+import React from 'react';
+import renderer from 'react-test-renderer';
+import Board from './board/board';
+import DraggableBox from './board/draggable-box';
 
-// eslint-disable-next-line no-undef
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
+/**
+ * @jest-environment node
+*/
+
+it('renders correctly', () => {
+    const tree = renderer.create(<Board />).toJSON();
+    expect(tree).toMatchSnapshot();
 });
+
+it('generates boxes', () => {
+  const doc = renderer.create(<Board />);
+  const instance = doc.root.instance;
+  const mockEvent = {
+    target: {dataset: {type: "text"}},
+    clientX: 50,
+    clientY: 50
+  }
+
+  instance.generateBox(mockEvent);
+  expect(doc.toJSON()).toMatchSnapshot();
+
+})
