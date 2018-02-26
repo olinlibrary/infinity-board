@@ -16,8 +16,8 @@ class Board extends React.Component {
       zIndex: 1,
       boxes: {},
       dragOverState: {
-        visibility: 'visible',
-        zIndex: 2,
+        visibility: 'hidden',
+        zIndex: -1,
       },
     };
   }
@@ -75,7 +75,9 @@ class Board extends React.Component {
   handleFileDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // this.generateBox(e);
+    const mockEvent = { target: { dataset: { type: 'image' } }, clientX: e.clientX, clientY: e.clientY};
+    this.generateBox(mockEvent);
+    this.dragLeaveHandler(e);
   };
 
   dragOverHandler = (e) => {
@@ -83,7 +85,7 @@ class Board extends React.Component {
     e.stopPropagation();
     this.setState({
       dragOverState: {
-        visibility: 'visible',
+        opacity: 1,
         zIndex: this.state.zIndex,
       },
     });
@@ -94,8 +96,8 @@ class Board extends React.Component {
     e.stopPropagation();
     this.setState({
       dragOverState: {
-        visibility: 'hidden',
-        zIndex: 0,
+        opacity: 0,
+        zIndex: -1,
       },
     });
   };
@@ -150,7 +152,9 @@ class Board extends React.Component {
         <button data-type="text" onClick={this.generateBox}>Box</button>
         <button data-type="image" onClick={this.generateBox}>Image</button>
         {boxes}
-        <div className="Wrapper" style={this.state.dragOverState} />
+        <div className="Wrapper" style={this.state.dragOverState}>
+          <div className="Wrapper-text">DROP FILE HERE</div>
+        </div>
       </div>
     );
   }
