@@ -29,15 +29,18 @@ class Board extends React.Component {
   }
 
   onUpdate = (msg) => {
-    const updatedState = {}; // TODO: Seems redundant from updateBoardState, should change
+    // eslint-disable-next-line
+    let updatedState = this.state.boxes; // TODO: Seems redundant from updateBoardState, should change
     updatedState[msg.uuid].state = msg.state; // Doing this is necessary to index by UUID
-    this.setState(updatedState);
+    this.setState({
+      boxes: updatedState,
+    });
   };
 
   updateBoardState = (uuidVal, curState) => {
     const updatedState = this.state.boxes;
     updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
-    // this.socket.sendUpdateMessage(uuid: uuidVal, state: curState)
+    // this.socket.sendUpdateMessage({uuid: uuidVal, state: curState})
     this.setState({
       boxes: updatedState,
     });
