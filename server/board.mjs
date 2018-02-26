@@ -1,31 +1,30 @@
+/* eslint-disable no-underscore-dangle */
 export default class Board {
+  constructor(data) {
+    this.data = data;
+  }
 
-    constructor(data) {
-        this.data = data;
-    }
+  getId() {
+    return this.data._id;
+  }
 
-    getId() {
-        return this.data._id;
-    }
+  getName() {
+    return this.data.name;
+  }
 
-    getName() {
-        return this.data.name;
-    }
+  getCreatedTime() {
+    return this.data.created;
+  }
 
-    getCreatedTime() {
-        return this.data.created;
-    }
+  getLastUsedTime() {
+    return this.data.lastUsed;
+  }
 
-    getLastUsedTime() {
-        return this.data.lastUsed;
-    }
+  serialize() {
+    return this.data;
+  }
 
-    serialize() {
-        return this.data;
-    }
-
-    applyElementUpdate(data) {
-        Object.assign(this.data.elements, data);
-    }
-
+  applyElementUpdate(data) {
+    Object.assign(this.data.elements, data);
+  }
 }
