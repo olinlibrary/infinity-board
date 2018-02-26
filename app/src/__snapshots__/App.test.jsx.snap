@@ -21,7 +21,7 @@ exports[`generates boxes 1`] = `
       onMouseDown={[Function]}
       style={
         Object {
-          "backgroundColor": "#ff000",
+          "backgroundColor": "#ff0000",
           "cursor": "default",
           "height": "160px",
           "left": "50px",
