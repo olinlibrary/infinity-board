@@ -3,6 +3,7 @@ import randomColor from 'randomcolor';
 import uuidv4 from 'uuid/v4';
 import '../App.css';
 import DraggableBox from './draggable-box';
+import TextField from './text-field';
 import ServerComm from '.././server-comm';
 
 
@@ -46,17 +47,20 @@ class Board extends React.Component {
     return (
       <div>
         <button onClick={this.generateBox}>Box</button>
-        {allKeys.map((key, index) =>
-            (<DraggableBox
-              uid={key}
-              key={key}
-              x={this.state[key].x}
-              y={this.state[key].y}
-              w={this.state[key].w}
-              h={this.state[key].h}
-              callback={this.updateBoardState}
-              color={this.state[key].color}
-            />))}
+        {allKeys.map((key, index) => (
+          <DraggableBox
+            uid={key}
+            key={key}
+            x={this.state[key].x}
+            y={this.state[key].y}
+            w={this.state[key].w}
+            h={this.state[key].h}
+            callback={this.updateBoardState}
+            color={this.state[key].color}
+          >
+            <TextField />
+          </DraggableBox>
+        ))}
       </div>
     );
   }
