@@ -5,11 +5,21 @@ import MongoClient from 'mongodb';
 import Names from './names.mjs';
 
 export default class DatabaseConnection {
+
+  /**
+   * Instantiates an object for communicating with a MongoDB database. Call connect() to
+   * actually open a connection to the database.
+   */
   constructor() {
     this.connected = false;
     this.db = null;
   }
 
+  /**
+   * Opens a new connection to the MongoDB database.
+   * @return {Promise<any>} a Promise that resolves once the connection has been established,
+   * passing along a connection to the database as the result, if successful.
+   */
   connect() {
     return new Promise((resolve, reject) => {
       // Connect to the MongoDB database
@@ -36,7 +46,7 @@ export default class DatabaseConnection {
         console.error('\t- MONGO_DB_NAME');
         console.error('\t- MONGO_REPLICA_SET');
         console.error('Connection to MongoDB failed.');
-        reject('Connection to MongoDB failed. Required environment variables not defined.');
+        reject(Error('Connection to MongoDB failed. Required environment variables not defined.'));
       } else {
         // We have all the information we need to connect, so attempt to do so
         const mongoUri = `mongodb://${username}:${password}@${cluster1}:${mongoPort},${cluster2}:${mongoPort},${cluster3}:${mongoPort}/${dbName}?ssl=true&replicaSet=${replicaSet}&authSource=${authSource}`;
@@ -73,6 +83,12 @@ export default class DatabaseConnection {
     return this.connected;
   }
 
+  /**
+   * Creates a new board in the database.
+   * @param {string} name - (optional) the desired name for the board.
+   * If one is not specified, one will be generated.
+   * @return {Promise<any>} a Promise that resolves when the board has been created.
+   */
   createBoard(name) {
     return new Promise((resolve, reject) => {
       const now = new Date();
@@ -93,6 +109,12 @@ export default class DatabaseConnection {
     });
   }
 
+  /**
+   * Updates the "last used" time of the board (to enable sorting by last opened/used).
+   * Only one parameter should be specified.
+   * @param {string} name - the name of the board
+   * @param {number} id - the unique ID of the board
+   */
   updateBoardLastUsed(name = null, id = null) {
     const now = new Date();
     const query = {};
@@ -101,7 +123,7 @@ export default class DatabaseConnection {
     } else if (id) {
       query._id = id;
     } else {
-      throw 'name or id must not be null';
+      throw Error('Both parameters "name" and "id" must not be null');
     }
     const updatedVals = { $set: { lastUsed: now } };
     this.db.collection('boards').updateOne(query, updatedVals, (err, res) => {
@@ -109,6 +131,10 @@ export default class DatabaseConnection {
     });
   }
 
+  /**
+   * Saves a board to the database (creation or update).
+   * @param {Board} board - a full Board object.
+   */
   saveBoard(board) {
     const query = { _id: board._id };
     console.log(board);
@@ -118,6 +144,13 @@ export default class DatabaseConnection {
     });
   }
 
+  /**
+   * Gets all the information for a given board. Only one parameter should be specified.
+   * @param {string} name - the name of the board
+   * @param {number} id - the ID of the board
+   * @return {Promise<any>} a Promise that resolves once the data has been fetched, passing on
+   * the data on as the result.
+   */
   getBoard(name = null, id = null) {
     const query = {};
     if (name) {
@@ -125,11 +158,15 @@ export default class DatabaseConnection {
     } else if (id) {
       query._id = id;
     } else {
-      throw 'name or id must not be null';
+      throw Error('Both parameters "name" and "id" must not be null');
     }
     return this.db.collection('boards').find(query).toArray().then(res => res[0]);
   }
 
+  /**
+   * Gets a list of all the boards in the database.
+   * @return {Promise} a Promise that resolves to a list of all the boards in the database.
+   */
   listBoards() {
     return this.db.collection('boards').find({}).toArray();
   }

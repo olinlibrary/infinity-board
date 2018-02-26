@@ -10,21 +10,21 @@ export default class ServerComm {
     this.socket.on('update', msg => this.receivedUpdateMessage(this.socket, msg));
   }
 
-    receivedUpdateMessage = (socket, msg) => {
-      console.log('Received update message');
-      console.log(util.inspect(msg));
-      if (this.receivedUpdateMessageHandler) {
-        this.receivedUpdateMessageHandler(msg);
-      }
-      // console.log(util.inspect(this))
-      this.socket.emit('boardUpdate', 'Got your message, bro!');
-    };
+  receivedUpdateMessage = (socket, msg) => {
+    console.log('Received update message');
+    console.log(util.inspect(msg));
+    if (this.receivedUpdateMessageHandler) {
+      this.receivedUpdateMessageHandler(msg);
+    }
+    // console.log(util.inspect(this))
+    this.socket.emit('boardUpdate', 'Got your message, bro!');
+  };
 
-    setReceivedUpdateMessageHandler = (callback) => {
-      this.receivedUpdateMessageHandler = callback;
-    };
+  setReceivedUpdateMessageHandler = (callback) => {
+    this.receivedUpdateMessageHandler = callback;
+  };
 
-    sendUpdateMessage = (data) => {
-      this.socket.emit('boardUpdate', data);
-    };
+  sendUpdateMessage = (data) => {
+    this.socket.emit('boardUpdate', data);
+  };
 }
