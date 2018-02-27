@@ -3,12 +3,20 @@ import util from 'util';
 
 export default class ServerComm {
   constructor(serverURL) {
-    this.socket = SocketIO(serverURL);
+    this.serverURL = serverURL;
+  }
+
+  connect = () => new Promise((resolve) => {
+    this.serverComm = SocketIO(this.serverURL);
     this.receivedUpdateMessageHandler = null;
 
-    this.socket.on('connection', () => console.log('Connected to server'));
-    this.socket.on('update', msg => this.receivedUpdateMessage(this.socket, msg));
-  }
+    this.serverComm.on('connection', () => {
+      console.log('Connected to server');
+      resolve(this.serverComm);
+    });
+    this.serverComm.on('update', msg => this.receivedUpdateMessage(this.serverComm, msg));
+  });
+
 
   receivedUpdateMessage = (socket, msg) => {
     console.log('Received update message');
@@ -17,7 +25,7 @@ export default class ServerComm {
       this.receivedUpdateMessageHandler(msg);
     }
     // console.log(util.inspect(this))
-    this.socket.emit('boardUpdate', 'Got your message, bro!');
+    this.serverComm.emit('boardUpdate', 'Got your message, bro!');
   };
 
   setReceivedUpdateMessageHandler = (callback) => {
@@ -25,6 +33,6 @@ export default class ServerComm {
   };
 
   sendUpdateMessage = (data) => {
-    this.socket.emit('boardUpdate', data);
+    this.serverComm.emit('boardUpdate', data);
   };
 }

@@ -5,7 +5,6 @@ import MongoClient from 'mongodb';
 import Names from './names.mjs';
 
 export default class DatabaseConnection {
-
   /**
    * Instantiates an object for communicating with a MongoDB database. Call connect() to
    * actually open a connection to the database.

@@ -1,5 +1,6 @@
 import React from 'react';
 import randomColor from 'randomcolor';
+import PropTypes from 'prop-types';
 import uuidv4 from 'uuid/v4';
 import '../App.css';
 import ServerComm from '.././server-comm';
@@ -10,9 +11,11 @@ import ImageBox from './image-box';
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    this.socket = new ServerComm(window.SERVER_URI);
-    this.socket.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.serverComm = new ServerComm(window.SERVER_URI);
+    this.serverComm.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.serverComm.connect();
     this.state = {
+      name: props.name,
       zIndex: 1,
       boxes: {},
       dragOverState: {
@@ -38,9 +41,9 @@ class Board extends React.Component {
   };
 
   updateBoardState = (uuidVal, curState) => {
-    const updatedState = this.state.boxes;
+    const updatedState = Object.assign({}, this.state.boxes);
     updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
-    this.socket.sendUpdateMessage({uuid: uuidVal, state: curState})
+    this.serverComm.sendUpdateMessage({ uuid: uuidVal, state: curState });
     this.setState({
       boxes: updatedState,
     });
@@ -156,5 +159,8 @@ class Board extends React.Component {
   }
 }
 
+Board.propTypes = {
+  name: PropTypes.string.isRequired,
+};
 
 export default Board;
