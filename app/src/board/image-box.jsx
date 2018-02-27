@@ -37,7 +37,7 @@ export default class ImageBox extends React.Component {
           textCallback={this.textFunc}
           defaultWidth={this.state.width}
           defaultHeight={this.state.height}
-          style={{ visibility: this.state.visibility }}
+          style={{ visibility: 'hidden' }}
           {...other}
         >
           <div className="Box-image" style={imgStyle}>
