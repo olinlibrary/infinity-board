@@ -29,7 +29,7 @@ class TextField extends React.Component {
         onChange={this.onInput}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
-        style={{ cursor: 'text' }}
+        style={{ cursor: 'text', resize: 'none' }}
       />);
     }
     return (<div className="Text-box unselectable">{this.state.value}</div>);

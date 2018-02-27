@@ -19,8 +19,8 @@ class Board extends React.Component {
       zIndex: 1,
       boxes: {},
       dragOverState: {
-        visibility: 'visible',
-        zIndex: 2,
+        visibility: 'hidden',
+        zIndex: -1,
       },
     };
   }
@@ -31,6 +31,19 @@ class Board extends React.Component {
     document.addEventListener('dragleave', this.dragLeaveHandler);
   }
 
+  /*
+  Handles when a file is selected from the file selection dialog.
+  */
+  onFileSelect = (e) => {
+    e.preventDefault();
+    this.generateBox('image');
+  };
+
+
+  /*
+  Update the state for a given board based on a message from the websocket.
+  @params msg: the websocket message containing updated state data for the board.
+  */
   onUpdate = (msg) => {
     // eslint-disable-next-line
     let updatedState = this.state.boxes; // TODO: Seems redundant from updateBoardState, should change
@@ -40,6 +53,11 @@ class Board extends React.Component {
     });
   };
 
+  /*
+  Update the state for a given board based on a mouse event.
+  @params uuidVal: the UUID of the board.
+  @params curState: The state object for the board..
+  */
   updateBoardState = (uuidVal, curState) => {
     const updatedState = Object.assign({}, this.state.boxes);
     updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
@@ -49,6 +67,10 @@ class Board extends React.Component {
     });
   };
 
+  /*
+  Increments the highest z-index for the board.
+  @return zIndex, the current board z-index
+  */
   updateZ = () => {
     this.setState({
       zIndex: this.state.zIndex + 1,
@@ -56,15 +78,31 @@ class Board extends React.Component {
     return this.state.zIndex;
   };
 
-  generateBox = (e) => {
+  /*
+  Handles the clicking of the box generation buttons.
+  */
+  handleButtonClick = (e) => {
     const boxType = e.target.dataset.type; // Get the type of box we're making
+    if (boxType === 'image') {
+      this.fileInput.click();
+    } else {
+      this.generateBox(boxType);
+    }
+  }
+
+
+  /*
+  Generates a box based on a button click event.
+  @params e: the button click event.
+  */
+  generateBox = (boxType) => {
     const uuid = uuidv4(); // Gen unique UUID
     const initState = this.state.boxes;
     initState[uuid] = {
       type: boxType,
       state: {
-        x: e.clientX,
-        y: e.clientY,
+        x: 50,
+        y: 50,
         w: 200,
         h: 200,
         z: this.state.zIndex,
@@ -72,39 +110,54 @@ class Board extends React.Component {
       },
     };
     this.setState({ boxes: initState });
-    // console.log('Gen box')
   };
 
+  /*
+  Generates a box based on a browser file drop event.
+  @params e: the file drop event.
+  */
   handleFileDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // this.generateBox(e);
+    this.generateBox('image');
+    this.dragLeaveHandler(e);
   };
 
+  /*
+  Makes the drag over div visible.
+  @params e: the file drag event.
+  */
   dragOverHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({
       dragOverState: {
-        visibility: 'visible',
+        opacity: 1,
         zIndex: this.state.zIndex,
       },
     });
   };
 
+  /*
+  Makes the drag over div invisible.
+  @params e: the file drag leave event.
+  */
   dragLeaveHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({
       dragOverState: {
-        visibility: 'hidden',
-        zIndex: 0,
+        opacity: 0,
+        zIndex: -1,
       },
     });
   };
 
   /*
   Called on ImageBox load to resize image correctly
+  @params uuid: the UUID of the box
+  @params w: the new width of the box
+  @params h: the new height of the box
   */
   updateImage = (uuid, w, h) => {
     const initState = this.state.boxes;
@@ -146,14 +199,23 @@ class Board extends React.Component {
       }
     }
     // console.log(this.state.zIndex);
-
+    const buttonStyle = { zIndex: this.state.zIndex + 1 };
 
     return (
       <div>
-        <button data-type="text" onClick={this.generateBox}>Box</button>
-        <button data-type="image" onClick={this.generateBox}>Image</button>
         {boxes}
-        <div className="Wrapper" style={this.state.dragOverState} />
+        <div className="Wrapper" style={this.state.dragOverState}>
+          <div className="Wrapper-text">DROP FILE HERE</div>
+        </div>
+        <div className="Button-wrapper" style={buttonStyle}>
+          <div className="Box-button">
+            <button className="Box-button" data-type="text" onClick={this.handleButtonClick}>Box</button>
+          </div>
+          <div className="Box-button" style={buttonStyle}>
+            <button className="Box-button" data-type="image" onClick={this.handleButtonClick}>Image</button>
+            <input type="file" ref={(input) => { this.fileInput = input; }} onChange={this.onFileSelect} style={{ display: 'none' }} />
+          </div>
+        </div>
       </div>
     );
   }
