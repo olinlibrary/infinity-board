@@ -9,7 +9,7 @@ class App extends React.Component {
     super();
 
     this.state = {
-      mode: 'list',
+      mode: 'board',
       boards: {},
       currentBoardId: null,
     };
@@ -41,4 +41,4 @@ class App extends React.Component {
     }
 }
 
-ReactDOM.render(<Board />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));

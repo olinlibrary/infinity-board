@@ -13,6 +13,12 @@ class Board extends React.Component {
     this.socket = new ServerComm(window.SERVER_URI);
     this.socket.setReceivedUpdateMessageHandler(this.onUpdate);
     this.state = {
+      cursor: 'default',
+      dragging: false,
+      windowX: 0,
+      windowY: 0,
+      prevX: 0,
+      prevY: 0,
       zIndex: 1,
       boxes: {},
       dragOverState: {
@@ -26,6 +32,9 @@ class Board extends React.Component {
     document.addEventListener('drop', this.handleFileDrop);
     document.addEventListener('dragover', this.dragOverHandler);
     document.addEventListener('dragleave', this.dragLeaveHandler);
+    // document.addEventListener('mousedown', this.dragWindow);
+    // document.addEventListener('mousemove', this.mouseMove);
+    // document.addEventListener('mouseup', this.mouseUp);
   }
 
   /*
@@ -150,6 +159,34 @@ class Board extends React.Component {
     });
   };
 
+  dragWindow = (e) => {
+    if (this.state.dragging) {
+      const curX = this.state.windowX;
+      const curY = this.state.windowY;
+      this.setState({
+        windowX: curX + (e.clientX - this.state.prevX),
+        windowY: curY + (e.clientY - this.state.prevY),
+      });
+      this.setState({
+        prevX: e.clientX,
+        prevY: e.clientY,
+      });
+    }
+  }
+
+  mouseDown = (e) => {
+    this.setState({
+      dragging: true,
+      prevX: e.clientX,
+      prevY: e.clientY,
+      cursor: 'move',
+    })
+  }
+
+  mouseUp = () => {
+    this.setState({ dragging: false, cursor: 'default' })
+  }
+
   /*
   Called on ImageBox load to resize image correctly
   @params uuid: the UUID of the box
@@ -172,14 +209,17 @@ class Board extends React.Component {
       const propsIn = {
         clickCallback: this.updateZ,
         uid: key,
-        key,
         x: this.state.boxes[key].state.x,
         y: this.state.boxes[key].state.y,
+        renderX: this.state.boxes[key].state.x + this.state.windowX,
+        renderY: this.state.boxes[key].state.y + this.state.windowY,
         w: this.state.boxes[key].state.w,
         h: this.state.boxes[key].state.h,
         z: this.state.boxes[key].state.z,
         callback: this.updateBoardState,
         color: this.state.boxes[key].state.color,
+        windowX: this.state.windowX,
+        windowY: this.state.windowY,
       };
       if (typeof this.state.boxes[key].aspect !== 'undefined') {
         propsIn.aspect = this.state.boxes[key].aspect;
@@ -199,13 +239,21 @@ class Board extends React.Component {
     const buttonStyle = { zIndex: this.state.zIndex + 1 };
 
     return (
-
-      <div>
+      // eslint-disable-next-line
+      <div className="View"
+        onMouseDown={this.mouseDown}
+        onMouseMove={this.dragWindow}
+        onMouseUp={this.mouseUp}
+        style={{ cursor: this.state.cursor }}
+      >
         {boxes}
-        <div className="Wrapper" style={this.state.dragOverState}>
+        <div className="Wrapper View" style={this.state.dragOverState}>
           <div className="Wrapper-text">DROP FILE HERE</div>
         </div>
         <div className="Button-wrapper" style={buttonStyle}>
+          <div className="Box-button">
+            <button className="Box-button" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }}>Home</button>
+          </div>
           <div className="Box-button">
             <button className="Box-button" data-type="text" onClick={this.handleButtonClick}>Box</button>
           </div>

@@ -25,8 +25,8 @@ class DraggableBox extends React.Component {
   getBoxStyle = () => {
     const boxStyle = {
       backgroundColor: this.props.color,
-      left: `${this.props.x}px`,
-      top: `${this.props.y}px`,
+      left: `${this.props.renderX}px`,
+      top: `${this.props.renderY}px`,
       width: `${this.props.w - (2 * this.props.padding)}px`,
       height: `${this.props.h - (2 * this.props.padding)}px`,
       cursor: this.getCursor(),
@@ -67,12 +67,12 @@ class DraggableBox extends React.Component {
     });
     const id = this.props.uid; // Get the UUID of the current board
     if (this.state.resizing) {
-      const width = this.getResize(e.clientX, this.props.x, this.props.minX); // Get new width
+      const width = this.getResize(e.clientX, this.props.renderX, this.props.minX); // Get new width
       let heightVal = 0;
       if (this.props.aspect !== 0) {
         heightVal = width / this.props.aspect;
       } else {
-        heightVal = this.getResize(e.clientY, this.props.y, this.props.minY);
+        heightVal = this.getResize(e.clientY, this.props.renderY, this.props.minY);
       }
 
       this.props.callback(id, {
@@ -84,7 +84,6 @@ class DraggableBox extends React.Component {
         color: this.props.color,
       });
     } else if (this.state.draggable) {
-      // console.log(e.screenX)
       this.props.callback(id, {
         x: e.screenX + this.state.downX,
         y: e.screenY + this.state.downY,
@@ -100,7 +99,9 @@ class DraggableBox extends React.Component {
 
 
   mouseDown = (e) => {
+    console.log("Box");
     e.preventDefault();
+    e.stopPropagation();
     if (e.button === 0) { // Check to make sure it's left mouse click
       this.setState({
         z: this.state.z + 1,
@@ -134,8 +135,8 @@ class DraggableBox extends React.Component {
 
 
   cursorInDraggingPosition = () => {
-    const cornerX = (this.state.mouseX - this.props.x - this.props.w) ** 2;
-    const cornerY = (this.state.mouseY - this.props.y - this.props.h) ** 2;
+    const cornerX = (this.state.mouseX - this.props.renderX - this.props.w) ** 2;
+    const cornerY = (this.state.mouseY - this.props.renderY - this.props.h) ** 2;
     const dist = Math.sqrt(cornerX + cornerY);
     return (dist < 20);
   };
@@ -167,6 +168,8 @@ DraggableBox.propTypes = {
   defaultHeight: PropTypes.number,
   x: PropTypes.number,
   y: PropTypes.number,
+  renderX: PropTypes.number,
+  renderY: PropTypes.number,
   w: PropTypes.number,
   h: PropTypes.number,
   z: PropTypes.number,
@@ -188,6 +191,8 @@ DraggableBox.defaultProps = {
   defaultHeight: 200,
   x: 0,
   y: 0,
+  renderX: 0,
+  renderY: 0,
   w: 200,
   h: 200,
   color: '#ff0000',
