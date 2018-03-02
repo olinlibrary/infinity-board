@@ -1,5 +1,6 @@
 import React from 'react';
 import randomColor from 'randomcolor';
+import PropTypes from 'prop-types';
 import uuidv4 from 'uuid/v4';
 import '../App.css';
 import ServerComm from '.././server-comm';
@@ -10,15 +11,15 @@ import ImageBox from './image-box';
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    this.socket = new ServerComm(window.SERVER_URI);
-    this.socket.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.serverComm = new ServerComm(window.SERVER_URI);
+    this.serverComm.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.serverComm.connect();
     this.state = {
-      cursor: 'default',
-      dragging: false,
       windowX: 0,
       windowY: 0,
       prevX: 0,
       prevY: 0,
+      name: props.name,
       zIndex: 1,
       boxes: {},
       dragOverState: {
@@ -26,6 +27,8 @@ class Board extends React.Component {
         zIndex: -1,
       },
     };
+    this.onUpdate = this.onUpdate.bind(this);
+    this.onUpdateDup = this.onUpdateDup.bind(this);
   }
 
   componentDidMount() {
@@ -43,7 +46,7 @@ class Board extends React.Component {
   onFileSelect = (e) => {
     e.preventDefault();
     this.generateBox('image');
-  }
+  };
 
 
   /*
@@ -51,9 +54,18 @@ class Board extends React.Component {
   @params msg: the websocket message containing updated state data for the board.
   */
   onUpdate = (msg) => {
-    // eslint-disable-next-line
-    let updatedState = this.state.boxes; // TODO: Seems redundant from updateBoardState, should change
-    updatedState[msg.uuid].state = msg.state; // Doing this is necessary to index by UUID
+    this.onUpdateDup(msg);
+  };
+
+  // TODO Figure out why this redundant/nested call is necessary to get access to 'this'
+  onUpdateDup = (msg) => {
+    const updatedState = Object.assign({}, this.state.boxes, {
+      [msg.uuid]: Object.assign({}, this.state.boxes[msg.uuid], {
+        state: msg.state,
+        type: msg.type,
+      }),
+    }); // TODO: Seems redundant from updateBoardState, should change
+    // updatedState[msg.uuid].state = msg.state; // Doing this is necessary to index by UUID
     this.setState({
       boxes: updatedState,
     });
@@ -65,11 +77,16 @@ class Board extends React.Component {
   @params curState: The state object for the board..
   */
   updateBoardState = (uuidVal, curState) => {
-    const updatedState = this.state.boxes;
+    const updatedState = Object.assign({}, this.state.boxes);
     updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
-    this.socket.sendUpdateMessage({ uuid: uuidVal, state: curState });
     this.setState({
       boxes: updatedState,
+    });
+    // Push the update out over WebSockets
+    this.serverComm.sendUpdateMessage({
+      uuid: uuidVal,
+      state: curState,
+      type: updatedState[uuidVal].type,
     });
   };
 
@@ -94,7 +111,7 @@ class Board extends React.Component {
     } else {
       this.generateBox(boxType);
     }
-  }
+  };
 
 
   /*
@@ -267,5 +284,8 @@ class Board extends React.Component {
   }
 }
 
+Board.propTypes = {
+  name: PropTypes.string.isRequired,
+};
 
 export default Board;

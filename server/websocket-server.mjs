@@ -20,31 +20,36 @@ export default class WebSocketServer {
     this.io.on('connection', this.onClientConnect);
   }
 
+  /**
+   * Called when a WebSockets client connects.
+   * @param socket - the socket.io connection
+   */
   onClientConnect(socket) {
     console.log('Client connected');
     // Register the message handlers
     Object.keys(this.messageHandlers).forEach((msgName) => {
       socket.on(msgName, data => this.messageHandlers[msgName](data, socket));
     });
-    socket.on('boardUpdate', data => this.boardUpdateReceived(data, socket));
+    socket.on('boardUpdate', (data) => {
+      if (Object.hasOwnProperty.call(this.messageHandlers, 'boardUpdate')) {
+        this.messageHandlers.boardUpdate(data, socket);
+      }
+    });
     socket.on('disconnect', () => this.onClientDisconnect(socket));
   }
 
+  /**
+   * Broadcasts a complete list of boards to all connected clients.
+   * @param boardList - the list to broadcast
+   */
   broadcastBoardListUpdate(boardList) {
     this.io.emit('boardListUpdate', boardList);
   }
 
-  broadcastBoardUpdate(boardName, boardElement, originatingSocket) {
-    if (Object.hasOwnProperty.call(this.boardToClientsViewingMap, boardName)) {
-      // Get the list of sockets with this board currently open
-      const clients = this.boardToClientsViewingMap[boardName];
-      // Broadcast the update to each client
-      clients.forEach((socket) => {
-        if (socket !== originatingSocket) { // Don't send the message to the sender
-          socket.emit('boardUpdate', boardElement); // TODO Support having multiple boards open
-        }
-      });
-    }
+  broadcastBoardUpdate(boardElement, originatingSocket) {
+    console.log(`Sending update to ${Object.keys(this.io.sockets.connected).length} connected clients`);
+    this.io.emit('boardUpdate', boardElement);
+    // TODO Support having multiple boards open
   }
 
   registerMessageHandler(msgName, callback) {

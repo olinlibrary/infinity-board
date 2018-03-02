@@ -3,6 +3,7 @@ import React from 'react';
 import Board from './board/board';
 import './App.css';
 import BoardList from './board-list';
+import ServerComm from './server-comm';
 
 class App extends React.Component {
   constructor() {
@@ -15,30 +16,38 @@ class App extends React.Component {
     };
   }
 
-    setBoardList = (boards) => {
-      this.setState({ boards });
-    };
+  componentDidMount() {
+    this.serverComm = new ServerComm(window.SERVER_URI);
+    this.serverComm.connect().then((socket) => {
+      // Request a list of all the boards
+      socket.emit('getBoardList');
+    });
+  }
 
-    setCurrentBoardId = (id) => {
-      this.setState({
-        // currentBoardId: id,
-        mode: id ? 'board' : 'list',
-      });
-    };
+  setBoardList = (boards) => {
+    this.setState({ boards });
+  };
 
-    render() {
-      // Figure out what should be shown
-      const content = this.state.mode === 'list'
-        ? <BoardList />
-        : <Board />;
+  setCurrentBoardId = (id) => {
+    this.setState({
+      // currentBoardId: id,
+      mode: id ? 'board' : 'list',
+    });
+  };
 
-        // Now show it
-      return (
-        <div className="app">
-          {content}
-        </div>
-      );
-    }
+  render() {
+    // Figure out what should be shown
+    const content = this.state.mode === 'list'
+      ? <BoardList />
+      : <Board />;
+
+      // Now show it
+    return (
+      <div className="app">
+        {content}
+      </div>
+    );
+  }
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
