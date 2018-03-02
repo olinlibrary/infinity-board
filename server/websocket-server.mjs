@@ -32,7 +32,7 @@ export default class WebSocketServer {
     });
     socket.on('boardUpdate', (data) => {
       if (Object.hasOwnProperty.call(this.messageHandlers, 'boardUpdate')) {
-        this.messageHandlers(data, socket);
+        this.messageHandlers.boardUpdate(data, socket);
       }
     });
     socket.on('disconnect', () => this.onClientDisconnect(socket));
@@ -46,17 +46,10 @@ export default class WebSocketServer {
     this.io.emit('boardListUpdate', boardList);
   }
 
-  broadcastBoardUpdate(boardName, boardElement, originatingSocket) {
-    if (Object.hasOwnProperty.call(this.boardToClientsViewingMap, boardName)) {
-      // Get the list of sockets with this board currently open
-      const clients = this.boardToClientsViewingMap[boardName];
-      // Broadcast the update to each client
-      clients.forEach((socket) => {
-        if (socket !== originatingSocket) { // Don't send the message to the sender
-          socket.emit('boardUpdate', boardElement); // TODO Support having multiple boards open
-        }
-      });
-    }
+  broadcastBoardUpdate(boardElement, originatingSocket) {
+    console.log(`Sending update to ${Object.keys(this.io.sockets.connected).length} connected clients`);
+    this.io.emit('boardUpdate', boardElement);
+    // TODO Support having multiple boards open
   }
 
   registerMessageHandler(msgName, callback) {

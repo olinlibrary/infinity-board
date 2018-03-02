@@ -3,7 +3,7 @@ import React from 'react';
 import Board from './board/board';
 import './App.css';
 import BoardList from './board-list';
-import ServerComm from "./server-comm";
+import ServerComm from './server-comm';
 
 class App extends React.Component {
   constructor() {

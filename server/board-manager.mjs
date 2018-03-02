@@ -13,14 +13,14 @@ export default class BoardManager {
     this.wsServer = new WebSocketServer();
     this.wsServer.start(httpServer.getHTTPServer());
 
-    // Register WebSocket message handlers
-    this.wsServer.registerMessageHandler('createBoard', this.createBoard);
-    this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
-
     // Bind contexts
     this.createBoard = this.createBoard.bind(this);
     this.receivedBoardUpdate = this.receivedBoardUpdate.bind(this);
     this.getBoardList = this.getBoardList.bind(this);
+
+    // Register WebSocket message handlers
+    this.wsServer.registerMessageHandler('createBoard', this.createBoard);
+    this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
   }
 
   /**
@@ -67,10 +67,6 @@ export default class BoardManager {
     console.log(msg);
     // TODO Apply the update to the local copy of the board and the database
 
-    this.wsServer.broadcastBoardUpdate(msg.name, msg, socket);
-    // bm.receivedBoardUpdate(msg);
-
-    // TODO Get name and changed element info from msg
     this.wsServer.broadcastBoardUpdate(msg, socket);
   }
 

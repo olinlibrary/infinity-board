@@ -23,6 +23,8 @@ class Board extends React.Component {
         zIndex: -1,
       },
     };
+    this.onUpdate = this.onUpdate.bind(this);
+    this.onUpdateDup = this.onUpdateDup.bind(this);
   }
 
   componentDidMount() {
@@ -45,9 +47,18 @@ class Board extends React.Component {
   @params msg: the websocket message containing updated state data for the board.
   */
   onUpdate = (msg) => {
-    // eslint-disable-next-line
-    let updatedState = this.state.boxes; // TODO: Seems redundant from updateBoardState, should change
-    updatedState[msg.uuid].state = msg.state; // Doing this is necessary to index by UUID
+    this.onUpdateDup(msg);
+  };
+
+  // TODO Figure out why this redundant/nested call is necessary to get access to 'this'
+  onUpdateDup = (msg) => {
+    const updatedState = Object.assign({}, this.state.boxes, {
+      [msg.uuid]: Object.assign({}, this.state.boxes[msg.uuid], {
+        state: msg.state,
+        type: msg.type,
+      }),
+    }); // TODO: Seems redundant from updateBoardState, should change
+    // updatedState[msg.uuid].state = msg.state; // Doing this is necessary to index by UUID
     this.setState({
       boxes: updatedState,
     });
@@ -61,9 +72,14 @@ class Board extends React.Component {
   updateBoardState = (uuidVal, curState) => {
     const updatedState = Object.assign({}, this.state.boxes);
     updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
-    this.serverComm.sendUpdateMessage({ uuid: uuidVal, state: curState });
     this.setState({
       boxes: updatedState,
+    });
+    // Push the update out over WebSockets
+    this.serverComm.sendUpdateMessage({
+      uuid: uuidVal,
+      state: curState,
+      type: updatedState[uuidVal].type,
     });
   };
 
@@ -88,7 +104,7 @@ class Board extends React.Component {
     } else {
       this.generateBox(boxType);
     }
-  }
+  };
 
 
   /*
