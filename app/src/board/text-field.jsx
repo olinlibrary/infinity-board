@@ -12,7 +12,9 @@ class TextField extends React.Component {
   }
 
   onInput = (e) => {
-    this.setState({ value: e.target.value });
+    e.preventDefault();
+    this.props.editCallback(this.props.uid, e.target.value);
+    // this.setState({ value: e.target.value });
   };
 
   onFocus = (e) => {
@@ -24,7 +26,7 @@ class TextField extends React.Component {
       return (<textarea
         // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus="autofocus"
-        value={this.state.value}
+        value={this.props.value}
         className="Text-box unselectable"
         onChange={this.onInput}
         onFocus={this.onFocus}
@@ -32,7 +34,7 @@ class TextField extends React.Component {
         style={{ cursor: 'text', resize: 'none' }}
       />);
     }
-    return (<div className="Text-box unselectable">{this.state.value}</div>);
+    return (<div className="Text-box unselectable">{this.props.value}</div>);
   }
 }
 
@@ -42,5 +44,8 @@ TextField.defaultProps = {
 
 TextField.propTypes = {
   edit: PropTypes.bool,
+  uid: PropTypes.string.isRequired,
+  editCallback: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
 };
 export default TextField;

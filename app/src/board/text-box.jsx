@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import DraggableBox from './draggable-box';
 import TextField from './text-field';
@@ -14,12 +15,29 @@ export default class TextBox extends React.Component {
   }
 
   render() {
+    const {
+      editCallback,
+      text,
+      uid,
+      ...other
+    } = this.props;
     return (
       <div>
-        <DraggableBox textCallback={this.onClick} {...this.props}>
-          <TextField edit={this.state.editing} />
+        <DraggableBox textCallback={this.onClick} uid={uid} {...other}>
+          <TextField
+            edit={this.state.editing}
+            editCallback={editCallback}
+            value={text}
+            uid={uid}
+          />
         </DraggableBox>
       </div>
     );
   }
 }
+
+TextBox.propTypes = {
+  editCallback: PropTypes.func.isRequired,
+  text: PropTypes.string.isRequired,
+  uid: PropTypes.string.isRequired,
+};

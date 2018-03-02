@@ -76,17 +76,22 @@ class Board extends React.Component {
   @params uuidVal: the UUID of the board.
   @params curState: The state object for the board..
   */
-  updateBoardState = (uuidVal, curState) => {
-    const updatedState = Object.assign({}, this.state.boxes);
-    updatedState[uuidVal].state = curState; // Doing this is necessary to index by UUID
+  updateBoardState = (uuidVal, newState) => {
+    const origState = Object.assign({}, this.state.boxes);
+    const updatedState = Object.assign( // Update just the state elements we care about
+      {},
+      origState[uuidVal].state,
+      newState,
+    ); // Doing this is necessary to index by UUID
+    origState[uuidVal].state = updatedState;
     this.setState({
-      boxes: updatedState,
+      boxes: origState,
     });
     // Push the update out over WebSockets
     this.serverComm.sendUpdateMessage({
       uuid: uuidVal,
-      state: curState,
-      type: updatedState[uuidVal].type,
+      state: updatedState,
+      type: origState[uuidVal].type,
     });
   };
 
@@ -100,6 +105,10 @@ class Board extends React.Component {
     });
     return this.state.zIndex;
   };
+
+  updateText = (uuid, text) => {
+    this.updateBoardState(uuid, { value: text });
+  }
 
   /*
   Handles the clicking of the box generation buttons.
@@ -121,18 +130,22 @@ class Board extends React.Component {
   generateBox = (boxType) => {
     const uuid = uuidv4(); // Gen unique UUID
     const initState = this.state.boxes;
+    const stateObject = {
+      x: 50,
+      y: 50,
+      w: 200,
+      h: 200,
+      z: this.state.zIndex,
+      color: randomColor(),
+      value: '',
+    };
+
     initState[uuid] = {
       type: boxType,
-      state: {
-        x: 50,
-        y: 50,
-        w: 200,
-        h: 200,
-        z: this.state.zIndex,
-        color: randomColor(),
-      },
+      state: stateObject,
     };
     this.setState({ boxes: initState });
+    this.updateBoardState(uuid, stateObject); // TODO Refactor so that this isn't necessary
   };
 
   /*
@@ -224,6 +237,7 @@ class Board extends React.Component {
     for (let i = 0; i < allKeys.length; i++) {
       const key = allKeys[i];
       const propsIn = {
+        key: key,
         clickCallback: this.updateZ,
         uid: key,
         x: this.state.boxes[key].state.x,
@@ -237,13 +251,14 @@ class Board extends React.Component {
         color: this.state.boxes[key].state.color,
         windowX: this.state.windowX,
         windowY: this.state.windowY,
+        text: this.state.boxes[key].state.value,
       };
       if (typeof this.state.boxes[key].aspect !== 'undefined') {
         propsIn.aspect = this.state.boxes[key].aspect;
       }
 
       if (this.state.boxes[key].type === 'text') {
-        boxes.push(<TextBox {...propsIn} />);
+        boxes.push(<TextBox editCallback={this.updateText} {...propsIn} />);
       } else if (this.state.boxes[key].type === 'image') {
         boxes.push(<ImageBox
           src="http://cdn.akc.org/content/hero/puppy-boundaries_header.jpg"

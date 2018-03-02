@@ -76,21 +76,13 @@ class DraggableBox extends React.Component {
       }
 
       this.props.callback(id, {
-        x: this.props.x,
-        y: this.props.y,
         w: width,
         h: heightVal,
-        z: this.props.z,
-        color: this.props.color,
       });
     } else if (this.state.draggable) {
       this.props.callback(id, {
         x: e.screenX + this.state.downX,
         y: e.screenY + this.state.downY,
-        w: this.props.w,
-        h: this.props.h,
-        z: this.props.z,
-        color: this.props.color,
       });
 
       // this.setState({elemX: e.screenX + this.state.downX, elemY: e.screenY + this.state.downY});
