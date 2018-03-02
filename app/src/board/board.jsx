@@ -11,11 +11,10 @@ import ImageBox from './image-box';
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    this.serverComm = new ServerComm(window.SERVER_URI);
-    this.serverComm.setReceivedUpdateMessageHandler(this.onUpdate);
-    this.serverComm.connect();
+    this.io = new ServerComm(window.SERVER_URI);
+    this.io.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.io.connect();
     this.state = {
-      name: props.name,
       zIndex: 1,
       boxes: {},
       dragOverState: {
@@ -76,7 +75,8 @@ class Board extends React.Component {
       boxes: updatedState,
     });
     // Push the update out over WebSockets
-    this.serverComm.sendUpdateMessage({
+    this.io.sendUpdateMessage({
+      boardId: this.props.uuid,
       uuid: uuidVal,
       state: curState,
       type: updatedState[uuidVal].type,
@@ -238,7 +238,8 @@ class Board extends React.Component {
 }
 
 Board.propTypes = {
-  name: PropTypes.string.isRequired,
+  data: PropTypes.object.isRequired,
+  uuid: PropTypes.string.isRequired,
 };
 
 export default Board;

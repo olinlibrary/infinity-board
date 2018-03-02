@@ -11,6 +11,7 @@
     "no-param-reassign": "warn",
     "no-unused-vars": "warn",
     "no-plusplus": "off",
-    "react/no-unused-state": "warn"
+    "react/no-unused-state": "warn",
+    "react/prefer-stateless-function": "off"
   }
 }

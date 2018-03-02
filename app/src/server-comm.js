@@ -5,20 +5,17 @@ export default class ServerComm {
   constructor(serverURL) {
     this.serverURL = serverURL;
     this.receivedUpdateMessageHandler = null;
+    this.receivedBoardListMessageHandler = null;
   }
 
-  connect = () => new Promise((resolve) => {
-    this.serverComm = SocketIO(this.serverURL);
-
-    this.serverComm.on('connection', () => {
-      console.log('Connected to server');
-      resolve(this.serverComm);
-    });
-    this.serverComm.on('boardUpdate', msg => this.receivedUpdateMessage(this.serverComm, msg));
-  });
+  connect = () => {
+    this.io = SocketIO(this.serverURL);
+    this.io.on('boardUpdate', msg => this.receivedUpdateMessage(msg, this.io));
+    this.io.on('boardListUpdate', msg => this.receivedBoardListMessageHandler(msg, this.io));
+  };
 
 
-  receivedUpdateMessage = (socket, msg) => {
+  receivedUpdateMessage = (msg, socket) => {
     if (this.receivedUpdateMessageHandler) {
       this.receivedUpdateMessageHandler(msg, socket);
     }
@@ -28,7 +25,22 @@ export default class ServerComm {
     this.receivedUpdateMessageHandler = callback;
   };
 
+  setReceivedBoardListMessageHandler = (callback) => {
+    this.receivedBoardListMessageHandler = callback;
+  };
+
+  receivedBoardListMessageHandler = (callback) => {
+    console.log('Received board list update');
+    if (this.receivedBoardListMessageHandler) {
+      this.receivedBoardListMessageHandler(callback);
+    }
+  };
+
   sendUpdateMessage = (data) => {
-    this.serverComm.emit('boardUpdate', data);
+    this.io.emit('boardUpdate', data);
+  };
+
+  getBoardList = () => {
+    this.io.emit('getBoardList');
   };
 }

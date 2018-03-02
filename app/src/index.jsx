@@ -10,18 +10,16 @@ class App extends React.Component {
     super();
 
     this.state = {
-      mode: 'list',
       boards: {},
       currentBoardId: null,
     };
   }
 
   componentDidMount() {
-    this.serverComm = new ServerComm(window.SERVER_URI);
-    this.serverComm.connect().then((socket) => {
-      // Request a list of all the boards
-      socket.emit('getBoardList');
-    });
+    this.io = new ServerComm(window.SERVER_URI);
+    this.io.connect();
+    this.io.setReceivedBoardListMessageHandler(this.setBoardList);
+    this.io.getBoardList();
   }
 
   setBoardList = (boards) => {
@@ -30,16 +28,19 @@ class App extends React.Component {
 
   setCurrentBoardId = (id) => {
     this.setState({
-      // currentBoardId: id,
-      mode: id ? 'board' : 'list',
+      currentBoardId: id,
     });
+  };
+
+  boardSelected = (uuid) => {
+    this.setState({ currentBoardId: uuid });
   };
 
   render() {
     // Figure out what should be shown
-    const content = this.state.mode === 'list'
-      ? <BoardList />
-      : <Board />;
+    const content = this.state.currentBoardId
+      ? <Board data={this.state.boards[this.state.currentBoardId]} />
+      : <BoardList boards={Object.values(this.state.boards)} boardSelected={this.boardSelected} />;
 
       // Now show it
     return (
@@ -50,4 +51,4 @@ class App extends React.Component {
   }
 }
 
-ReactDOM.render(<Board />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));

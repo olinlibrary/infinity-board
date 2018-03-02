@@ -7,7 +7,7 @@ export default class BoardManager {
     this.boards = {};
     this.boardListUpdateEventHandlers = [];
     this.dbConn = new DatabaseConnection();
-    this.dbConn.connect();
+    this.dbConn.connect().then(() => this.fetchBoardsFromDb());
 
     // Start the WebSockets server
     this.wsServer = new WebSocketServer();
@@ -16,11 +16,13 @@ export default class BoardManager {
     // Bind contexts
     this.createBoard = this.createBoard.bind(this);
     this.receivedBoardUpdate = this.receivedBoardUpdate.bind(this);
+    this.handleBoardListRequest = this.handleBoardListRequest.bind(this);
     this.getBoardList = this.getBoardList.bind(this);
 
     // Register WebSocket message handlers
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
     this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
+    this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
   }
 
   /**
@@ -70,12 +72,33 @@ export default class BoardManager {
     this.wsServer.broadcastBoardUpdate(msg, socket);
   }
 
+  handleBoardListRequest(data, socket) {
+    console.log('Responding to board list request');
+    const boards = this.getBoardList();
+    console.log(boards)
+    socket.emit('boardListUpdate', boards);
+  }
+
+  fetchBoardsFromDb() {
+    this.dbConn.listBoards().then((boards) => {
+      this.boards = boards;
+      console.log('Got boards from db:');
+      console.log(this.boards);
+    });
+  }
+
   getBoardList() {
-    return Object.values(this.boards).map(board => ({
-      name: board.getName(),
-      id: board.getId(),
-      created: board.getCreatedTime(),
-      lastUsed: board.getLastUsedTime(),
-    }));
+    const map = {};
+    this.boards.forEach((board) => {
+      // eslint-disable-next-line no-underscore-dangle
+      map[board._id] = board;
+    });
+    return map;
+    // return Object.values(this.boards).map(board => ({
+    //   name: board.getName(),
+    //   id: board.getId(),
+    //   created: board.getCreatedTime(),
+    //   lastUsed: board.getLastUsedTime(),
+    // }));
   }
 }
