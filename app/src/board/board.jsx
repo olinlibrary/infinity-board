@@ -131,8 +131,8 @@ class Board extends React.Component {
     const uuid = uuidv4(); // Gen unique UUID
     const initState = this.state.boxes;
     const stateObject = {
-      x: 50,
-      y: 50,
+      x: 50 - this.state.windowX,
+      y: 50 - this.state.windowY,
       w: 200,
       h: 200,
       z: this.state.zIndex,
@@ -270,6 +270,11 @@ class Board extends React.Component {
     // console.log(this.state.zIndex);
     const buttonStyle = { zIndex: this.state.zIndex + 1 };
 
+    const bgStyle = {
+      // eslint-disable-next-line
+      backgroundPosition: String(this.state.windowX % 50) + 'px ' +  String(this.state.windowY % 50) + 'px',
+    };
+
     return (
       // eslint-disable-next-line
       <div className="View"
@@ -279,12 +284,14 @@ class Board extends React.Component {
         style={{ cursor: this.state.cursor }}
       >
         {boxes}
-        <div className="Wrapper View" style={this.state.dragOverState}>
-          <div className="Wrapper-text">DROP FILE HERE</div>
+        <div className="View" style={bgStyle} id="bg" />
+        <div className="Wrapper File-drop" style={this.state.dragOverState}>
+          <div className="Drop-text">DROP FILE HERE</div>
         </div>
         <div className="Button-wrapper" style={buttonStyle}>
           <div className="Box-button">
             <button className="Box-button" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }}>Home</button>
+
           </div>
           <div className="Box-button">
             <button className="Box-button" data-type="text" onClick={this.handleButtonClick}>Box</button>
