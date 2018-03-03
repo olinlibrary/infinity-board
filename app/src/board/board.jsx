@@ -13,7 +13,7 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     this.serverComm = new ServerComm(window.SERVER_URI);
-    this.serverComm.setReceivedUpdateMessageHandler(this.onUpdateDup);
+    this.serverComm.setReceivedUpdateMessageHandler(this.onUpdate);
     this.serverComm.connect();
     this.state = {
       windowX: 0,
@@ -24,29 +24,20 @@ class Board extends React.Component {
       zIndex: 1,
       boxes: {},
     };
-    this.onUpdate = this.onUpdateDup.bind(this);
     // this.onUpdateDup = this.onUpdateDup.bind(this);
   }
 
-
-
   /*
   Update the state for a given board based on a message from the websocket.
-  @params msg: the websocket message containing updated state data for the board.
+  @param msg - the websocket message containing updated state data for the board.
   */
   onUpdate = (msg) => {
-    this.onUpdateDup(msg);
-  };
-
-  // TODO Figure out why this redundant/nested call is necessary to get access to 'this'
-  onUpdateDup = (msg) => {
     const updatedState = Object.assign({}, this.state.boxes, {
       [msg.uuid]: Object.assign({}, this.state.boxes[msg.uuid], {
         state: msg.state,
         type: msg.type,
       }),
     }); // TODO: Seems redundant from updateBoardState, should change
-    // updatedState[msg.uuid].state = msg.state; // Doing this is necessary to index by UUID
     this.setState({
       boxes: updatedState,
     });
@@ -54,8 +45,8 @@ class Board extends React.Component {
 
   /*
   Update the state for a given board based on a mouse event.
-  @params uuidVal: the UUID of the board.
-  @params curState: The state object for the board..
+  @param {string} uuidVal - the UUID of the board.
+  @param newState: The state object containint the updated state elements of the given box.
   */
   updateBoardState = (uuidVal, newState) => {
     const origState = Object.assign({}, this.state.boxes);
@@ -87,6 +78,11 @@ class Board extends React.Component {
     return this.state.zIndex;
   };
 
+  /*
+  Updates the text value for a given text box.
+  @param uuid - the UUID of the text box to be updated.
+  @param textVal - the text to put in the text box.
+  */
   updateText = (uuid, textVal) => {
     this.updateBoardState(uuid, { text: textVal });
   }
@@ -103,10 +99,47 @@ class Board extends React.Component {
     }
   };
 
+  /*
+  Handles the movement of the board view window.
+  */
+  dragWindow = (e) => {
+    if (this.state.dragging) {
+      const curX = this.state.windowX;
+      const curY = this.state.windowY;
+      this.setState({
+        windowX: curX + (e.clientX - this.state.prevX),
+        windowY: curY + (e.clientY - this.state.prevY),
+      });
+      this.setState({
+        prevX: e.clientX,
+        prevY: e.clientY,
+      });
+    }
+  }
+
+  /*
+  Updates the board state to allow window movement on mouse press.
+  */
+  mouseDown = (e) => {
+    this.setState({
+      dragging: true,
+      prevX: e.clientX,
+      prevY: e.clientY,
+      cursor: 'move',
+    })
+  }
+
+  /*
+  Stops movement of the board window.
+  */
+  mouseUp = () => {
+    this.setState({ dragging: false, cursor: 'default' })
+  }
+
 
   /*
   Generates a box based on a button click event.
-  @params e: the button click event.
+  @params boxType: the type of box to generate.
   */
   generateBox = (boxType) => {
     const uuid = uuidv4(); // Gen unique UUID
@@ -129,34 +162,6 @@ class Board extends React.Component {
   };
 
 
-  dragWindow = (e) => {
-    if (this.state.dragging) {
-      const curX = this.state.windowX;
-      const curY = this.state.windowY;
-      this.setState({
-        windowX: curX + (e.clientX - this.state.prevX),
-        windowY: curY + (e.clientY - this.state.prevY),
-      });
-      this.setState({
-        prevX: e.clientX,
-        prevY: e.clientY,
-      });
-    }
-  }
-
-  mouseDown = (e) => {
-    this.setState({
-      dragging: true,
-      prevX: e.clientX,
-      prevY: e.clientY,
-      cursor: 'move',
-    })
-  }
-
-  mouseUp = () => {
-    this.setState({ dragging: false, cursor: 'default' })
-  }
-
   /*
   Called on ImageBox load to resize image correctly
   @params uuid: the UUID of the box
@@ -166,7 +171,8 @@ class Board extends React.Component {
   updateImage = (uuid, w, h, newW, newH) => {
     const initState = this.state.boxes;
     initState[uuid].aspect = w / h; // Store the aspect ratio
-    if (newW/newH == initState[uuid].aspect) { // Check to see if the image has already been resized
+    if (newW / newH === initState[uuid].aspect) {
+      // Check to see if the image has already been resized
       initState[uuid].state.w = newW;
       initState[uuid].state.h = newH;
     } else {
@@ -212,7 +218,6 @@ class Board extends React.Component {
         />);
       }
     }
-    // console.log(this.state.zIndex);
     const buttonStyle = { zIndex: this.state.zIndex + 1 };
 
     const bgStyle = {

@@ -1,25 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-
+// eslint-disable-next-line
 class TextField extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: '',
-      cursor: 'inherit',
-    };
-  }
 
+  /*
+
+  */
   onInput = (e) => {
     e.preventDefault();
     this.props.editCallback(this.props.uid, e.target.value);
-    // this.setState({ value: e.target.value });
   };
 
-  onFocus = (e) => {
-    e.preventDefault();
-  };
 
   render() {
     if (this.props.edit) {
@@ -29,8 +21,7 @@ class TextField extends React.Component {
         value={this.props.value}
         className="Text-box unselectable"
         onChange={this.onInput}
-        onFocus={this.onFocus}
-        onBlur={this.onBlur}
+        onBlur={this.props.blurFunc}
         style={{ cursor: 'text', resize: 'none' }}
       />);
     }
@@ -43,6 +34,7 @@ TextField.defaultProps = {
 };
 
 TextField.propTypes = {
+  blurFunc: PropTypes.func.isRequired,
   edit: PropTypes.bool,
   uid: PropTypes.string.isRequired,
   editCallback: PropTypes.func.isRequired,

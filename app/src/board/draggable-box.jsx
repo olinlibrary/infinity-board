@@ -22,6 +22,10 @@ class DraggableBox extends React.Component {
     document.addEventListener('mouseup', this.mouseUp);
   }
 
+  /*
+  Gives the CSS styling for the given box.
+  @return boxStyle - the JS object containing the correct styling for the box.
+  */
   getBoxStyle = () => {
     const boxStyle = {
       backgroundColor: this.props.color,
@@ -37,7 +41,13 @@ class DraggableBox extends React.Component {
     return boxStyle;
   };
 
-  // Gets the new width and height of the box based on the min width and height
+  /*
+  Handles the resizing of the given box.
+  @param mouseVal: the position value (x or y) for the mouse
+  @param elemVal: the position value for the element
+  @param min: the minimum width or height of the box
+  @return the resulting width or height value
+  */
   getResize = (mouseVal, elemVal, min) => {
     const newSize = mouseVal - elemVal;
     if (newSize >= min) {
@@ -46,16 +56,23 @@ class DraggableBox extends React.Component {
     return min;
   };
 
+  /*
+  Returns the correct cursor given the state of the box.
+  @return the css property name for the cursor
+  */
   getCursor = () => {
     if (this.state.draggable) {
       return 'move';
     } else if (this.state.resizing || this.cursorInDraggingPosition()) {
       return 'se-resize';
     }
-
     return 'default';
   };
 
+  /*
+  Handles mouse movement events. Updates the size or position of the box based on
+  whether we're resizing or dragging.
+  */
   mouseMove = (e) => {
     e.preventDefault();
     // Fix this, the box should be less state-y
@@ -68,7 +85,7 @@ class DraggableBox extends React.Component {
     if (this.state.resizing) {
       const width = this.getResize(e.clientX, this.props.renderX, this.props.minX); // Get new width
       let heightVal = 0;
-      if (this.props.aspect !== 0) {
+      if (this.props.aspect !== 0) { // If the box has a defined aspect ratio, keep it to that ratio
         heightVal = width / this.props.aspect;
       } else {
         heightVal = this.getResize(e.clientY, this.props.renderY, this.props.minY);
@@ -86,24 +103,20 @@ class DraggableBox extends React.Component {
     }
   };
 
-
+  /*
+  Handles mouse press events. Updates zIndex, and state values to detect mouse movement.
+  */
   mouseDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.button === 0) { // Check to make sure it's left mouse click
       this.setState({
-        z: this.state.z + 1,
         mouseMoved: false,
         downX: this.props.x - e.screenX,
         downY: this.props.y - e.screenY,
       });
       this.props.callback(this.props.uid, { // Update z-index
-        x: this.props.x,
-        y: this.props.y,
-        w: this.props.w,
-        h: this.props.h,
         z: this.props.clickCallback(),
-        color: this.props.color,
       });
       if (this.cursorInDraggingPosition(e)) { // If we're resizing the box
         this.setState({ resizing: true });
@@ -113,6 +126,9 @@ class DraggableBox extends React.Component {
     }
   };
 
+  /*
+  Handles mouse up events. Stops everything from being dragged or resized.
+  */
   mouseUp = (e) => {
     e.preventDefault();
     this.setState({ draggable: false, resizing: false });
@@ -121,7 +137,10 @@ class DraggableBox extends React.Component {
     }
   };
 
-
+  /*
+  Determines whether the mouse is in dragging position.
+  @return a bool indicating whether the mouse is in dragging position
+  */
   cursorInDraggingPosition = () => {
     const cornerX = (this.state.mouseX - this.props.renderX - this.props.w) ** 2;
     const cornerY = (this.state.mouseY - this.props.renderY - this.props.h) ** 2;
@@ -129,14 +148,10 @@ class DraggableBox extends React.Component {
     return (dist < 20);
   };
 
-  updateStyle = (style) => {
-    this.setState(style);
-  };
-
   render() {
     return (
       // eslint-disable-next-line
-      <div onMouseDown={this.mouseDown} onBlur={this.props.textCallback} className="Box" style={this.getBoxStyle()}>
+      <div onMouseDown={this.mouseDown} className="Box" style={this.getBoxStyle()}>
         {this.props.children}
         <div className="pull-tab" />
 

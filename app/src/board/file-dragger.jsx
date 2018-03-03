@@ -73,13 +73,11 @@ export default class FileDragger extends React.Component {
       <div className="Wrapper File-drop" style={this.state.dragOverState}>
         <div className="Drop-text">DROP FILE HERE</div>
       </div>
-    )
+    );
   }
 }
 
 FileDragger.propTypes = {
-  update: PropTypes.func.isRequired,
   generateBox: PropTypes.func.isRequired,
   // eslint-disable-next-line
-  dragState: PropTypes.object.isRequired,
-}
+};

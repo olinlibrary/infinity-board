@@ -17,11 +17,14 @@ export default class ImageBox extends React.Component {
     Update our state in the board to reflect the height of the image
   */
   onImgLoad({ target: img }) { //
-    this.props.imgCallback(this.props.uid, img.offsetWidth, img.offsetHeight, this.props.w, this.props.h);
+    this.props.imgCallback(
+      this.props.uid,
+      img.offsetWidth,
+      img.offsetHeight,
+      this.props.w,
+      this.props.h
+    );
     this.setState({ visibility: 'visible' });
-  }
-
-  textFunc = () => {
   }
 
   render() {
@@ -53,6 +56,8 @@ ImageBox.propTypes = {
   src: PropTypes.string.isRequired,
   imgCallback: PropTypes.func,
   uid: PropTypes.string.isRequired,
+  w: PropTypes.number.isRequired,
+  h: PropTypes.number.isRequired,
 };
 
 ImageBox.defaultProps = {

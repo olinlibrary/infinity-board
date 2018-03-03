@@ -9,6 +9,9 @@ export default class TextBox extends React.Component {
     this.state = { editing: false };
   }
 
+  /*
+  Handles click events by changing the editing state.
+  */
   onClick = () => {
     const editingState = !this.state.editing;
     this.setState({ editing: editingState });
@@ -23,12 +26,13 @@ export default class TextBox extends React.Component {
     } = this.props;
     return (
       <div>
-        <DraggableBox textCallback={this.onClick} uid={uid} {...other}>
+        <DraggableBox textCallback={() => { this.setState({ editing: true }); }} uid={uid} {...other}>
           <TextField
             edit={this.state.editing}
             editCallback={editCallback}
             value={text}
             uid={uid}
+            blurFunc={() => { this.setState({ editing: false }); }}
           />
         </DraggableBox>
       </div>
