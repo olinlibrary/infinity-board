@@ -48,7 +48,8 @@ export default class WebSocketServer {
 
   broadcastBoardUpdate(boardElement, originatingSocket) {
     console.log(`Sending update to ${Object.keys(this.io.sockets.connected).length} connected clients`);
-    this.io.emit('boardUpdate', boardElement);
+    // this.io.emit('boardUpdate', boardElement);
+    originatingSocket.broadcast.emit('boardUpdate', boardElement); // Only sends the updated state to the client who didn't send.
     // TODO Support having multiple boards open
   }
 

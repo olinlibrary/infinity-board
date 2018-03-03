@@ -43,7 +43,6 @@ class DraggableBox extends React.Component {
     if (newSize >= min) {
       return newSize;
     }
-
     return min;
   };
 
@@ -84,14 +83,11 @@ class DraggableBox extends React.Component {
         x: e.screenX + this.state.downX,
         y: e.screenY + this.state.downY,
       });
-
-      // this.setState({elemX: e.screenX + this.state.downX, elemY: e.screenY + this.state.downY});
     }
   };
 
 
   mouseDown = (e) => {
-    console.log("Box");
     e.preventDefault();
     e.stopPropagation();
     if (e.button === 0) { // Check to make sure it's left mouse click
@@ -139,8 +135,11 @@ class DraggableBox extends React.Component {
 
   render() {
     return (
+      // eslint-disable-next-line
       <div onMouseDown={this.mouseDown} onBlur={this.props.textCallback} className="Box" style={this.getBoxStyle()}>
         {this.props.children}
+        <div className="pull-tab" />
+
       </div>
     );
   }

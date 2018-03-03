@@ -6,13 +6,14 @@ import '../App.css';
 import ServerComm from '.././server-comm';
 import TextBox from './text-box';
 import ImageBox from './image-box';
+import FileDragger from './file-dragger';
 
 
 class Board extends React.Component {
   constructor(props) {
     super(props);
     this.serverComm = new ServerComm(window.SERVER_URI);
-    this.serverComm.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.serverComm.setReceivedUpdateMessageHandler(this.onUpdateDup);
     this.serverComm.connect();
     this.state = {
       windowX: 0,
@@ -22,31 +23,11 @@ class Board extends React.Component {
       name: props.name,
       zIndex: 1,
       boxes: {},
-      dragOverState: {
-        visibility: 'hidden',
-        zIndex: -1,
-      },
     };
-    this.onUpdate = this.onUpdate.bind(this);
-    this.onUpdateDup = this.onUpdateDup.bind(this);
+    this.onUpdate = this.onUpdateDup.bind(this);
+    // this.onUpdateDup = this.onUpdateDup.bind(this);
   }
 
-  componentDidMount() {
-    document.addEventListener('drop', this.handleFileDrop);
-    document.addEventListener('dragover', this.dragOverHandler);
-    document.addEventListener('dragleave', this.dragLeaveHandler);
-    // document.addEventListener('mousedown', this.dragWindow);
-    // document.addEventListener('mousemove', this.mouseMove);
-    // document.addEventListener('mouseup', this.mouseUp);
-  }
-
-  /*
-  Handles when a file is selected from the file selection dialog.
-  */
-  onFileSelect = (e) => {
-    e.preventDefault();
-    this.generateBox('image');
-  };
 
 
   /*
@@ -106,8 +87,8 @@ class Board extends React.Component {
     return this.state.zIndex;
   };
 
-  updateText = (uuid, text) => {
-    this.updateBoardState(uuid, { value: text });
+  updateText = (uuid, textVal) => {
+    this.updateBoardState(uuid, { text: textVal });
   }
 
   /*
@@ -137,9 +118,8 @@ class Board extends React.Component {
       h: 200,
       z: this.state.zIndex,
       color: randomColor(),
-      value: '',
+      text: '',
     };
-
     initState[uuid] = {
       type: boxType,
       state: stateObject,
@@ -148,46 +128,6 @@ class Board extends React.Component {
     this.updateBoardState(uuid, stateObject); // TODO Refactor so that this isn't necessary
   };
 
-  /*
-  Generates a box based on a browser file drop event.
-  @params e: the file drop event.
-  */
-  handleFileDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    this.generateBox('image');
-    this.dragLeaveHandler(e);
-  };
-
-  /*
-  Makes the drag over div visible.
-  @params e: the file drag event.
-  */
-  dragOverHandler = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    this.setState({
-      dragOverState: {
-        opacity: 1,
-        zIndex: this.state.zIndex,
-      },
-    });
-  };
-
-  /*
-  Makes the drag over div invisible.
-  @params e: the file drag leave event.
-  */
-  dragLeaveHandler = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    this.setState({
-      dragOverState: {
-        opacity: 0,
-        zIndex: -1,
-      },
-    });
-  };
 
   dragWindow = (e) => {
     if (this.state.dragging) {
@@ -223,11 +163,17 @@ class Board extends React.Component {
   @params w: the new width of the box
   @params h: the new height of the box
   */
-  updateImage = (uuid, w, h) => {
+  updateImage = (uuid, w, h, newW, newH) => {
     const initState = this.state.boxes;
-    initState[uuid].state.w = w;
-    initState[uuid].state.h = h;
     initState[uuid].aspect = w / h; // Store the aspect ratio
+    if (newW/newH == initState[uuid].aspect) { // Check to see if the image has already been resized
+      initState[uuid].state.w = newW;
+      initState[uuid].state.h = newH;
+    } else {
+      initState[uuid].state.w = w;
+      initState[uuid].state.h = h;
+    }
+
     this.setState({ boxes: initState });
   };
 
@@ -235,35 +181,34 @@ class Board extends React.Component {
     const allKeys = Object.keys(this.state.boxes);
     const boxes = [];
     for (let i = 0; i < allKeys.length; i++) {
-      const key = allKeys[i];
+      const curKey = allKeys[i];
       const propsIn = {
-        key: key,
+        key: curKey,
         clickCallback: this.updateZ,
-        uid: key,
-        x: this.state.boxes[key].state.x,
-        y: this.state.boxes[key].state.y,
-        renderX: this.state.boxes[key].state.x + this.state.windowX,
-        renderY: this.state.boxes[key].state.y + this.state.windowY,
-        w: this.state.boxes[key].state.w,
-        h: this.state.boxes[key].state.h,
-        z: this.state.boxes[key].state.z,
+        uid: curKey,
+        renderX: this.state.boxes[curKey].state.x + this.state.windowX,
+        renderY: this.state.boxes[curKey].state.y + this.state.windowY,
         callback: this.updateBoardState,
-        color: this.state.boxes[key].state.color,
-        windowX: this.state.windowX,
-        windowY: this.state.windowY,
-        text: this.state.boxes[key].state.value,
       };
-      if (typeof this.state.boxes[key].aspect !== 'undefined') {
-        propsIn.aspect = this.state.boxes[key].aspect;
+      const stateProps = Object.assign(
+        {},
+        propsIn,
+        this.state.boxes[curKey].state
+      ); // Add in state props
+
+
+      if (typeof this.state.boxes[curKey].aspect !== 'undefined') {
+        stateProps.aspect = this.state.boxes[curKey].aspect;
       }
 
-      if (this.state.boxes[key].type === 'text') {
-        boxes.push(<TextBox editCallback={this.updateText} {...propsIn} />);
-      } else if (this.state.boxes[key].type === 'image') {
+
+      if (this.state.boxes[curKey].type === 'text') {
+        boxes.push(<TextBox editCallback={this.updateText} {...stateProps} />);
+      } else if (this.state.boxes[curKey].type === 'image') {
         boxes.push(<ImageBox
           src="http://cdn.akc.org/content/hero/puppy-boundaries_header.jpg"
           imgCallback={this.updateImage}
-          {...propsIn}
+          {...stateProps}
         />);
       }
     }
@@ -285,19 +230,16 @@ class Board extends React.Component {
       >
         {boxes}
         <div className="View" style={bgStyle} id="bg" />
-        <div className="Wrapper File-drop" style={this.state.dragOverState}>
-          <div className="Drop-text">DROP FILE HERE</div>
-        </div>
+        <FileDragger generateBox={this.generateBox} />
         <div className="Button-wrapper" style={buttonStyle}>
           <div className="Box-button">
-            <button className="Box-button" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }}>Home</button>
-
+            <button className="Box-button home" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }} />
           </div>
           <div className="Box-button">
-            <button className="Box-button" data-type="text" onClick={this.handleButtonClick}>Box</button>
+            <button className="Box-button text" data-type="text" onClick={this.handleButtonClick} />
           </div>
           <div className="Box-button" style={buttonStyle}>
-            <button className="Box-button" data-type="image" onClick={this.handleButtonClick}>Image</button>
+            <button className="Box-button image" data-type="image" onClick={this.handleButtonClick} />
             <input type="file" ref={(input) => { this.fileInput = input; }} onChange={this.onFileSelect} style={{ display: 'none' }} />
           </div>
         </div>

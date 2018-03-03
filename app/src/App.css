@@ -98,6 +98,7 @@ html, body {
   margin: 10px 10px 10px 10px;
   justify-content: center;
   display: flex;
+  align-items: center;
 }
 
 .Box-button button {
@@ -118,7 +119,31 @@ html, body {
   text-shadow: 1px 1px #222222;
   text-transform: uppercase;
   font-weight: bold;
+  font-size: 25px;
 }
+
+.Box-button button::before {
+  display: none;
+ }
+
+ .home::before {
+   pointer-events: none;
+   width: 100%;
+   height: 100%;
+   font-family: "Font Awesome 5 Solid";
+   content: "\f015";
+ }
+
+ .text::before {
+   font-family: "Font Awesome 5 Solid";
+   content: "\f031";
+ }
+
+ .image::before {
+   font-family: "Font Awesome 5 Solid";
+   content: "\f03e";
+ }
+
 
 .Box-button button:hover {
   background-color: #999999;
@@ -130,6 +155,11 @@ html, body {
 
 .Box-button button:active {
   background-color: #777777;
+}
+
+.icon {
+  position: absolute;
+  color: #ffffff;
 }
 
 #bg{
@@ -150,6 +180,17 @@ html, body {
 
   background-size:50px 50px;
 
+}
+
+.pull-tab {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  background-color: transparent;
+  border-right: 4px solid #ffffff;
+  border-bottom: 4px solid #ffffff;
 }
 
 
