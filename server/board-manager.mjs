@@ -67,7 +67,10 @@ export default class BoardManager {
   receivedBoardUpdate(msg, socket) {
     console.log('Received update message:');
     console.log(msg);
-    // TODO Apply the update to the local copy of the board and the database
+    const boards = this.getBoardList();
+    const board = new Board(boards[msg.boardId]);
+    board.applyElementUpdate(msg);
+    this.dbConn.saveBoard(board.data);
 
     this.wsServer.broadcastBoardUpdate(msg, socket);
   }
