@@ -23,6 +23,7 @@ export default class BoardManager {
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
     this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
+    this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
   }
 
   /**
@@ -103,5 +104,11 @@ export default class BoardManager {
     //   created: board.getCreatedTime(),
     //   lastUsed: board.getLastUsedTime(),
     // }));
+  }
+
+  getBoardData(boardId, socket) {
+    this.dbConn.getBoard(null, boardId).then((board) => {
+      socket.emit('boardData',board);
+    });
   }
 }
