@@ -44,6 +44,14 @@ class Board extends React.Component {
   };
 
   /*
+  Handles when a file is selected from the file selection dialog.
+  */
+  onFileSelect = (e) => {
+    e.preventDefault();
+    this.generateBox('image');
+  };
+
+  /*
   Update the state for a given board based on a mouse event.
   @param {string} uuidVal - the UUID of the board.
   @param newState: The state object containing the updated state elements of the given box.
