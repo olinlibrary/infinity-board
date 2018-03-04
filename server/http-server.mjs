@@ -2,6 +2,7 @@
 
 import express from 'express';
 import http from 'http';
+import S3Router from 'react-s3-uploader/s3router';
 import expose from './expose';
 import indexHTML from '../index.html.mjs';
 
@@ -46,6 +47,13 @@ export default class HttpServer {
     this.app.get('/bundle.js', (req, res) => {
       res.sendFile(`${rootDir}/bundle.js`);
     });
+    // For Amazon S3 uploads
+    this.app.use('/s3', S3Router({
+      bucket: process.env.AWS_S3_BUCKET_NAME,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      ACL: 'private', // this is default
+      uniquePrefix: true,
+    }));
   }
 
   getHTTPServer() {

@@ -19,6 +19,7 @@
     "raw-loader": "^0.5.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-s3-uploader": "^4.6.2",
     "react-scripts": "1.1.0",
     "react-test-renderer": "^16.2.0",
     "regenerator-runtime": "^0.11.1",
@@ -38,7 +39,8 @@
     "test": "jest",
     "eject": "react-scripts eject",
     "lint": "./node_modules/.bin/eslint --ext .jsx --ext .js --ext .mjs .",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "server": "node --experimental-modules server/index.mjs"
   },
   "devDependencies": {
     "esdoc": "^1.0.4",

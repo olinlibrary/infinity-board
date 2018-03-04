@@ -5,7 +5,7 @@
 
 ```bash
 yarn install  # Install the necessary Node modules
-node --experimental-modules server/index.mjs  # Run the server
+yarn run server
 ```
 
 # Running the frontend app
