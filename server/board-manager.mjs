@@ -23,6 +23,7 @@ export default class BoardManager {
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
     this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
+    this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
   }
 
   /**
@@ -67,7 +68,10 @@ export default class BoardManager {
   receivedBoardUpdate(msg, socket) {
     console.log('Received update message:');
     console.log(msg);
-    // TODO Apply the update to the local copy of the board and the database
+    const boards = this.getBoardList();
+    const board = new Board(boards[msg.boardId]);
+    board.applyElementUpdate(msg);
+    this.dbConn.saveBoard(board.data);
 
     this.wsServer.broadcastBoardUpdate(msg, socket);
   }
@@ -100,5 +104,11 @@ export default class BoardManager {
     //   created: board.getCreatedTime(),
     //   lastUsed: board.getLastUsedTime(),
     // }));
+  }
+
+  getBoardData(boardId, socket) {
+    this.dbConn.getBoard(null, boardId).then((board) => {
+      socket.emit('boardData',board);
+    });
   }
 }

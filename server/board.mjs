@@ -28,7 +28,7 @@ export default class Board {
     if(this.data.elements[data.uuid] == undefined) {
       this.data.elements[data.uuid] = {state:data.state};
     }else {
-      Obejct.assign(this.data.elements[data.uuid].state,data.state);
+      Object.assign(this.data.elements[data.uuid].state,data.state);
     }
   }
 }
