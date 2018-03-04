@@ -38,9 +38,11 @@ class App extends React.Component {
 
   render() {
     // Figure out what should be shown
+    const boardObjects = Object.keys(this.state.boards).map((key) => { return this.state.boards[key]; });
+
     const content = this.state.currentBoardId
       ? <Board data={this.state.boards[this.state.currentBoardId]} />
-      : <BoardList boards={Object.values(this.state.boards)} boardSelected={this.boardSelected} />;
+      : <BoardList boards={boardObjects} boardSelected={this.boardSelected} />;
 
       // Now show it
     return (
