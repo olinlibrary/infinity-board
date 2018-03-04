@@ -11,7 +11,7 @@ class App extends React.Component {
 
     this.state = {
       boards: {},
-      currentBoardId: null,
+      currentBoardData: null,
     };
   }
 
@@ -32,15 +32,20 @@ class App extends React.Component {
     });
   };
 
-  boardSelected = (uuid) => {
-    this.setState({ currentBoardId: uuid });
+  receivedBoardData = (board) => {
+    this.setState({ currentBoardData: board });
   };
 
   render() {
     // Figure out what should be shown
     const content = this.state.currentBoardId
-      ? <Board data={this.state.boards[this.state.currentBoardId]} />
-      : <BoardList boards={Object.values(this.state.boards)} boardSelected={this.boardSelected} />;
+      ? <Board data={this.state.currentBoardData} />
+      : (
+        <BoardList
+          boards={Object.values(this.state.boards)}
+          boardSelected={uuid => this.io.getBoardData(uuid)}
+        />
+      );
 
       // Now show it
     return (

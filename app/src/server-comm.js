@@ -43,4 +43,8 @@ export default class ServerComm {
   getBoardList = () => {
     this.io.emit('getBoardList');
   };
+
+  getBoardData = (id) => {
+    this.io.emit('getBoardData', id);
+  };
 }

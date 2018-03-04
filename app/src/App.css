@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Comfortaa|Montserrat');
+
 * {
   font-family: Tahoma, Verdana, Segoe, sans-serif;
 }
@@ -8,6 +10,12 @@ html, body {
   font-family: sans-serif;
 }
 
+html,
+body,
+#root,
+.app {
+  height: 100%;
+}
 
 .App-title {
   font-size: 1.5em;
@@ -15,6 +23,51 @@ html, body {
 
 .App-intro {
   font-size: large;
+}
+
+.board-list-container {
+  background-color: #fefcfb;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.board-list-header {
+  padding: 3.5em;
+  text-align: center;
+  background-color: #1282a2;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.board-list-header span {
+  font-family: Comfortaa, Arial sans-serif;
+  font-size: 3rem;
+  color: white;
+}
+
+.board-li {
+  font-size: 1.4em;
+  font-family: Montserrat, Arial sans-serif;
+  padding: 1em;
+  border-bottom: 1px solid #e1e1e1;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-transition: background-color 0.3s;
+  -moz-transition: background-color 0.3s;
+  -ms-transition: background-color 0.3s;
+  -o-transition: background-color 0.3s;
+  transition: background-color 0.3s;
+}
+
+.board-li:hover {
+  background-color: #eee;
 }
 
 .Box {
@@ -163,20 +216,18 @@ html, body {
 }
 
 #bg{
-    background-color: transparent;
-    background-image:
-    linear-gradient(0deg, transparent 9%,
-            rgba(100, 100, 100, .2) 10%, rgba(100, 100, 100, .2) 12%, transparent 13%, transparent 29%,
-            rgba(100, 100, 100, .1) 30%, rgba(100, 100, 100, .1) 31%, transparent 32%, transparent 49%,
-            rgba(100, 100, 100, .1) 50%, rgba(100, 100, 100, .1) 51%, transparent 52%, transparent 69%,
-            rgba(100, 100, 100, .1) 70%, rgba(100, 100, 100, .1) 71%, transparent 72%, transparent 89%,
-            rgba(100, 100, 100, .1) 90%, rgba(100, 100, 100, .1) 91%, transparent 92%, transparent),
-    linear-gradient(90deg, transparent 9%,
-            rgba(100, 100, 100, .2) 10%, rgba(100, 100, 100, .2) 12%, transparent 13%, transparent 29%,
-            rgba(100, 100, 100, .1) 30%, rgba(100, 100, 100, .1) 31%, transparent 32%, transparent 49%,
-            rgba(100, 100, 100, .1) 50%, rgba(100, 100, 100, .1) 51%, transparent 52%, transparent 69%,
-            rgba(100, 100, 100, .1) 70%, rgba(100, 100, 100, .1) 71%, transparent 72%, transparent 89%,
-            rgba(100, 100, 100, .1) 90%, rgba(100, 100, 100, .1) 91%, transparent 92%, transparent);
+  background: transparent linear-gradient(0deg, transparent 9%,
+  rgba(100, 100, 100, .2) 10%, rgba(100, 100, 100, .2) 12%, transparent 13%, transparent 29%,
+  rgba(100, 100, 100, .1) 30%, rgba(100, 100, 100, .1) 31%, transparent 32%, transparent 49%,
+  rgba(100, 100, 100, .1) 50%, rgba(100, 100, 100, .1) 51%, transparent 52%, transparent 69%,
+  rgba(100, 100, 100, .1) 70%, rgba(100, 100, 100, .1) 71%, transparent 72%, transparent 89%,
+  rgba(100, 100, 100, .1) 90%, rgba(100, 100, 100, .1) 91%, transparent 92%, transparent),
+  linear-gradient(90deg, transparent 9%,
+          rgba(100, 100, 100, .2) 10%, rgba(100, 100, 100, .2) 12%, transparent 13%, transparent 29%,
+          rgba(100, 100, 100, .1) 30%, rgba(100, 100, 100, .1) 31%, transparent 32%, transparent 49%,
+          rgba(100, 100, 100, .1) 50%, rgba(100, 100, 100, .1) 51%, transparent 52%, transparent 69%,
+          rgba(100, 100, 100, .1) 70%, rgba(100, 100, 100, .1) 71%, transparent 72%, transparent 89%,
+          rgba(100, 100, 100, .1) 90%, rgba(100, 100, 100, .1) 91%, transparent 92%, transparent);
 
   background-size:50px 50px;
 
@@ -191,24 +242,4 @@ html, body {
   background-color: transparent;
   border-right: 4px solid #ffffff;
   border-bottom: 4px solid #ffffff;
-}
-
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.board-li {
-  padding: 1em;
-  border-bottom: 1px solid gray;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.board-li:hover {
-  background-color: #eee;
 }

@@ -60,7 +60,7 @@ class Board extends React.Component {
     });
     // Push the update out over WebSockets
     this.io.sendUpdateMessage({
-      boardId: this.data._id,
+      boardId: this.props.data._id,
       uuid: uuidVal,
       state: updatedState,
       type: origState[uuidVal].type,
