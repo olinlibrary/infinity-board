@@ -8,6 +8,7 @@ import TextBox from './text-box';
 import ImageBox from './image-box';
 import FileDragger from './file-dragger';
 
+let ReactS3Uploader = require('react-s3-uploader');
 
 class Board extends React.Component {
   constructor(props) {
@@ -24,6 +25,10 @@ class Board extends React.Component {
       boxes: {},
     };
     // this.onUpdateDup = this.onUpdateDup.bind(this);
+  }
+
+  onUploadFinish = (e) => {
+    console.log(e);
   }
 
   /*
@@ -68,6 +73,7 @@ class Board extends React.Component {
     });
     // Push the update out over WebSockets
     this.io.sendUpdateMessage({
+      // eslint-disable-next-line
       boardId: this.props.data._id,
       uuid: uuidVal,
       state: updatedState,
@@ -101,7 +107,7 @@ class Board extends React.Component {
   handleButtonClick = (e) => {
     const boxType = e.target.dataset.type; // Get the type of box we're making
     if (boxType === 'image') {
-      this.fileInput.click();
+      this.input.click();
     } else {
       this.generateBox(boxType);
     }
@@ -241,6 +247,7 @@ class Board extends React.Component {
         onMouseUp={this.mouseUp}
         style={{ cursor: this.state.cursor }}
       >
+
         {boxes}
         <div className="View" style={bgStyle} id="bg" />
         <FileDragger generateBox={this.generateBox} />
@@ -253,7 +260,18 @@ class Board extends React.Component {
           </div>
           <div className="Box-button" style={buttonStyle}>
             <button className="Box-button image" data-type="image" onClick={this.handleButtonClick} />
-            <input type="file" ref={(input) => { this.fileInput = input; }} onChange={this.onFileSelect} style={{ display: 'none' }} />
+
+            <ReactS3Uploader
+              signingUrl="/s3/sign"
+              signingUrlMethod="GET"
+              accept="image/*"
+              onFinish={this.onUploadFinish}
+              uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}  // this is the default
+              autoUpload={true}
+              server="http://localhost:1234"
+              inputRef={(input) => {this.input = input;}}
+              style={{display: 'none'}}
+            />
           </div>
         </div>
       </div>
