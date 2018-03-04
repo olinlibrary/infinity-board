@@ -20,7 +20,6 @@ class Board extends React.Component {
       windowY: 0,
       prevX: 0,
       prevY: 0,
-      name: props.name,
       zIndex: 1,
       boxes: {},
     };
@@ -61,7 +60,7 @@ class Board extends React.Component {
     });
     // Push the update out over WebSockets
     this.io.sendUpdateMessage({
-      boardId: this.props.uuid,
+      boardId: this.data._id,
       uuid: uuidVal,
       state: updatedState,
       type: origState[uuidVal].type,
@@ -86,7 +85,7 @@ class Board extends React.Component {
   */
   updateText = (uuid, textVal) => {
     this.updateBoardState(uuid, { text: textVal });
-  }
+  };
 
   /*
   Handles the clicking of the box generation buttons.
@@ -134,7 +133,7 @@ class Board extends React.Component {
   Stops movement of the board window.
   */
   mouseUp = () => {
-    this.setState({ dragging: false, cursor: 'default' })
+    this.setState({ dragging: false, cursor: 'default' });
   };
 
 
@@ -200,7 +199,7 @@ class Board extends React.Component {
       const stateProps = Object.assign(
         {},
         propsIn,
-        this.state.boxes[curKey].state
+        this.state.boxes[curKey].state,
       ); // Add in state props
 
 
@@ -256,7 +255,6 @@ class Board extends React.Component {
 
 Board.propTypes = {
   data: PropTypes.object.isRequired,
-  uuid: PropTypes.string.isRequired,
 };
 
 export default Board;
