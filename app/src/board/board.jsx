@@ -25,6 +25,11 @@ class Board extends React.Component {
     };
   }
 
+  componentDidMount() {
+    // We have to add document listeners so it will update pos even when
+    document.addEventListener('mousedown', this.mouseDown);
+  }
+
   onUploadFinish = (e) => {
     console.log(e)
     // eslint-disable-next-line
@@ -45,6 +50,7 @@ class Board extends React.Component {
     }); // TODO: Seems redundant from updateBoardState, should change
     this.setState({
       boxes: updatedState,
+      zIndex: msg.zIndex,
     });
   };
 
@@ -67,6 +73,7 @@ class Board extends React.Component {
     // Push the update out over WebSockets
     this.io.sendUpdateMessage({
       // eslint-disable-next-line
+      zIndex: this.state.zIndex,
       boardId: this.props.data._id,
       uuid: uuidVal,
       state: updatedState,
@@ -128,12 +135,15 @@ class Board extends React.Component {
    * Updates the board state to allow window movement on mouse press.
   */
   mouseDown = (e) => {
-    this.setState({
-      dragging: true,
-      prevX: e.clientX,
-      prevY: e.clientY,
-      cursor: 'move',
-    });
+    console.log(e.button)
+    if (e.button === 1) {
+      this.setState({
+        dragging: true,
+        prevX: e.clientX,
+        prevY: e.clientY,
+        cursor: 'move',
+      });
+    }
   };
 
   /**
@@ -235,7 +245,6 @@ class Board extends React.Component {
     return (
       // eslint-disable-next-line
       <div className="View"
-        onMouseDown={this.mouseDown}
         onMouseMove={this.dragWindow}
         onMouseUp={this.mouseUp}
         style={{ cursor: this.state.cursor }}
@@ -243,11 +252,11 @@ class Board extends React.Component {
         {boxes}
         <div className="View" style={bgStyle} id="bg" />
         <FileDragger generateBox={this.generateBox} inputFile={this.inputFile} />
-        <div className="Button-wrapper">
+        <div className="Button-wrapper" style={buttonStyle}>
           <div className="Box-button">
             <button className="Box-button home" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }}>HOME</button>
           </div>
-          <div className="Box-button">
+          <div className="Box-button" style={buttonStyle}>
             <button className="Box-button text" data-type="text" onClick={this.handleButtonClick} >TEXT</button>
           </div>
           <div className="Box-button" style={buttonStyle}>
