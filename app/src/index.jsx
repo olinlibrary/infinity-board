@@ -32,11 +32,12 @@ class App extends React.Component {
   };
 
   render() {
+    const boardObjects = Object.keys(this.state.boards).map((key) => { return this.state.boards[key]; });
     const content = this.state.currentBoardData
       ? <Board data={this.state.currentBoardData} />
       : (
         <BoardList
-          boards={Object.values(this.state.boards)}
+          boards={boardObjects}
           boardSelected={uuid => this.serverComm.getBoardData(uuid)}
         />
       );

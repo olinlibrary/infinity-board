@@ -243,7 +243,7 @@ class Board extends React.Component {
         {boxes}
         <div className="View" style={bgStyle} id="bg" />
         <FileDragger generateBox={this.generateBox} inputFile={this.inputFile} />
-        <div className="Button-wrapper" style={buttonStyle}>
+        <div className="Button-wrapper">
           <div className="Box-button">
             <button className="Box-button home" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }} />
           </div>
