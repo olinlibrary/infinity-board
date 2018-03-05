@@ -29,7 +29,7 @@ class Board extends React.Component {
 
   onUploadFinish = (e) => {
     // eslint-disable-next-line
-    const imgUrl = e.publicUrl; // TODO make this actually point to correct URL
+    const imgUrl = window.SERVER_URI + e.publicUrl; // TODO make this actually point to correct URL
     this.generateBox('image', imgUrl);
   }
   /*
@@ -265,7 +265,7 @@ class Board extends React.Component {
               accept="image/*"
               onFinish={this.onUploadFinish}
               uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
-              server="/"
+              server={window.SERVER_URI}
               inputRef={(input) => { this.input = input; }}
               style={{ display: 'none' }}
             />
