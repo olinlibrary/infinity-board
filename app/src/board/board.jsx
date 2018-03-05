@@ -245,13 +245,13 @@ class Board extends React.Component {
         <FileDragger generateBox={this.generateBox} inputFile={this.inputFile} />
         <div className="Button-wrapper">
           <div className="Box-button">
-            <button className="Box-button home" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }} />
+            <button className="Box-button home" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }}>HOME</button>
           </div>
           <div className="Box-button">
-            <button className="Box-button text" data-type="text" onClick={this.handleButtonClick} />
+            <button className="Box-button text" data-type="text" onClick={this.handleButtonClick} >TEXT</button>
           </div>
           <div className="Box-button" style={buttonStyle}>
-            <button className="Box-button image" data-type="image" onClick={this.handleButtonClick} />
+            <button className="Box-button image" data-type="image" onClick={this.handleButtonClick} >IMAGE</button>
 
             <ReactS3Uploader
               signingUrl="/s3/sign"
