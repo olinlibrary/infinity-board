@@ -29,7 +29,7 @@ class Board extends React.Component {
 
   onUploadFinish = (e) => {
     // eslint-disable-next-line
-    const imgUrl = "http://localhost:1234" + e.publicUrl; // TODO make this actually point to correct URL
+    const imgUrl = e.publicUrl; // TODO make this actually point to correct URL
     this.generateBox('image', imgUrl);
   }
   /*
@@ -248,7 +248,7 @@ class Board extends React.Component {
 
         {boxes}
         <div className="View" style={bgStyle} id="bg" />
-        <FileDragger generateBox={this.generateBox} inputFile={this.inputFile}/>
+        <FileDragger generateBox={this.generateBox} inputFile={this.inputFile} />
         <div className="Button-wrapper" style={buttonStyle}>
           <div className="Box-button">
             <button className="Box-button home" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }} />
@@ -264,11 +264,10 @@ class Board extends React.Component {
               signingUrlMethod="GET"
               accept="image/*"
               onFinish={this.onUploadFinish}
-              uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}  // this is the default
-              autoUpload={true}
-              server="http://localhost:1234"
-              inputRef={(input) => {this.input = input;}}
-              style={{display: 'none'}}
+              uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
+              server="/"
+              inputRef={(input) => { this.input = input; }}
+              style={{ display: 'none' }}
             />
           </div>
         </div>
@@ -278,6 +277,7 @@ class Board extends React.Component {
 }
 
 Board.propTypes = {
+  // eslint-disable-next-line
   data: PropTypes.object.isRequired,
 };
 
