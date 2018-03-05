@@ -11,38 +11,35 @@ class App extends React.Component {
 
     this.state = {
       boards: {},
-      currentBoardId: null,
+      currentBoardData: null,
     };
   }
 
   componentDidMount() {
-    this.io = new ServerComm(window.SERVER_URI);
-    this.io.connect();
-    this.io.setReceivedBoardListMessageHandler(this.setBoardList);
-    this.io.getBoardList();
+    this.serverComm = new ServerComm(window.SERVER_URI);
+    this.serverComm.connect();
+    this.serverComm.setReceivedBoardListMessageHandler(this.setBoardList);
+    this.serverComm.setReceivedBoardDataMessageHandler(this.receivedBoardData);
+    this.serverComm.getBoardList();
   }
 
   setBoardList = (boards) => {
     this.setState({ boards });
   };
 
-  setCurrentBoardId = (id) => {
-    this.setState({
-      currentBoardId: id,
-    });
-  };
-
-  boardSelected = (uuid) => {
-    this.setState({ currentBoardId: uuid });
+  receivedBoardData = (board) => {
+    this.setState({ currentBoardData: board });
   };
 
   render() {
-    // Figure out what should be shown
-    const boardObjects = Object.keys(this.state.boards).map((key) => { return this.state.boards[key]; });
-
-    const content = this.state.currentBoardId
-      ? <Board data={this.state.boards[this.state.currentBoardId]} />
-      : <BoardList boards={boardObjects} boardSelected={this.boardSelected} />;
+    const content = this.state.currentBoardData
+      ? <Board data={this.state.currentBoardData} />
+      : (
+        <BoardList
+          boards={Object.values(this.state.boards)}
+          boardSelected={uuid => this.serverComm.getBoardData(uuid)}
+        />
+      );
 
       // Now show it
     return (

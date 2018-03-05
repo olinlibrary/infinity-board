@@ -6,11 +6,16 @@ export default class BoardList extends React.Component {
   render() {
     const boards = [];
     this.props.boards.forEach((board) => {
-      boards.push(<button className="board-li" onClick={() => this.props.boardSelected(board._id)} key={board.id}>{board.name}</button>);
+      boards.push(<div className="board-li" onClick={() => this.props.boardSelected(board._id)} key={board._id}>{board.name}</div>);
     });
     return (
-      <div className="board-list">
-        {boards}
+      <div className="board-list-container">
+        <div className="board-list-header">
+          <span>InfinityBoard</span>
+        </div>
+        <div className="board-list">
+          {boards}
+        </div>
       </div>
     );
   }

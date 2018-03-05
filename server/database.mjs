@@ -4,6 +4,8 @@
 import MongoClient from 'mongodb';
 import Names from './names.mjs';
 
+const ObjectId = MongoClient.connect.ObjectId;
+
 export default class DatabaseConnection {
   /**
    * Instantiates an object for communicating with a MongoDB database. Call connect() to
@@ -120,7 +122,7 @@ export default class DatabaseConnection {
     if (name) {
       query.name = name;
     } else if (id) {
-      query._id = id;
+      query._id = ObjectId(id);
     } else {
       throw Error('Both parameters "name" and "id" must not be null');
     }
@@ -151,15 +153,17 @@ export default class DatabaseConnection {
    * the data on as the result.
    */
   getBoard(name = null, id = null) {
-    const query = {};
-    if (name) {
-      query.name = name;
-    } else if (id) {
-      query._id = id;
-    } else {
-      throw Error('Both parameters "name" and "id" must not be null');
-    }
-    return this.db.collection('boards').find(query).toArray().then(res => res[0]);
+    return new Promise((resolve, reject) => {
+      const query = {};
+      if (name) {
+        query.name = name;
+      } else if (id) {
+        query._id = ObjectId(id);
+      } else {
+        reject(Error('Both parameters "name" and "id" must not be null'));
+      }
+      resolve(this.db.collection('boards').findOne(query));
+    });
   }
 
   /**
