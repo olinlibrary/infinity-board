@@ -171,11 +171,11 @@ body,
   text-shadow: 1px 1px #222222;
   text-transform: uppercase;
   font-weight: bold;
-  font-size: 25px;
+  font-size: 12px;
 }
 
 
-.Box-button button::before {
+/* .Box-button button::before {
   display: none;
  }
 
@@ -195,7 +195,7 @@ body,
  .image::before {
    font-family: "Font Awesome 5 Solid";
    content: "\f03e";
- }
+ } */
 
 
 .Box-button button:hover {
