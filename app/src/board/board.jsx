@@ -29,8 +29,10 @@ class Board extends React.Component {
 
   onUploadFinish = (e) => {
     console.log(e);
+    // eslint-disable-next-line
+    const imgUrl = "http://localhost:1234" + e.publicUrl; // TODO make this actually point to correct URL
+    this.generateBox('image', imgUrl);
   }
-
   /*
   Update the state for a given board based on a message from the websocket.
   @param msg - the websocket message containing updated state data for the board.
@@ -47,13 +49,6 @@ class Board extends React.Component {
     });
   };
 
-  /*
-  Handles when a file is selected from the file selection dialog.
-  */
-  onFileSelect = (e) => {
-    e.preventDefault();
-    this.generateBox('image');
-  };
 
   /*
   Update the state for a given board based on a mouse event.
@@ -155,7 +150,7 @@ class Board extends React.Component {
   Generates a box based on a button click event.
   @params boxType: the type of box to generate.
   */
-  generateBox = (boxType) => {
+  generateBox = (boxType, sourceURL) => {
     const uuid = uuidv4(); // Gen unique UUID
     const initState = this.state.boxes;
     const stateObject = {
@@ -166,6 +161,7 @@ class Board extends React.Component {
       z: this.state.zIndex,
       color: randomColor(),
       text: '',
+      src: sourceURL,
     };
     initState[uuid] = {
       type: boxType,
@@ -226,7 +222,6 @@ class Board extends React.Component {
         boxes.push(<TextBox editCallback={this.updateText} {...stateProps} />);
       } else if (this.state.boxes[curKey].type === 'image') {
         boxes.push(<ImageBox
-          src="http://cdn.akc.org/content/hero/puppy-boundaries_header.jpg"
           imgCallback={this.updateImage}
           {...stateProps}
         />);
@@ -250,7 +245,7 @@ class Board extends React.Component {
 
         {boxes}
         <div className="View" style={bgStyle} id="bg" />
-        <FileDragger generateBox={this.generateBox} />
+        <FileDragger generateBox={this.generateBox}/>
         <div className="Button-wrapper" style={buttonStyle}>
           <div className="Box-button">
             <button className="Box-button home" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }} />
