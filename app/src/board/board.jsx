@@ -28,7 +28,6 @@ class Board extends React.Component {
   }
 
   onUploadFinish = (e) => {
-    console.log(e);
     // eslint-disable-next-line
     const imgUrl = "http://localhost:1234" + e.publicUrl; // TODO make this actually point to correct URL
     this.generateBox('image', imgUrl);
@@ -49,6 +48,10 @@ class Board extends React.Component {
     });
   };
 
+  // inputFile = (e) => {
+  //   console.log(this.input)
+  //   this.input.form.submit();
+  // }
 
   /*
   Update the state for a given board based on a mouse event.
@@ -245,7 +248,7 @@ class Board extends React.Component {
 
         {boxes}
         <div className="View" style={bgStyle} id="bg" />
-        <FileDragger generateBox={this.generateBox}/>
+        <FileDragger generateBox={this.generateBox} inputFile={this.inputFile}/>
         <div className="Button-wrapper" style={buttonStyle}>
           <div className="Box-button">
             <button className="Box-button home" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }} />

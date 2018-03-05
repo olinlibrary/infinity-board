@@ -1,5 +1,9 @@
 * {
   font-family: Tahoma, Verdana, Segoe, sans-serif;
+  transition: opacity 0.2s ease-in-out;
+  -webkit-transition: opacity 0.2s ease-in-out;
+  -moz-transition: opacity 0.2s ease-in-out;
+  -o-transition: opacity 0.2s ease-in-out;
 }
 
 html, body {
@@ -67,10 +71,6 @@ html, body {
   background-color: rgba(255,255,255,.5);
   justify-content: center;
   align-items: center;
-  transition: opacity 0.2s ease-in-out;
-  -webkit-transition: opacity 0.2s ease-in-out;
-  -moz-transition: opacity 0.2s ease-in-out;
-  -o-transition: opacity 0.2s ease-in-out;
 }
 
 .View {
