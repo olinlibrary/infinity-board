@@ -30,7 +30,7 @@ class Board extends React.Component {
   onUploadFinish = (e) => {
     console.log(e)
     // eslint-disable-next-line
-    const imgUrl = "https://olin-library-infinity-board.s3.amazonaws.com/8ba27ff9-ed11-4d0f-a168-c40f747cc6e6_70JupwV.gif?AWSAccessKeyId=AKIAJDKMPGV6UVCD6UFA&Expires=1520277478&Signature=KBqDFnCq3pI3%2Bp8NIBSF5X0oLk0%3D"; // TODO make this actually point to correct URL
+    const imgUrl = window.SERVER_URI + e.publicUrl; // TODO make this actually point to correct URL
     this.generateBox('image', imgUrl);
   }
   /*
