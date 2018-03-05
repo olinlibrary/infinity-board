@@ -26,7 +26,6 @@ class Board extends React.Component {
   }
 
   onUploadFinish = (e) => {
-    console.log(e)
     // eslint-disable-next-line
     const imgUrl = window.SERVER_URI + e.publicUrl; // TODO make this actually point to correct URL
     this.generateBox('image', imgUrl);
@@ -76,7 +75,7 @@ class Board extends React.Component {
 
   /**
    * Increments the highest z-index for the board.
-   * @return zIndex, the current board z-index
+   * @return {number} zIndex: the current board z-index
   */
   updateZ = () => {
     this.setState({

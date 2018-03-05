@@ -4,6 +4,7 @@
 import MongoClient from 'mongodb';
 import Names from './names.mjs';
 
+// eslint-disable-next-line prefer-destructuring
 const ObjectId = MongoClient.connect.ObjectId;
 
 export default class DatabaseConnection {
@@ -138,9 +139,8 @@ export default class DatabaseConnection {
    */
   saveBoard(board) {
     const query = { _id: board._id };
-    console.log(board);
-    const updatedVals = { $set: board };
-    this.db.collection('boards').updateOne(query, updatedVals, (err, res) => {
+    const updatedVals = { $set: { elements: board.elements } };
+    return this.db.collection('boards').updateOne(query, updatedVals, (err, res) => {
       if (err) throw err;
     });
   }
@@ -148,7 +148,7 @@ export default class DatabaseConnection {
   /**
    * Gets all the information for a given board. Only one parameter should be specified.
    * @param {string} name - the name of the board
-   * @param {number} id - the ID of the board
+   * @param {number|null} id - the ID of the board
    * @return {Promise<any>} a Promise that resolves once the data has been fetched, passing on
    * the data on as the result.
    */
