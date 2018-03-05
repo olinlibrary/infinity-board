@@ -1,13 +1,13 @@
 import React from 'react';
-import randomColor from 'randomcolor';
 import PropTypes from 'prop-types';
+import randomColor from 'randomcolor';
+import ReactS3Uploader from 'react-s3-uploader';
 import uuidv4 from 'uuid/v4';
 import '../App.css';
 import ServerComm from '.././server-comm';
 import TextBox from './text-box';
 import ImageBox from './image-box';
 import FileDragger from './file-dragger';
-
 
 class Board extends React.Component {
   constructor(props) {
@@ -21,14 +21,20 @@ class Board extends React.Component {
       prevX: 0,
       prevY: 0,
       zIndex: 1,
-      boxes: {},
+      boxes: props.data.elements,
     };
-    // this.onUpdateDup = this.onUpdateDup.bind(this);
   }
 
-  /*
-  Update the state for a given board based on a message from the websocket.
-  @param msg - the websocket message containing updated state data for the board.
+  onUploadFinish = (e) => {
+    console.log(e);
+    // eslint-disable-next-line
+    const imgUrl = "http://localhost:1234" + e.publicUrl; // TODO make this actually point to correct URL
+    this.generateBox('image', imgUrl);
+  };
+
+  /**
+   * Update the state for a given board based on a message from the WebSocket.
+   * @param msg - the WebSocket message containing updated state data for the board.
   */
   onUpdate = (msg) => {
     const updatedState = Object.assign({}, this.state.boxes, {
@@ -42,10 +48,10 @@ class Board extends React.Component {
     });
   };
 
-  /*
-  Update the state for a given board based on a mouse event.
-  @param {string} uuidVal - the UUID of the board.
-  @param newState: The state object containing the updated state elements of the given box.
+  /**
+  * Update the state for a given board based on a mouse event.
+  * @param {string} uuidVal - the UUID of the board.
+  * @param newState: The state object containing the updated state elements of the given box.
   */
   updateBoardState = (uuidVal, newState) => {
     const origState = Object.assign({}, this.state.boxes);
@@ -60,6 +66,7 @@ class Board extends React.Component {
     });
     // Push the update out over WebSockets
     this.io.sendUpdateMessage({
+      // eslint-disable-next-line
       boardId: this.props.data._id,
       uuid: uuidVal,
       state: updatedState,
@@ -67,9 +74,9 @@ class Board extends React.Component {
     });
   };
 
-  /*
-  Increments the highest z-index for the board.
-  @return zIndex, the current board z-index
+  /**
+   * Increments the highest z-index for the board.
+   * @return zIndex, the current board z-index
   */
   updateZ = () => {
     this.setState({
@@ -78,29 +85,29 @@ class Board extends React.Component {
     return this.state.zIndex;
   };
 
-  /*
-  Updates the text value for a given text box.
-  @param uuid - the UUID of the text box to be updated.
-  @param textVal - the text to put in the text box.
+  /**
+   * Updates the text value for a given text box.
+   * @param uuid - the UUID of the text box to be updated.
+   * @param textVal - the text to put in the text box.
   */
   updateText = (uuid, textVal) => {
     this.updateBoardState(uuid, { text: textVal });
   };
 
-  /*
-  Handles the clicking of the box generation buttons.
+  /**
+  * Handles the clicking of the box generation buttons.
   */
   handleButtonClick = (e) => {
     const boxType = e.target.dataset.type; // Get the type of box we're making
     if (boxType === 'image') {
-      this.fileInput.click();
+      this.input.click();
     } else {
       this.generateBox(boxType);
     }
   };
 
-  /*
-  Handles the movement of the board view window.
+  /**
+   * Handles the movement of the board view window.
   */
   dragWindow = (e) => {
     if (this.state.dragging) {
@@ -117,8 +124,8 @@ class Board extends React.Component {
     }
   };
 
-  /*
-  Updates the board state to allow window movement on mouse press.
+  /**
+   * Updates the board state to allow window movement on mouse press.
   */
   mouseDown = (e) => {
     this.setState({
@@ -129,19 +136,19 @@ class Board extends React.Component {
     });
   };
 
-  /*
-  Stops movement of the board window.
+  /**
+   * Stops movement of the board window.
   */
   mouseUp = () => {
     this.setState({ dragging: false, cursor: 'default' });
   };
 
 
-  /*
-  Generates a box based on a button click event.
-  @params boxType: the type of box to generate.
+  /**
+   * Generates a box based on a button click event.
+   * @params boxType: the type of box to generate.
   */
-  generateBox = (boxType) => {
+  generateBox = (boxType, sourceURL) => {
     const uuid = uuidv4(); // Gen unique UUID
     const initState = this.state.boxes;
     const stateObject = {
@@ -152,6 +159,7 @@ class Board extends React.Component {
       z: this.state.zIndex,
       color: randomColor(),
       text: '',
+      src: sourceURL,
     };
     initState[uuid] = {
       type: boxType,
@@ -162,11 +170,11 @@ class Board extends React.Component {
   };
 
 
-  /*
-  Called on ImageBox load to resize image correctly
-  @params uuid: the UUID of the box
-  @params w: the new width of the box
-  @params h: the new height of the box
+  /**
+   * Called on ImageBox load to resize image correctly
+   * @params uuid: the UUID of the box
+   * @params w: the new width of the box
+   * @params h: the new height of the box
   */
   updateImage = (uuid, w, h, newW, newH) => {
     const initState = this.state.boxes;
@@ -212,7 +220,6 @@ class Board extends React.Component {
         boxes.push(<TextBox editCallback={this.updateText} {...stateProps} />);
       } else if (this.state.boxes[curKey].type === 'image') {
         boxes.push(<ImageBox
-          src="http://cdn.akc.org/content/hero/puppy-boundaries_header.jpg"
           imgCallback={this.updateImage}
           {...stateProps}
         />);
@@ -245,7 +252,18 @@ class Board extends React.Component {
           </div>
           <div className="Box-button" style={buttonStyle}>
             <button className="Box-button image" data-type="image" onClick={this.handleButtonClick} />
-            <input type="file" ref={(input) => { this.fileInput = input; }} onChange={this.onFileSelect} style={{ display: 'none' }} />
+
+            <ReactS3Uploader
+              signingUrl="/s3/sign"
+              signingUrlMethod="GET"
+              accept="image/*"
+              onFinish={this.onUploadFinish}
+              uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
+              autoUpload
+              server="http://localhost:1234"
+              inputRef={(input) => { this.input = input; }}
+              style={{ display: 'none' }}
+            />
           </div>
         </div>
       </div>
@@ -254,6 +272,7 @@ class Board extends React.Component {
 }
 
 Board.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object.isRequired,
 };
 

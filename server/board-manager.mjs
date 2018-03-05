@@ -18,11 +18,13 @@ export default class BoardManager {
     this.receivedBoardUpdate = this.receivedBoardUpdate.bind(this);
     this.handleBoardListRequest = this.handleBoardListRequest.bind(this);
     this.getBoardList = this.getBoardList.bind(this);
+    this.getBoardData = this.getBoardData.bind(this);
 
     // Register WebSocket message handlers
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
     this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
+    this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
   }
 
   /**
@@ -65,25 +67,22 @@ export default class BoardManager {
    * @param socket - the socket.io connection
    */
   receivedBoardUpdate(msg, socket) {
-    console.log('Received update message:');
-    console.log(msg);
-    // TODO Apply the update to the local copy of the board and the database
+    const boards = this.getBoardList();
+    const board = new Board(boards[msg.boardId]);
+    board.applyElementUpdate(msg);
+    this.dbConn.saveBoard(board.data);
 
     this.wsServer.broadcastBoardUpdate(msg, socket);
   }
 
   handleBoardListRequest(data, socket) {
-    console.log('Responding to board list request');
     const boards = this.getBoardList();
-    console.log(boards)
     socket.emit('boardListUpdate', boards);
   }
 
   fetchBoardsFromDb() {
     this.dbConn.listBoards().then((boards) => {
       this.boards = boards;
-      console.log('Got boards from db:');
-      console.log(this.boards);
     });
   }
 
@@ -94,11 +93,11 @@ export default class BoardManager {
       map[board._id] = board;
     });
     return map;
-    // return Object.values(this.boards).map(board => ({
-    //   name: board.getName(),
-    //   id: board.getId(),
-    //   created: board.getCreatedTime(),
-    //   lastUsed: board.getLastUsedTime(),
-    // }));
+  }
+
+  getBoardData(boardId, socket) {
+    this.dbConn.getBoard(null, boardId).then((board) => {
+      socket.emit('boardData', board);
+    });
   }
 }

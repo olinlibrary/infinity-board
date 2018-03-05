@@ -16,20 +16,15 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.io = new ServerComm(window.SERVER_URI);
-    this.io.connect();
-    this.io.setReceivedBoardListMessageHandler(this.setBoardList);
-    this.io.getBoardList();
+    this.serverComm = new ServerComm(window.SERVER_URI);
+    this.serverComm.connect();
+    this.serverComm.setReceivedBoardListMessageHandler(this.setBoardList);
+    this.serverComm.setReceivedBoardDataMessageHandler(this.receivedBoardData);
+    this.serverComm.getBoardList();
   }
 
   setBoardList = (boards) => {
     this.setState({ boards });
-  };
-
-  setCurrentBoardId = (id) => {
-    this.setState({
-      currentBoardId: id,
-    });
   };
 
   receivedBoardData = (board) => {
@@ -37,13 +32,12 @@ class App extends React.Component {
   };
 
   render() {
-    // Figure out what should be shown
-    const content = this.state.currentBoardId
+    const content = this.state.currentBoardData
       ? <Board data={this.state.currentBoardData} />
       : (
         <BoardList
           boards={Object.values(this.state.boards)}
-          boardSelected={uuid => this.io.getBoardData(uuid)}
+          boardSelected={uuid => this.serverComm.getBoardData(uuid)}
         />
       );
 

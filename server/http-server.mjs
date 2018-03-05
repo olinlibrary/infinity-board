@@ -47,6 +47,7 @@ export default class HttpServer {
     this.app.get('/bundle.js', (req, res) => {
       res.sendFile(`${rootDir}/bundle.js`);
     });
+
     // For Amazon S3 uploads
     this.app.use('/s3', S3Router({
       bucket: process.env.AWS_S3_BUCKET_NAME,
