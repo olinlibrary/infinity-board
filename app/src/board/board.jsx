@@ -73,6 +73,7 @@ class Board extends React.Component {
     this.io.sendUpdateMessage({
       // eslint-disable-next-line
       zIndex: this.state.zIndex,
+      // eslint-disable-next-line no-underscore-dangle
       boardId: this.props.data._id,
       uuid: uuidVal,
       state: updatedState,
@@ -175,7 +176,7 @@ class Board extends React.Component {
     };
 
     if (isUpload) {
-      initState[uuid] = Object.assign({}, initState[uuid], {isUpload: true})
+      initState[uuid] = Object.assign({}, initState[uuid], { isUpload: true });
     }
     this.setState({ boxes: initState });
     this.updateBoardState(uuid, stateObject); // TODO Refactor so that this isn't necessary
@@ -194,15 +195,13 @@ class Board extends React.Component {
 
     if (w > 500) {
       initState[uuid].state.w = 500;
-      initState[uuid].state.h = initState[uuid].state.w/initState[uuid].aspect;
-    }
-    else if (h > 500) {
+      initState[uuid].state.h = initState[uuid].state.w / initState[uuid].aspect;
+    } else if (h > 500) {
       initState[uuid].state.h = 500;
-      initState[uuid].state.w = initState[uuid].state.h*initState[uuid].aspect;
-    }
-    else {
+      initState[uuid].state.w = initState[uuid].state.h * initState[uuid].aspect;
+    } else {
       initState[uuid].state.h = h;
-      initState[uuid].state.w = initState[uuid].state.h*initState[uuid].aspect;
+      initState[uuid].state.w = initState[uuid].state.h * initState[uuid].aspect;
     }
 
     this.setState({ boxes: initState });

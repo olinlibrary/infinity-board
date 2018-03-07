@@ -139,11 +139,11 @@ class DraggableBox extends React.Component {
   };
 
   mouseEnter = () => {
-    this.setState({ tabVisible: 1 })
+    this.setState({ tabVisible: 1 });
   }
 
   mouseLeave = () => {
-    this.setState({ tabVisible: 0 })
+    this.setState({ tabVisible: 0 });
   }
 
   /*
@@ -165,7 +165,8 @@ class DraggableBox extends React.Component {
         onMouseEnter={this.mouseEnter}
         onMouseLeave={this.mouseLeave}
         className="Box"
-        style={this.getBoxStyle()}>
+        style={this.getBoxStyle()}
+      >
         {this.props.children}
         <div className="pull-tab" style={{ zIndex: this.props.z + 2, opacity: this.state.tabVisible }} />
 

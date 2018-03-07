@@ -26,7 +26,11 @@ export default class TextBox extends React.Component {
     } = this.props;
     return (
       <div>
-        <DraggableBox textCallback={() => { this.setState({ editing: true }); }} uid={uid} {...other}>
+        <DraggableBox
+          textCallback={() => { this.setState({ editing: true }); }}
+          uid={uid}
+          {...other}
+        >
           <TextField
             edit={this.state.editing}
             editCallback={editCallback}

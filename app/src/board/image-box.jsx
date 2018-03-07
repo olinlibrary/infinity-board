@@ -23,7 +23,7 @@ export default class ImageBox extends React.Component {
         img.offsetWidth,
         img.offsetHeight,
         this.props.w,
-        this.props.h
+        this.props.h,
       );
     }
     this.setState({ opacity: 1 });
@@ -66,5 +66,5 @@ ImageBox.propTypes = {
 
 ImageBox.defaultProps = {
   imgCallback: () => {},
-  isUpload: false
+  isUpload: false,
 };
