@@ -31,10 +31,9 @@ class Board extends React.Component {
   }
 
   onUploadFinish = (e) => {
-    console.log(e)
     // eslint-disable-next-line
     const imgUrl = window.SERVER_URI + e.publicUrl; // TODO make this actually point to correct URL
-    this.generateBox('image', imgUrl);
+    this.generateBox('image', imgUrl, true);
   };
 
   /**
@@ -135,7 +134,6 @@ class Board extends React.Component {
    * Updates the board state to allow window movement on mouse press.
   */
   mouseDown = (e) => {
-    console.log(e.button)
     if (e.button === 1) {
       this.setState({
         dragging: true,
@@ -158,7 +156,7 @@ class Board extends React.Component {
    * Generates a box based on a button click event.
    * @params boxType: the type of box to generate.
   */
-  generateBox = (boxType, sourceURL) => {
+  generateBox = (boxType, sourceURL, isUpload) => {
     const uuid = uuidv4(); // Gen unique UUID
     const initState = this.state.boxes;
     const stateObject = {
@@ -175,6 +173,10 @@ class Board extends React.Component {
       type: boxType,
       state: stateObject,
     };
+
+    if (isUpload) {
+      initState[uuid] = Object.assign({}, initState[uuid], {isUpload: true})
+    }
     this.setState({ boxes: initState });
     this.updateBoardState(uuid, stateObject); // TODO Refactor so that this isn't necessary
   };
@@ -186,16 +188,21 @@ class Board extends React.Component {
    * @params w: the new width of the box
    * @params h: the new height of the box
   */
-  updateImage = (uuid, w, h, newW, newH) => {
+  updateImage = (uuid, w, h) => {
     const initState = this.state.boxes;
     initState[uuid].aspect = w / h; // Store the aspect ratio
-    if (newW / newH === initState[uuid].aspect) {
-      // Check to see if the image has already been resized
-      initState[uuid].state.w = newW;
-      initState[uuid].state.h = newH;
-    } else {
-      initState[uuid].state.w = w;
+
+    if (w > 500) {
+      initState[uuid].state.w = 500;
+      initState[uuid].state.h = initState[uuid].state.w/initState[uuid].aspect;
+    }
+    else if (h > 500) {
+      initState[uuid].state.h = 500;
+      initState[uuid].state.w = initState[uuid].state.h*initState[uuid].aspect;
+    }
+    else {
       initState[uuid].state.h = h;
+      initState[uuid].state.w = initState[uuid].state.h*initState[uuid].aspect;
     }
 
     this.setState({ boxes: initState });
@@ -213,6 +220,7 @@ class Board extends React.Component {
         renderX: this.state.boxes[curKey].state.x + this.state.windowX,
         renderY: this.state.boxes[curKey].state.y + this.state.windowY,
         callback: this.updateBoardState,
+        isUpload: this.state.boxes[curKey].isUpload,
       };
       const stateProps = Object.assign(
         {},

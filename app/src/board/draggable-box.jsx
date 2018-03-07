@@ -13,6 +13,7 @@ class DraggableBox extends React.Component {
       mouseX: 0,
       mouseY: 0,
       mouseMoved: 'false',
+      tabVisible: 0,
     };
   }
 
@@ -137,6 +138,14 @@ class DraggableBox extends React.Component {
     }
   };
 
+  mouseEnter = () => {
+    this.setState({ tabVisible: 1 })
+  }
+
+  mouseLeave = () => {
+    this.setState({ tabVisible: 0 })
+  }
+
   /*
   Determines whether the mouse is in dragging position.
   @return a bool indicating whether the mouse is in dragging position
@@ -151,9 +160,14 @@ class DraggableBox extends React.Component {
   render() {
     return (
       // eslint-disable-next-line
-      <div onMouseDown={this.mouseDown} className="Box" style={this.getBoxStyle()}>
+      <div
+        onMouseDown={this.mouseDown}
+        onMouseEnter={this.mouseEnter}
+        onMouseLeave={this.mouseLeave}
+        className="Box"
+        style={this.getBoxStyle()}>
         {this.props.children}
-        <div className="pull-tab" />
+        <div className="pull-tab" style={{ zIndex: this.props.z + 2, opacity: this.state.tabVisible }} />
 
       </div>
     );

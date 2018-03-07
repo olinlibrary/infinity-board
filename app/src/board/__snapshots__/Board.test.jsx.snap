@@ -1,0 +1,339 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generates boxes 1`] = `
+<div
+  className="View"
+  onMouseMove={[Function]}
+  onMouseUp={[Function]}
+  style={
+    Object {
+      "cursor": undefined,
+    }
+  }
+>
+  <div>
+    <div
+      className="Box"
+      onMouseDown={[Function]}
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#ffffff",
+          "cursor": "default",
+          "height": "200px",
+          "left": "50px",
+          "padding": "0px",
+          "top": "50px",
+          "visibility": "hidden",
+          "width": "200px",
+          "zIndex": 1,
+        }
+      }
+    >
+      <div
+        className="Box-image"
+        style={
+          Object {
+            "backgroundImage": "url(test)",
+            "opacity": 0,
+            "visibility": "visible",
+          }
+        }
+      >
+        <img
+          alt=""
+          onLoad={[Function]}
+          src="test"
+          style={
+            Object {
+              "visibility": "hidden",
+            }
+          }
+        />
+      </div>
+      <div
+        className="pull-tab"
+        style={
+          Object {
+            "opacity": 0,
+            "zIndex": 3,
+          }
+        }
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      className="Box"
+      onMouseDown={[Function]}
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#ff0000",
+          "cursor": "default",
+          "height": "160px",
+          "left": "50px",
+          "padding": "20px",
+          "top": "50px",
+          "visibility": "visible",
+          "width": "160px",
+          "zIndex": 1,
+        }
+      }
+    >
+      <div
+        className="Text-box unselectable"
+      >
+        
+      </div>
+      <div
+        className="pull-tab"
+        style={
+          Object {
+            "opacity": 0,
+            "zIndex": 3,
+          }
+        }
+      />
+    </div>
+  </div>
+  <div
+    className="View"
+    id="bg"
+    style={
+      Object {
+        "backgroundPosition": "0px 0px",
+      }
+    }
+  />
+  <div
+    className="Wrapper File-drop"
+    style={
+      Object {
+        "visibility": "hidden",
+        "zIndex": -1,
+      }
+    }
+  >
+    <div
+      className="Drop-text"
+    >
+      DROP FILE HERE
+    </div>
+  </div>
+  <div
+    className="Button-wrapper"
+    style={
+      Object {
+        "zIndex": 2,
+      }
+    }
+  >
+    <div
+      className="Box-button"
+    >
+      <button
+        className="Box-button home"
+        onClick={[Function]}
+      >
+        HOME
+      </button>
+    </div>
+    <div
+      className="Box-button"
+      style={
+        Object {
+          "zIndex": 2,
+        }
+      }
+    >
+      <button
+        className="Box-button text"
+        data-type="text"
+        onClick={[Function]}
+      >
+        TEXT
+      </button>
+    </div>
+    <div
+      className="Box-button"
+      style={
+        Object {
+          "zIndex": 2,
+        }
+      }
+    >
+      <button
+        className="Box-button image"
+        data-type="image"
+        onClick={[Function]}
+      >
+        IMAGE
+      </button>
+      <input
+        accept="image/*"
+        onChange={[Function]}
+        style={
+          Object {
+            "display": "none",
+          }
+        }
+        type="file"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders correctly 1`] = `
+<div
+  className="View"
+  onMouseMove={[Function]}
+  onMouseUp={[Function]}
+  style={
+    Object {
+      "cursor": undefined,
+    }
+  }
+>
+  <div>
+    <div
+      className="Box"
+      onMouseDown={[Function]}
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#ffffff",
+          "cursor": "default",
+          "height": "200px",
+          "left": "50px",
+          "padding": "0px",
+          "top": "50px",
+          "visibility": "hidden",
+          "width": "200px",
+          "zIndex": 1,
+        }
+      }
+    >
+      <div
+        className="Box-image"
+        style={
+          Object {
+            "backgroundImage": "url(test)",
+            "opacity": 0,
+            "visibility": "visible",
+          }
+        }
+      >
+        <img
+          alt=""
+          onLoad={[Function]}
+          src="test"
+          style={
+            Object {
+              "visibility": "hidden",
+            }
+          }
+        />
+      </div>
+      <div
+        className="pull-tab"
+        style={
+          Object {
+            "opacity": 0,
+            "zIndex": 3,
+          }
+        }
+      />
+    </div>
+  </div>
+  <div
+    className="View"
+    id="bg"
+    style={
+      Object {
+        "backgroundPosition": "0px 0px",
+      }
+    }
+  />
+  <div
+    className="Wrapper File-drop"
+    style={
+      Object {
+        "visibility": "hidden",
+        "zIndex": -1,
+      }
+    }
+  >
+    <div
+      className="Drop-text"
+    >
+      DROP FILE HERE
+    </div>
+  </div>
+  <div
+    className="Button-wrapper"
+    style={
+      Object {
+        "zIndex": 2,
+      }
+    }
+  >
+    <div
+      className="Box-button"
+    >
+      <button
+        className="Box-button home"
+        onClick={[Function]}
+      >
+        HOME
+      </button>
+    </div>
+    <div
+      className="Box-button"
+      style={
+        Object {
+          "zIndex": 2,
+        }
+      }
+    >
+      <button
+        className="Box-button text"
+        data-type="text"
+        onClick={[Function]}
+      >
+        TEXT
+      </button>
+    </div>
+    <div
+      className="Box-button"
+      style={
+        Object {
+          "zIndex": 2,
+        }
+      }
+    >
+      <button
+        className="Box-button image"
+        data-type="image"
+        onClick={[Function]}
+      >
+        IMAGE
+      </button>
+      <input
+        accept="image/*"
+        onChange={[Function]}
+        style={
+          Object {
+            "display": "none",
+          }
+        }
+        type="file"
+      />
+    </div>
+  </div>
+</div>
+`;

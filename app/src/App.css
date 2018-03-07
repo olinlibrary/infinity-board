@@ -242,6 +242,7 @@ body,
   right: 5px;
   bottom: 5px;
   background-color: transparent;
-  border-right: 4px solid #ffffff;
-  border-bottom: 4px solid #ffffff;
+  border-right: 4px solid #dddddd;
+  border-bottom: 4px solid #dddddd;
+  visibility: visible;
 }
