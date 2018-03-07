@@ -32,7 +32,7 @@ class App extends React.Component {
   };
 
   render() {
-    const boardObjects = Object.keys(this.state.boards).map((key) => { return this.state.boards[key]; });
+    const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
     const content = this.state.currentBoardData
       ? <Board data={this.state.currentBoardData} />
       : (

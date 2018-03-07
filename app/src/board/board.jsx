@@ -83,7 +83,7 @@ class Board extends React.Component {
 
   /**
    * Increments the highest z-index for the board.
-   * @return zIndex, the current board z-index
+   * @return {number} zIndex: the current board z-index
   */
   updateZ = () => {
     this.setState({

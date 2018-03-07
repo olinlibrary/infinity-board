@@ -25,10 +25,14 @@ export default class Board {
   }
 
   applyElementUpdate(data) {
-    if(this.data.elements[data.uuid] == undefined) {
-      this.data.elements[data.uuid] = {state:data.state};
-    }else {
-      Object.assign(this.data.elements[data.uuid].state,data.state);
+    if (!Object.hasOwnProperty.call(this.data.elements, data.uuid)) {
+      this.data.elements[data.uuid] = {
+        state: data.state,
+        type: data.type,
+      };
+    } else {
+      Object.assign(this.data.elements[data.uuid].state, data.state);
+      this.data.elements[data.uuid].type = data.type;
     }
   }
 }
