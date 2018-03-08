@@ -5,6 +5,10 @@ import PropTypes from 'prop-types';
  * A board component to allow editing the content of a text board element.
  */
 class TextField extends React.Component {
+  /**
+   * Called on a change in the text value.
+   * @param e - the event associated with the input change
+  */
   onInput = (e) => {
     e.preventDefault();
     this.props.editCallback(this.props.uid, e.target.value);
@@ -22,6 +26,7 @@ class TextField extends React.Component {
         style={{ cursor: 'text', resize: 'none' }}
       />);
     }
+    // Render a div to make text unselectable (CSS properties weren't working on all browsers)
     return (<div className="Text-box unselectable">{this.props.value}</div>);
   }
 }

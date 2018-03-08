@@ -2,11 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class BoardList extends React.Component {
-
   render() {
     const boards = [];
     this.props.boards.forEach((board) => {
-      boards.push(<div className="board-li" onClick={() => this.props.boardSelected(board._id)} key={board._id}>{board.name}</div>);
+      /* eslint-disable */
+      boards.push(<div
+        className="board-li"
+        onClick={ () => this.props.boardSelected(board._id) }
+        key={ board._id }>
+        { board.name }
+      </div>);
+      /* eslint-enable */
     });
     return (
       <div className="board-list-container">

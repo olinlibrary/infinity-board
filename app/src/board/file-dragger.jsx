@@ -76,5 +76,5 @@ export default class FileDragger extends React.Component {
 
 FileDragger.propTypes = {
   generateBox: PropTypes.func.isRequired,
-  // eslint-disable-next-line
+  inputFile: PropTypes.func.isRequired,
 };

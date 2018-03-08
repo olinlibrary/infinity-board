@@ -83,3 +83,10 @@ In a separate terminal, simply run the following to launch the web app:
 ```bash
 yarn run start
 ```
+
+# Tests
+
+To run the Jest tests, run:
+```bash
+yarn run test
+```

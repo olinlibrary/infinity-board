@@ -37,13 +37,13 @@ class Board extends React.Component {
   }
 
   /**
-   * Called once an upload to AWS S3 has finished.
-   * @param e the result from the server?
-   */
+   * On finishing upload of an image, create a box containing that image
+   * @param e - the upload finish event
+  */
   onUploadFinish = (e) => {
     // eslint-disable-next-line
-    const imgUrl = window.SERVER_URI + e.publicUrl; // TODO make this actually point to correct URL
-    this.generateBox('image', imgUrl);
+    const imgUrl = window.SERVER_URI + e.publicUrl;
+    this.generateBox('image', imgUrl, true);
   };
 
   /**
@@ -83,6 +83,7 @@ class Board extends React.Component {
     this.io.sendUpdateMessage({
       // eslint-disable-next-line
       zIndex: this.state.zIndex,
+      // eslint-disable-next-line no-underscore-dangle
       boardId: this.props.data._id,
       uuid: uuidVal,
       state: updatedState,
@@ -116,7 +117,7 @@ class Board extends React.Component {
   handleButtonClick = (e) => {
     const boxType = e.target.dataset.type; // Get the type of box we're making
     if (boxType === 'image') {
-      this.input.click();
+      this.input.click(); // Manually bring up file dialog
     } else {
       this.generateBox(boxType);
     }
@@ -144,8 +145,7 @@ class Board extends React.Component {
    * Updates the board state to allow window movement on mouse press.
   */
   mouseDown = (e) => {
-    console.log(e.button)
-    if (e.button === 1) {
+    if (e.button === 1) { // Only drag on middle mouse
       this.setState({
         dragging: true,
         prevX: e.clientX,
@@ -165,9 +165,9 @@ class Board extends React.Component {
 
   /**
    * Generates a box based on a button click event.
-   * @params boxType: the type of box to generate.
+   * @param boxType: the type of box to generate.
   */
-  generateBox = (boxType, sourceURL) => {
+  generateBox = (boxType, sourceURL, isUpload) => {
     const uuid = uuidv4(); // Gen unique UUID
     const initState = this.state.boxes;
     const stateObject = {
@@ -184,27 +184,34 @@ class Board extends React.Component {
       type: boxType,
       state: stateObject,
     };
+
+    if (isUpload) { // Set the prop for this box so it resizes on load
+      initState[uuid] = Object.assign({}, initState[uuid], { isUpload: true });
+    }
     this.setState({ boxes: initState });
-    this.updateBoardState(uuid, stateObject); // TODO Refactor so that this isn't necessary
+    this.updateBoardState(uuid, stateObject);
   };
 
 
   /**
    * Called on ImageBox load to resize image correctly
-   * @params uuid: the UUID of the box
-   * @params w: the new width of the box
-   * @params h: the new height of the box
+   * @param uuid: the UUID of the box
+   * @param w: the new width of the box
+   * @param h: the new height of the box
   */
-  updateImage = (uuid, w, h, newW, newH) => {
+  updateImage = (uuid, w, h) => {
     const initState = this.state.boxes;
-    initState[uuid].aspect = w / h; // Store the aspect ratio
-    if (newW / newH === initState[uuid].aspect) {
-      // Check to see if the image has already been resized
-      initState[uuid].state.w = newW;
-      initState[uuid].state.h = newH;
+    initState[uuid].aspect = w / h; // Track the aspect ratio
+
+    if (w > 500) { // Bound the initial render size to 500x500 to avoid huge images
+      initState[uuid].state.w = 500;
+      initState[uuid].state.h = initState[uuid].state.w / initState[uuid].aspect;
+    } else if (h > 500) {
+      initState[uuid].state.h = 500;
+      initState[uuid].state.w = initState[uuid].state.h * initState[uuid].aspect;
     } else {
-      initState[uuid].state.w = w;
-      initState[uuid].state.h = h;
+      initState[uuid].state.h = h; // Otherwise, set based on aspect ratio
+      initState[uuid].state.w = initState[uuid].state.h * initState[uuid].aspect;
     }
 
     this.setState({ boxes: initState });
@@ -222,6 +229,7 @@ class Board extends React.Component {
         renderX: this.state.boxes[curKey].state.x + this.state.windowX,
         renderY: this.state.boxes[curKey].state.y + this.state.windowY,
         callback: this.updateBoardState,
+        isUpload: this.state.boxes[curKey].isUpload,
       };
       const stateProps = Object.assign(
         {},
@@ -229,12 +237,10 @@ class Board extends React.Component {
         this.state.boxes[curKey].state,
       ); // Add in state props
 
-
+      // If there is an aspect ratio, add that to the box state as well
       if (typeof this.state.boxes[curKey].aspect !== 'undefined') {
         stateProps.aspect = this.state.boxes[curKey].aspect;
       }
-
-
       if (this.state.boxes[curKey].type === 'text') {
         boxes.push(<TextBox editCallback={this.updateText} {...stateProps} />);
       } else if (this.state.boxes[curKey].type === 'image') {
@@ -246,7 +252,7 @@ class Board extends React.Component {
     }
     const buttonStyle = { zIndex: this.state.zIndex + 1 };
 
-    const bgStyle = {
+    const bgStyle = { // Set the position for the grid background
       // eslint-disable-next-line
       backgroundPosition: String(this.state.windowX % 50) + 'px ' +  String(this.state.windowY % 50) + 'px',
     };
@@ -272,7 +278,6 @@ class Board extends React.Component {
             <button className="Box-button image" data-type="image" onClick={this.handleButtonClick} >IMAGE</button>
 
             <ReactS3Uploader
-              // identityPoolId={window.AWS_IDENTITY_POOL_ID}
               signingUrl="/s3/sign"
               signingUrlMethod="GET"
               accept="image/*"

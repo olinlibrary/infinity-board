@@ -16,6 +16,7 @@ class DraggableBox extends React.Component {
       mouseX: 0,
       mouseY: 0,
       mouseMoved: 'false',
+      tabVisible: 0,
     };
   }
 
@@ -25,9 +26,9 @@ class DraggableBox extends React.Component {
     document.addEventListener('mouseup', this.mouseUp);
   }
 
-  /*
-  Gives the CSS styling for the given box.
-  @return boxStyle - the JS object containing the correct styling for the box.
+  /**
+    Gives the CSS styling for the given box.
+    @return boxStyle - the JS object containing the correct styling for the box.
   */
   getBoxStyle = () => {
     const boxStyle = {
@@ -44,12 +45,12 @@ class DraggableBox extends React.Component {
     return boxStyle;
   };
 
-  /*
-  Handles the resizing of the given box.
-  @param mouseVal: the position value (x or y) for the mouse
-  @param elemVal: the position value for the element
-  @param min: the minimum width or height of the box
-  @return the resulting width or height value
+  /**
+    Handles the resizing of the given box.
+    @param mouseVal: the position value (x or y) for the mouse
+    @param elemVal: the position value for the element
+    @param min: the minimum width or height of the box
+    @return the resulting width or height value
   */
   getResize = (mouseVal, elemVal, min) => {
     const newSize = mouseVal - elemVal;
@@ -59,9 +60,9 @@ class DraggableBox extends React.Component {
     return min;
   };
 
-  /*
-  Returns the correct cursor given the state of the box.
-  @return the css property name for the cursor
+  /**
+    Returns the correct cursor given the state of the box.
+    @return the css property name for the cursor
   */
   getCursor = () => {
     if (this.state.draggable) {
@@ -72,13 +73,12 @@ class DraggableBox extends React.Component {
     return 'default';
   };
 
-  /*
+  /**
   Handles mouse movement events. Updates the size or position of the box based on
   whether we're resizing or dragging.
   */
   mouseMove = (e) => {
     e.preventDefault();
-    // Fix this, the box should be less state-y
     this.setState({
       mouseX: e.clientX,
       mouseY: e.clientY,
@@ -140,7 +140,15 @@ class DraggableBox extends React.Component {
     }
   };
 
-  /*
+  mouseEnter = () => {
+    this.setState({ tabVisible: 1 }); // Update resize handle visibility
+  }
+
+  mouseLeave = () => {
+    this.setState({ tabVisible: 0 });
+  }
+
+  /**
   Determines whether the mouse is in dragging position.
   @return a bool indicating whether the mouse is in dragging position
   */
@@ -154,9 +162,15 @@ class DraggableBox extends React.Component {
   render() {
     return (
       // eslint-disable-next-line
-      <div onMouseDown={this.mouseDown} className="Box" style={this.getBoxStyle()}>
+      <div
+        onMouseDown={this.mouseDown}
+        onMouseEnter={this.mouseEnter}
+        onMouseLeave={this.mouseLeave}
+        className="Box"
+        style={this.getBoxStyle()}
+      >
         {this.props.children}
-        <div className="pull-tab" />
+        <div className="pull-tab" style={{ zIndex: this.props.z + 2, opacity: this.state.tabVisible }} />
 
       </div>
     );
