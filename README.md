@@ -7,8 +7,10 @@ you'll never run out of collaborative and creative space.
 
 # Documentation
 
-  * [Frontend React app](docs/app.html)
-  * [Backend server](docs/server.html)
+  * [Frontend React app](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/app.html)
+  * [Backend server](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/server.html)
+
+![](UMLDiagram.png)
 
 # Running InfinityBoard locally
 
