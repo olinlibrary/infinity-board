@@ -17,6 +17,7 @@ export default `
 <div id="root"></div>
 <script type="text/javascript">
     window.SERVER_URI = '${SERVER_URI}';
+    window.AWS_IDENTITY_POOL_ID = '${process.env.AWS_IDENTITY_POOL_ID}';
 </script>
 <script src="bundle.js" type="text/javascript"></script>
 </body>

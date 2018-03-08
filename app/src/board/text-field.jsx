@@ -1,17 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// eslint-disable-next-line
+/**
+ * A board component to allow editing the content of a text board element.
+ */
 class TextField extends React.Component {
-
-  /*
-
-  */
   onInput = (e) => {
     e.preventDefault();
     this.props.editCallback(this.props.uid, e.target.value);
   };
-
 
   render() {
     if (this.props.edit) {

@@ -6,7 +6,14 @@ import S3Router from 'react-s3-uploader/s3router';
 import expose from './expose';
 import indexHTML from '../index.html.mjs';
 
+/**
+ * An HTTP server using Express.
+ */
 export default class HttpServer {
+  /**
+   * Starts a new Exxpress HTTP server.
+   * @param {number} port - the port to listen for requests on
+   */
   constructor(port) {
     // Current hack with Node and experimental modules
     // eslint-disable-next-line no-underscore-dangle
@@ -57,10 +64,18 @@ export default class HttpServer {
     }));
   }
 
+  /**
+   * Gets a reference to the actual HTTP server object.
+   * @return {http.Server} the server
+   */
   getHTTPServer() {
     return this.server;
   }
 
+  /**
+   * Gets a reference to the Express app object.
+   * @return {express} the Express app
+   */
   getExpressApp() {
     return this.app;
   }

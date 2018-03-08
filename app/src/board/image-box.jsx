@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DraggableBox from './draggable-box';
 
+/**
+ * A board element for displaying images.
+ */
 export default class ImageBox extends React.Component {
   constructor(props) {
     super(props);
@@ -13,9 +16,9 @@ export default class ImageBox extends React.Component {
     this.onImgLoad = this.onImgLoad.bind(this);
   }
 
-  /*
-    Update our state in the board to reflect the height of the image
-  */
+  /**
+   * Update our state in the board to reflect the height of the image
+   */
   onImgLoad({ target: img }) { //
     this.props.imgCallback(
       this.props.uid,
