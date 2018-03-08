@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 class TextField extends React.Component {
 
   /*
-
+    Called on a change in the text value.
   */
   onInput = (e) => {
     e.preventDefault();
@@ -25,6 +25,7 @@ class TextField extends React.Component {
         style={{ cursor: 'text', resize: 'none' }}
       />);
     }
+    // Render a div to make text unselectable (CSS properties weren't working on all browsers)
     return (<div className="Text-box unselectable">{this.props.value}</div>);
   }
 }

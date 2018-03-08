@@ -13,3 +13,10 @@ yarn run server
 ```bash
 yarn run start
 ```
+
+# Tests
+
+To run the Jest tests, run:
+```bash
+yarn run test
+```

@@ -31,9 +31,9 @@ export default class FileDragger extends React.Component {
     this.props.inputFile();
   };
 
-  /*
+  /**
   Makes the drag over div visible.
-  @params e: the file drag event.
+  @param e: the file drag event.
   */
   dragOverHandler = (e) => {
     e.preventDefault();
@@ -46,9 +46,9 @@ export default class FileDragger extends React.Component {
     });
   };
 
-  /*
+  /**
   Makes the drag over div invisible.
-  @params e: the file drag leave event.
+  @param e: the file drag leave event.
   */
   dragLeaveHandler = (e) => {
     e.preventDefault();
