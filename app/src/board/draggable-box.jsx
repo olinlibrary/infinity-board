@@ -44,6 +44,7 @@ class DraggableBox extends React.Component {
       padding: `${this.props.padding}px`,
       zIndex: this.props.z,
       opacity: this.props.opacity,
+      visibility: this.props.visibility,
     };
     return boxStyle;
   };
@@ -171,7 +172,6 @@ class DraggableBox extends React.Component {
   };
 
   render() {
-    console.log(this.props.opacity)
     return (
       // eslint-disable-next-line
       <div
@@ -216,6 +216,7 @@ DraggableBox.propTypes = {
   opacity: PropTypes.number,
   textCallback: PropTypes.func,
   clickCallback: PropTypes.func,
+  visibility: PropTypes.string,
 };
 
 DraggableBox.defaultProps = {
@@ -233,6 +234,7 @@ DraggableBox.defaultProps = {
   color: '#ff0000',
   aspect: 0,
   opacity: 1,
+  visibility: 'visible',
   textCallback: () => {},
   clickCallback: () => {},
   z: 1,

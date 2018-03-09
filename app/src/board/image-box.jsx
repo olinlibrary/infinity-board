@@ -42,7 +42,7 @@ export default class ImageBox extends React.Component {
           textCallback={this.textFunc}
           defaultWidth={this.state.width}
           defaultHeight={this.state.height}
-          opacity={0}
+          visibility={'hidden'}
           {...other}
         >
           {loaded ? (
