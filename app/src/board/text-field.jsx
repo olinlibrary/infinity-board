@@ -9,7 +9,7 @@ class TextField extends React.Component {
   */
   onInput = (e) => {
     e.preventDefault();
-    this.props.editCallback(this.props.uid, e.target.value);
+    this.props.editCallback(this.props.uuid, e.target.value);
   };
 
 
@@ -37,7 +37,7 @@ TextField.defaultProps = {
 TextField.propTypes = {
   blurFunc: PropTypes.func.isRequired,
   edit: PropTypes.bool,
-  uid: PropTypes.string.isRequired,
+  uuid: PropTypes.string.isRequired,
   editCallback: PropTypes.func.isRequired,
   value: PropTypes.string.isRequired,
 };

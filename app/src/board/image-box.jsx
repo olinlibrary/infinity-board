@@ -8,7 +8,7 @@ export default class ImageBox extends React.Component {
     this.state = {
       width: 0,
       height: 0,
-      opacity: 0,
+      isLoaded: false,
     };
     this.onImgLoad = this.onImgLoad.bind(this);
   }
@@ -17,25 +17,24 @@ export default class ImageBox extends React.Component {
     Update our state in the board to reflect the height of the image
   */
   onImgLoad({ target: img }) { //
-    if (this.props.isUpload) {
-      this.props.imgCallback(
-        this.props.uid,
-        img.offsetWidth,
-        img.offsetHeight,
-        this.props.w,
-        this.props.h,
-      );
-    }
-    this.setState({ opacity: 1 });
+    this.props.imgCallback(
+      this.props.uuid,
+      img.offsetWidth,
+      img.offsetHeight,
+      this.props.isUpload,
+    );
+    console.log("Image loaded.")
+    this.setState({ isLoaded: true })
   }
 
   render() {
     const { src, imgCallback, ...other } = this.props; // Get the image src
     const imgStyle = {
       backgroundImage: `url(${src})`,
-      opacity: this.state.opacity,
+      opacity: this.props.opacity,
       visibility: 'visible',
     };
+    const loaded = this.state.isLoaded;
     return (
       <div>
         <DraggableBox
@@ -43,28 +42,32 @@ export default class ImageBox extends React.Component {
           textCallback={this.textFunc}
           defaultWidth={this.state.width}
           defaultHeight={this.state.height}
-          style={{ visibility: 'hidden' }}
+          opacity={0}
           {...other}
         >
-          <div className="Box-image" style={imgStyle}>
-            <img src={src} onLoad={this.onImgLoad} style={{ visibility: 'hidden' }} alt="" />
-          </div>
+          {loaded ? (
+            <div className="Box-image" style={imgStyle} />) : (
+              <div className="loader" style={{ visibility: 'visible' }} >
+                <img src={src} onLoad={this.onImgLoad} style={{ visibility: 'hidden' }} alt="" />
+              </div>
+            )}
         </DraggableBox>
-      </div>
-    );
+      </div>);
   }
 }
 
 ImageBox.propTypes = {
   src: PropTypes.string.isRequired,
   imgCallback: PropTypes.func,
-  uid: PropTypes.string.isRequired,
+  uuid: PropTypes.string.isRequired,
   w: PropTypes.number.isRequired,
   h: PropTypes.number.isRequired,
   isUpload: PropTypes.bool,
+  opacity: PropTypes.number,
 };
 
 ImageBox.defaultProps = {
+  opacity: 1,
   imgCallback: () => {},
   isUpload: false,
 };
