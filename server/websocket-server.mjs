@@ -1,5 +1,9 @@
 import SocketIO from 'socket.io';
 
+/**
+ * A WebSockets server for keeping bidirectional data channels open for real-time communication.
+ * All communication between the client app and server is done using WebSockets.
+ */
 export default class WebSocketServer {
   constructor() {
     this.io = null;
@@ -14,6 +18,10 @@ export default class WebSocketServer {
     this.registerMessageHandler = this.registerMessageHandler.bind(this);
   }
 
+  /**
+   * Starts the WebSockets server.
+   * @param httpServer - the Express HTTP server to use
+   */
   start(httpServer) {
     this.io = new SocketIO(httpServer);
     console.log('WebSocket server started successfully.');
@@ -46,14 +54,26 @@ export default class WebSocketServer {
     this.io.emit('boardListUpdate', boardList);
   }
 
+  /**
+   * Sends a message to all of the connected clients (excluding the original emitter of the update)
+   * with information about the new or modified board element.
+   * @param boardElement - the board element that was added or changed
+   * @param originatingSocket - the WebSocket connection to the client that emitted the update
+   */
   broadcastBoardUpdate(boardElement, originatingSocket) {
     // this.io.emit('boardUpdate', boardElement);
     originatingSocket.broadcast.emit('boardUpdate', boardElement); // Only sends the updated state to the client who didn't send.
     // TODO Support having multiple boards open
   }
 
-  registerMessageHandler(msgName, callback) {
-    this.messageHandlers[msgName] = callback;
+  /**
+   * Use this to register a callback function for a WebSockets event.
+   * @param {string} eventName - the name of the WebSockets event to listen for
+   * @param {function} callback - the function to call when the event has occurred. The event
+   * payload and the emitting socket will be passed as arguments (in that order).
+   */
+  registerMessageHandler(eventName, callback) {
+    this.messageHandlers[eventName] = callback;
   }
 
   onClientDisconnect(socket) {

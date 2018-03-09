@@ -1,8 +1,15 @@
-import Board from './board.mjs';
 import DatabaseConnection from './database.mjs';
 import WebSocketServer from './websocket-server.mjs';
 
+/**
+ * The BoardManager keeps track of the states of all the boards. It is also responsible for
+ * dispatching updates to the database and handling any updates received from clients.
+ */
 export default class BoardManager {
+  /**
+   * Instantiates a new BoardManager.
+   * @param httpServer - the Express HTTP server to use for receiving client connections.
+   */
   constructor(httpServer) {
     this.boards = {};
     this.boardListUpdateEventHandlers = [];
@@ -37,12 +44,10 @@ export default class BoardManager {
    */
   createBoard(msg, socket) {
     return new Promise((resolve, reject) => {
-      this.dbConn.createBoard(msg.name).then((boardDbObj) => {
-        // Instantiate a Board object
-        const board = new Board(boardDbObj);
-
+      this.dbConn.createBoard(msg.name).then((board) => {
         // Save the board to our list of open boards
-        this.boards[board.getName()] = board;
+        // eslint-disable-next-line no-underscore-dangle
+        this.boards[board._id] = board;
 
         // Register this board with the WebSockets server
         // (or anything else that wants to be notified of board creation)
@@ -52,7 +57,7 @@ export default class BoardManager {
         this.wsServer.broadcastBoardListUpdate(this.getBoardList());
         // Send a creation confirmation message to the primary client
         // (should trigger displaying/opening board)
-        socket.emit('boardCreated', board.serialize());
+        socket.emit('boardCreated', board);
 
         resolve(board);
       }, (err) => {
@@ -63,29 +68,49 @@ export default class BoardManager {
 
   /**
    * Called when a boardUpdate message is received from one of the WebSocket clients.
-   * @param {object} msg - the message from the client
+   * @param {object} element - the updated board element from the client
    * @param socket - the socket.io connection
    */
-  receivedBoardUpdate(msg, socket) {
+  receivedBoardUpdate(element, socket) {
     const boards = this.getBoardList();
-    const board = new Board(boards[msg.boardId]);
-    board.applyElementUpdate(msg);
-    this.dbConn.saveBoard(board.data);
+    const boardData = boards[element.boardId];
+    boardData.elements[element.uuid] = {
+      state: element.state,
+      type: element.type,
+    };
+    console.log(element.state)
+    // Save the board to the database
+    this.dbConn.saveBoard(boardData);
 
-    this.wsServer.broadcastBoardUpdate(msg, socket);
+    // Broadcast the update to the other connected clients
+    this.wsServer.broadcastBoardUpdate(element, socket);
   }
 
+  /**
+   * Called when a client requests a list of all the boards.
+   * @param data - the WebSockets message payload (should be null)
+   * @param socket - the WebSockets connection to the client requesting the list
+   * @private
+   */
   handleBoardListRequest(data, socket) {
     const boards = this.getBoardList();
     socket.emit('boardListUpdate', boards);
   }
 
+  /**
+   * Updates the list of boards by querying the MongoDB database.
+   * @private
+   */
   fetchBoardsFromDb() {
     this.dbConn.listBoards().then((boards) => {
       this.boards = boards;
     });
   }
 
+  /**
+   * Gets the list of boards.
+   * @return {{object}} the list of boards
+   */
   getBoardList() {
     const map = {};
     this.boards.forEach((board) => {
@@ -95,6 +120,11 @@ export default class BoardManager {
     return map;
   }
 
+  /**
+   * Gets all the data associated with a board, including its elements.
+   * @param {string} boardId - the UUID of the board to look up
+   * @param socket - the WebSockets connection to the client requesting the data
+   */
   getBoardData(boardId, socket) {
     this.dbConn.getBoard(null, boardId).then((board) => {
       socket.emit('boardData', board);

@@ -3,19 +3,22 @@ import React from 'react';
 import DraggableBox from './draggable-box';
 import TextField from './text-field';
 
+/**
+ * A board component for displaying editable text.
+ */
 export default class TextBox extends React.Component {
   constructor(props) {
     super(props);
     this.state = { editing: false };
   }
 
-  /*
-  Handles click events by changing the editing state.
-  */
+  /**
+   * Handles click events by changing the editing state.
+   */
   onClick = () => {
     const editingState = !this.state.editing;
     this.setState({ editing: editingState });
-  }
+  };
 
   render() {
     const {

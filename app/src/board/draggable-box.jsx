@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+/**
+ * A container component for draggable board elements.
+ */
 class DraggableBox extends React.Component {
   constructor(props) {
     super(props);

@@ -9,6 +9,9 @@ import TextBox from './text-box';
 import ImageBox from './image-box';
 import FileDragger from './file-dragger';
 
+/**
+ * The component responsible for drawing all elements of the board.
+ */
 class Board extends React.Component {
   constructor(props) {
     super(props);
@@ -27,6 +30,9 @@ class Board extends React.Component {
     };
   }
 
+  /**
+   * Called once the component has rendered on the screen.
+   */
   componentDidMount() {
     // We have to add document listeners so it will update pos even when
     document.addEventListener('mousedown', this.mouseDown);

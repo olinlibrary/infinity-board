@@ -1,12 +1,13 @@
 /* eslint-disable no-underscore-dangle */
-// This file is responsible for connecting to and interacting with the MongoDB database.
-
 import MongoClient from 'mongodb';
 import Names from './names.mjs';
 
 // eslint-disable-next-line prefer-destructuring
 const ObjectId = MongoClient.connect.ObjectId;
 
+/**
+ * This class is responsible for connecting to and interacting with a MongoDB database.
+ */
 export default class DatabaseConnection {
   /**
    * Instantiates an object for communicating with a MongoDB database. Call connect() to

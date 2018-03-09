@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+/**
+ * Ostensibly enables drag-and-drop file uploads.
+ */
 export default class FileDragger extends React.Component {
   constructor(props) {
     super(props);
@@ -19,10 +22,10 @@ export default class FileDragger extends React.Component {
   }
 
 
-  /*
-  Generates a box based on a browser file drop event.
-  @params e: the file drop event.
-  */
+  /**
+   * Generates a box based on a browser file drop event.
+   * @params e: the file drop event.
+   */
   handleFileDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -32,9 +35,9 @@ export default class FileDragger extends React.Component {
   };
 
   /**
-  Makes the drag over div visible.
-  @param e: the file drag event.
-  */
+   * Makes the drag over div visible.
+   * @params e: the file drag event.
+   */
   dragOverHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -47,9 +50,9 @@ export default class FileDragger extends React.Component {
   };
 
   /**
-  Makes the drag over div invisible.
-  @param e: the file drag leave event.
-  */
+   * Makes the drag over div invisible.
+   * @params e: the file drag leave event.
+   */
   dragLeaveHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -74,5 +77,4 @@ export default class FileDragger extends React.Component {
 FileDragger.propTypes = {
   generateBox: PropTypes.func.isRequired,
   inputFile: PropTypes.func.isRequired,
-  // eslint-disable-next-line
 };

@@ -5,6 +5,10 @@ import './App.css';
 import BoardList from './board-list';
 import ServerComm from './server-comm';
 
+/**
+ * The main React container for the app. It holds the state and passes it down
+ * as props to its child components.
+ */
 class App extends React.Component {
   constructor() {
     super();
