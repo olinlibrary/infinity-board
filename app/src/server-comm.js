@@ -71,6 +71,10 @@ export default class ServerComm {
     this.receivedBoardListMessageHandler = callback;
   };
 
+  setReceivedBoardDataMessageHandler = (callback) => {
+    this.boardUpdateMessageHandler = callback;
+  };
+
   /**
    * Broadcasts a board change/update event to the server.
    * @param data - the data to change (e.g. modified board elements)
