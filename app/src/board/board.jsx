@@ -258,7 +258,7 @@ class Board extends React.Component {
       };
 
       if (this.state.onDelete && curKey === this.state.curDragging) {
-        propsIn.opacity = .6;
+        propsIn.opacity = 0.6;
       }
 
       const stateProps = Object.assign(
