@@ -175,33 +175,6 @@ body,
 }
 
 
-.Box-button button::before {
-  display: none;
- }
-
- .home::before {
-   pointer-events: none;
-   width: 100%;
-   height: 100%;
-   font-family: "Font Awesome 5 Solid";
-   content: "\f015";
- }
-
- .text::before {
-   font-family: "Font Awesome 5 Solid";
-   content: "\f031";
- }
-
- .image::before {
-   font-family: "Font Awesome 5 Solid";
-   content: "\f03e";
- }
-
- .trash::before {
-   font-family: "Font Awesome 5 Solid";
-   content: "\f2ed";
- }
-
 
 .Box-button button:hover {
   background-color: #999999;

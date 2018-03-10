@@ -135,8 +135,7 @@ class Board extends React.Component {
   /**
   * Handles the clicking of the box generation buttons.
   */
-  handleButtonClick = (e) => {
-    const boxType = e.target.dataset.type; // Get the type of box we're making
+  handleButtonClick = (boxType) => {
     if (boxType === 'image') {
       this.input.click(); // Manually bring up file dialog
     } else {
@@ -259,7 +258,7 @@ class Board extends React.Component {
       };
 
       if (this.state.onDelete && curKey === this.state.curDragging) {
-        propsIn.opacity = .6;
+        propsIn.opacity = 0.6;
       }
 
       const stateProps = Object.assign(
@@ -302,13 +301,19 @@ class Board extends React.Component {
         <FileDragger generateBox={this.generateBox} inputFile={this.inputFile} />
         <div className="Button-wrapper" style={buttonStyle}>
           <div className="Box-button">
-            <button className="Box-button home" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }} />
+            <button className="Box-button" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }}>
+              <i className="fa fa-home" />
+            </button>
           </div>
           <div className="Box-button" style={buttonStyle}>
-            <button className="Box-button text" data-type="text" onClick={this.handleButtonClick} />
+            <button className="Box-button text" onClick={() => this.handleButtonClick('text')} >
+              <i className="fa fa-font" data-type="text" />
+            </button>
           </div>
           <div className="Box-button" style={buttonStyle}>
-            <button className="Box-button image" data-type="image" onClick={this.handleButtonClick} />
+            <button className="Box-button image" onClick={() => this.handleButtonClick('image')} >
+              <i className="fa fa-image" />
+            </button>
 
             <ReactS3Uploader
               signingUrl="/s3/sign"
@@ -327,7 +332,9 @@ class Board extends React.Component {
               className="Box-button trash"
               onMouseEnter={() => this.setState({ onDelete: true })}
               onMouseLeave={() => this.setState({ onDelete: false })}
-            />
+            >
+              <i className="fa fa-trash" />
+            </button>
           </div>
         </div>
       </div>

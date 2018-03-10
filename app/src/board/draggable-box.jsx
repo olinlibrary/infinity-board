@@ -92,14 +92,22 @@ class DraggableBox extends React.Component {
       mouseMoved: true,
     });
     const id = this.props.uuid; // Get the Uuuid of the current board
+    let width = 0;
+    let heightVal = 0;
     if (this.state.resizing) {
-      const width = this.getResize(e.clientX, this.props.renderX, this.props.minX); // Get new width
-      let heightVal = 0;
-      if (this.props.aspect !== 0) { // If the box has a defined aspect ratio, keep it to that ratio
-        heightVal = width / this.props.aspect;
+      if (this.props.aspect !== 0) {
+        if (this.props.aspect < 1) {
+          width = this.getResize(e.clientX, this.props.renderX, this.props.minX);
+          heightVal = width / this.props.aspect;
+        } else {
+          heightVal = this.getResize(e.clientY, this.props.renderY, this.props.minY);
+          width = heightVal * this.props.aspect;
+        }
       } else {
+        width = this.getResize(e.clientX, this.props.renderX, this.props.minX);
         heightVal = this.getResize(e.clientY, this.props.renderY, this.props.minY);
       }
+
 
       this.props.callback(id, {
         w: width,
