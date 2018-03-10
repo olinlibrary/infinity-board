@@ -266,3 +266,10 @@ body,
     transform: rotate(360deg);
   }
 }
+
+.Client-box {
+  border-radius: 5px;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+}

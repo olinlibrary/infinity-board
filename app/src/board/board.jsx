@@ -19,6 +19,8 @@ class Board extends React.Component {
     this.io.setReceivedUpdateMessageHandler(this.onUpdate);
     this.io.connect();
     this.state = {
+      clientUUID: uuidv4(),
+      clientColor: randomColor(),
       windowX: 0,
       windowY: 0,
       prevX: 0,
@@ -27,6 +29,7 @@ class Board extends React.Component {
       boxes: props.data.elements,
       curDragging: '',
       onDelete: false,
+      otherUsers: {},
     };
   }
 
@@ -63,6 +66,7 @@ class Board extends React.Component {
     this.setState({
       boxes: updatedState,
       zIndex: msg.zIndex,
+      otherUsers: msg.clients,
     });
   };
 
@@ -95,6 +99,18 @@ class Board extends React.Component {
       this.setState({ curDragging: newState.curDragging });
     }
 
+    const uuid = this.state.clientUUID;
+    const myClient = Object.assign({}, this.state.otherUsers,
+      {
+        uuid:
+        {
+          x: this.state.windowX - (window.innerWidth / 2),
+          y: this.state.windowY - (window.innerHeight / 2),
+          color: this.state.clientColor,
+        },
+      },
+    );
+
     origState[uuidVal].state = updatedState;
     this.setState({
       boxes: origState,
@@ -109,6 +125,7 @@ class Board extends React.Component {
       uuid: uuidVal,
       state: updatedState,
       type: origState[uuidVal].type,
+      clients: myClient,
     });
   };
 
@@ -241,6 +258,17 @@ class Board extends React.Component {
   };
 
   render() {
+    const allClients = Object.keys(this.state.otherUsers);
+    const clientBoxes = [];
+    for (let i = 0; i < allClients.length; i++) {
+      const curKey = allClients[i];
+      const xVal = -this.state.otherUsers[curKey].x + this.state.windowX;
+      const yVal = -this.state.otherUsers[curKey].y + this.state.windowY;
+      const clientStyle = ({ left: xVal, top: yVal, zIndex: this.state.zIndex + 2, backgroundColor: this.state.otherUsers[curKey].color });
+      clientBoxes.push(<div className="Client-box" key={curKey} style={clientStyle} />)
+    }
+
+
     const allKeys = Object.keys(this.state.boxes);
     const boxes = [];
     for (let i = 0; i < allKeys.length; i++) {
@@ -296,6 +324,7 @@ class Board extends React.Component {
         onMouseUp={this.mouseUp}
         style={{ cursor: this.state.cursor }}
       >
+        {clientBoxes}
         {boxes}
         <div className="View" style={bgStyle} id="bg" ref={(view) => { this.view = view; }} />
         <FileDragger generateBox={this.generateBox} inputFile={this.inputFile} />
