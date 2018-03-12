@@ -15,12 +15,17 @@ export default class BoardList extends React.Component {
       /* eslint-enable */
     });
     return (
-      <div className="board-list-container">
-        <div className="board-list-header">
-          <span>InfinityBoard</span>
-        </div>
-        <div className="board-list">
-          {boards}
+      <div className="board-list-super-container">
+        <div className="board-list-container">
+          <div className="board-list-header">
+            <span>InfinityBoard</span>
+          </div>
+          <div className="add-button" onClick={this.props.createBoard}>
+            +
+          </div>
+          <div className="board-list">
+            {boards}
+          </div>
         </div>
       </div>
     );
@@ -32,4 +37,5 @@ BoardList.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   boards: PropTypes.array.isRequired,
   boardSelected: PropTypes.func.isRequired,
+  createBoard: PropTypes.func.isRequired,
 };

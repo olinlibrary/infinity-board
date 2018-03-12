@@ -53,10 +53,14 @@ body,
   color: white;
 }
 
+.add-button {
+  text-align: center;
+  font-size: 3em;
+  padding: 0.5em;
+}
+
+.add-button,
 .board-li {
-  font-size: 1.4em;
-  font-family: Montserrat, Arial sans-serif;
-  padding: 1em;
   border-bottom: 1px solid #e1e1e1;
   cursor: pointer;
   -webkit-user-select: none;
@@ -68,8 +72,15 @@ body,
   -ms-transition: background-color 0.3s;
   -o-transition: background-color 0.3s;
   transition: background-color 0.3s;
+  font-family: Montserrat, Arial sans-serif;
 }
 
+.board-li {
+  font-size: 1.4em;
+  padding: 1em;
+}
+
+.add-button:hover,
 .board-li:hover {
   background-color: #eee;
 }

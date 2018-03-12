@@ -11,7 +11,7 @@ export default class BoardManager {
    * @param httpServer - the Express HTTP server to use for receiving client connections.
    */
   constructor(httpServer) {
-    this.boards = {};
+    this.boards = [];
     this.boardListUpdateEventHandlers = [];
     this.dbConn = new DatabaseConnection();
     this.dbConn.connect().then(() => this.fetchBoardsFromDb());
@@ -44,10 +44,11 @@ export default class BoardManager {
    */
   createBoard(msg, socket) {
     return new Promise((resolve, reject) => {
-      this.dbConn.createBoard(msg.name).then((board) => {
+      const name = msg ? msg.name : null;
+      this.dbConn.createBoard(name).then((board) => {
         // Save the board to our list of open boards
         // eslint-disable-next-line no-underscore-dangle
-        this.boards[board._id] = board;
+        this.boards.push(board);
 
         // Register this board with the WebSockets server
         // (or anything else that wants to be notified of board creation)
@@ -57,7 +58,7 @@ export default class BoardManager {
         this.wsServer.broadcastBoardListUpdate(this.getBoardList());
         // Send a creation confirmation message to the primary client
         // (should trigger displaying/opening board)
-        socket.emit('boardCreated', board);
+        socket.emit('boardData', board);
 
         resolve(board);
       }, (err) => {
@@ -78,7 +79,6 @@ export default class BoardManager {
       state: element.state,
       type: element.type,
     };
-    console.log(element.state)
     // Save the board to the database
     this.dbConn.saveBoard(boardData);
 

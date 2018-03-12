@@ -35,6 +35,12 @@ class App extends React.Component {
     this.setState({ currentBoardData: board });
   };
 
+  createBoard = () => {
+    if (this.serverComm) {
+      this.serverComm.createBoard();
+    }
+  };
+
   render() {
     const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
     const content = this.state.currentBoardData
@@ -43,6 +49,7 @@ class App extends React.Component {
         <BoardList
           boards={boardObjects}
           boardSelected={uuid => this.serverComm.getBoardData(uuid)}
+          createBoard={this.createBoard}
         />
       );
 

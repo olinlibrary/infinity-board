@@ -8,7 +8,7 @@ export default class ServerComm {
     this.serverURL = serverURL;
     this.receivedUpdateMessageHandler = null;
     this.receivedBoardListMessageHandler = null;
-    this.boardUpdateMessageHandler = null;
+    this.receivedBoardDataMessageHandler = null;
   }
 
   /**
@@ -16,9 +16,9 @@ export default class ServerComm {
    */
   connect = () => {
     this.io = SocketIO(this.serverURL);
-    this.io.on('boardUpdate', msg => this.receivedUpdateMessage(msg, this.io));
-    this.io.on('boardListUpdate', msg => this.registerBoardListMessageHandler(msg, this.io));
-    this.io.on('boardData', msg => this.handleFullBoardDataMessageReceived(msg, this.io));
+    this.io.on('boardUpdate', msg => this.receivedBoardUpdateMessage(msg, this.io));
+    this.io.on('boardListUpdate', msg => this.receivedBoardListUpdate(msg, this.io));
+    this.io.on('boardData', msg => this.receivedFullBoardDataMessage(msg, this.io));
   };
 
 
@@ -27,7 +27,7 @@ export default class ServerComm {
    * @param msg - the update message payload from the server
    * @param socket - the socket.io connection to the server
    */
-  receivedUpdateMessage = (msg, socket) => {
+  receivedBoardUpdateMessage = (msg, socket) => {
     if (this.receivedUpdateMessageHandler) {
       this.receivedUpdateMessageHandler(msg, socket);
     }
@@ -38,9 +38,9 @@ export default class ServerComm {
    * @param data - the message payload
    * @param socket - the socket.io connection to the server
    */
-  handleFullBoardDataMessageReceived = (data, socket) => {
-    if (this.boardUpdateMessageHandler) {
-      this.boardUpdateMessageHandler(data, socket);
+  receivedFullBoardDataMessage = (data, socket) => {
+    if (this.receivedBoardDataMessageHandler) {
+      this.receivedBoardDataMessageHandler(data, socket);
     }
   };
 
@@ -49,7 +49,7 @@ export default class ServerComm {
    * from the server. (Only one function can be registered at a time.)
    * @param callback - the function to call when a 'boardListUpdate' event is received
    */
-  registerBoardListMessageHandler = (callback) => {
+  receivedBoardListUpdate = (callback) => {
     if (this.receivedBoardListMessageHandler) {
       this.receivedBoardListMessageHandler(callback);
     }
@@ -69,6 +69,14 @@ export default class ServerComm {
    */
   setReceivedBoardListMessageHandler = (callback) => {
     this.receivedBoardListMessageHandler = callback;
+  };
+
+  /**
+   * Registers a function to be called when a board list message is received.
+   * @param callback - the function to call when a 'boardListUpdate' message is received
+   */
+  setReceivedBoardDataMessageHandler = (callback) => {
+    this.receivedBoardDataMessageHandler = callback;
   };
 
   /**
@@ -93,4 +101,11 @@ export default class ServerComm {
   getBoardData = (id) => {
     this.io.emit('getBoardData', id);
   };
+
+  /**
+   * Creates a new board. The server will emit an event when the creation is completed.
+   */
+  createBoard = () => {
+    this.io.emit('createBoard');
+  }
 }
