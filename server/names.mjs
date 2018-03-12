@@ -13,4 +13,19 @@ export default class Names {
     });
     return name;
   }
+
+  static getRandomName() {
+
+    function getRandomInt(max) {
+      return Math.floor(Math.random() * Math.floor(max));
+    }
+    
+    let name = '';
+    const bases = [adjectives, adjectives, animals];
+    bases.forEach((base) => {
+      const val = getRandomInt(base.length);
+      name += base[val].charAt(0).toUpperCase() + base[val].slice(1);
+    });
+    return name;
+  }
 }
