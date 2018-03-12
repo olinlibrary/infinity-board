@@ -1,4 +1,5 @@
 # InfinityBoard
+
 InfinityBoard is a digital canvas with real-time collaborative editing
 for sharing pictures and text. The ability to pan infinitely means
 you'll never run out of collaborative and creative space.
@@ -7,16 +8,18 @@ you'll never run out of collaborative and creative space.
 
 # Documentation
 
-  * [Frontend React app](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/app.html)
-  * [Backend server](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/server.html)
+* [Frontend React app](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/app.html)
+* [Backend server](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/server.html)
 
-![](UMLDiagram.png)
+![](./docs/UMLDiagram.png)
 
 # Running InfinityBoard locally
 
 In order to run a local instance of InfinityBoard, you'll need to do a
 few things.
-up the backend server and the React frontend. For image upload functionality,
+
+<!-- missing words? --> up the backend server and the React frontend. For image upload functionality,
+
 you'll also need to [configure an AWS S3 bucket](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html).
 
 ## Setup MongoDB
@@ -37,6 +40,9 @@ can help you get one configured.
 
 First, make create a file called `.env` in the root of the project.
 Then paste the following in that file and fill in the appropriate values:
+
+<!-- another practice is to make a template file that the user can copy and edit -->
+
 ```
 # MongoDB Settings
 MONGO_USERNAME=""
@@ -57,8 +63,10 @@ AWS_IDENTITY_POOL_ID=""
 
 #### Install Node.js >8.5.0
 
-If you don't have Node.js v8.5.0 or greater already,
+If you don't have Node.js v8.5.0 or greater as indicated by `node --version`,
 [do that first](http://nodesource.com/blog/installing-node-js-tutorial-using-nvm-on-mac-os-x-and-ubuntu/).
+
+<!-- You can also add { "engines" : { "node" : ">=8.5" } } to package.json. -->
 
 If you can, install Yarn instead of NPM for package management (it's a lot faster).
 If not, simply replace "yarn" with "npm" below.
@@ -89,6 +97,7 @@ yarn run start
 # Tests
 
 To run the Jest tests, run:
+
 ```bash
 yarn run test
 ```

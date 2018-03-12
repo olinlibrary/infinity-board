@@ -39,7 +39,8 @@
     "dev": "webpack-dev-server --inline --hot",
     "test": "jest",
     "eject": "react-scripts eject",
-    "lint": "./node_modules/.bin/eslint --ext .jsx --ext .js --ext .mjs .",
+    "lint": "eslint --ext .jsx --ext .js --ext .mjs .",
+    "format": "eslint --fix --ext .jsx --ext .js --ext .mjs .",
     "validate": "npm ls",
     "server": "node --experimental-modules server/index.mjs"
   },
