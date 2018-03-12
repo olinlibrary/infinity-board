@@ -36,9 +36,13 @@ class App extends React.Component {
   };
 
   render() {
-    const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
-    const content = this.state.currentBoardData
-      ? <Board data={this.state.currentBoardData} />
+    // Also consider the following in order to remove duplicate retrievals from
+    // this.state, although this is a judgement call on whether it's worth the
+    // extra variables:
+    const { boards, currentBoardData } = this.state;
+    const boardObjects = Object.keys(boards).map(key => boards[key]);
+    const content = currentBoardData
+      ? <Board data={currentBoardData} />
       : (
         <BoardList
           boards={boardObjects}
