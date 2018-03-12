@@ -350,7 +350,7 @@ class Board extends React.Component {
               accept="image/*"
               onFinish={this.onUploadFinish}
               uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
-              autoUpload
+              // eslint-disable-next-line
               server={window.SERVER_URI}
               inputRef={(input) => { this.input = input; }}
               style={{ display: 'none' }}
