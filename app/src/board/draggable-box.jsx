@@ -26,6 +26,12 @@ class DraggableBox extends React.Component {
     document.addEventListener('mouseup', this.mouseUp);
   }
 
+  componentWillUnmount() {
+    // Remove event listeners on box deletion/unmounting
+    document.removeEventListener('mousemove', this.mouseMove);
+    document.removeEventListener('mouseup', this.mouseUp);
+  }
+
   /**
     Gives the CSS styling for the given box.
     @return boxStyle - the JS object containing the correct styling for the box.
@@ -40,7 +46,8 @@ class DraggableBox extends React.Component {
       cursor: this.getCursor(),
       padding: `${this.props.padding}px`,
       zIndex: this.props.z,
-      visibility: this.props.style.visibility,
+      opacity: this.props.opacity,
+      visibility: this.props.visibility,
     };
     return boxStyle;
   };
@@ -84,24 +91,34 @@ class DraggableBox extends React.Component {
       mouseY: e.clientY,
       mouseMoved: true,
     });
-    const id = this.props.uid; // Get the UUID of the current board
+    const id = this.props.uuid; // Get the Uuuid of the current board
+    let width = 0;
+    let heightVal = 0;
     if (this.state.resizing) {
-      const width = this.getResize(e.clientX, this.props.renderX, this.props.minX); // Get new width
-      let heightVal = 0;
-      if (this.props.aspect !== 0) { // If the box has a defined aspect ratio, keep it to that ratio
-        heightVal = width / this.props.aspect;
+      if (this.props.aspect !== 0) {
+        if (this.props.aspect < 1) {
+          width = this.getResize(e.clientX, this.props.renderX, this.props.minX);
+          heightVal = width / this.props.aspect;
+        } else {
+          heightVal = this.getResize(e.clientY, this.props.renderY, this.props.minY);
+          width = heightVal * this.props.aspect;
+        }
       } else {
+        width = this.getResize(e.clientX, this.props.renderX, this.props.minX);
         heightVal = this.getResize(e.clientY, this.props.renderY, this.props.minY);
       }
+
 
       this.props.callback(id, {
         w: width,
         h: heightVal,
+        curDragging: id,
       });
     } else if (this.state.draggable) {
       this.props.callback(id, {
         x: e.screenX + this.state.downX,
         y: e.screenY + this.state.downY,
+        curDragging: id,
       });
     }
   };
@@ -118,13 +135,14 @@ class DraggableBox extends React.Component {
         downX: this.props.x - e.screenX,
         downY: this.props.y - e.screenY,
       });
-      this.props.callback(this.props.uid, { // Update z-index
+      this.props.callback(this.props.uuid, { // Update z-index
         z: this.props.clickCallback(),
       });
       if (this.cursorInDraggingPosition(e)) { // If we're resizing the box
         this.setState({ resizing: true });
       } else {
         this.setState({ draggable: true });
+        this.props.callback(this.props.uuid, { curDragging: this.props.uuid })
       }
     }
   };
@@ -134,9 +152,14 @@ class DraggableBox extends React.Component {
   */
   mouseUp = (e) => {
     e.preventDefault();
-    this.setState({ draggable: false, resizing: false });
-    if (!this.state.mouseMoved) {
-      this.props.textCallback();
+    if (this.props.overDelete) {
+      this.props.deleteCallback(this.props.uuid);
+    } else {
+      this.setState({ draggable: false, resizing: false });
+      this.props.callback(this.props.uuid, { curDragging: '' })
+      if (!this.state.mouseMoved) {
+        this.props.textCallback();
+      }
     }
   };
 
@@ -198,12 +221,13 @@ DraggableBox.propTypes = {
   z: PropTypes.number,
   color: PropTypes.string,
   callback: PropTypes.func.isRequired,
-  uid: PropTypes.string.isRequired,
+  uuid: PropTypes.string.isRequired,
   aspect: PropTypes.number,
   // eslint-disable-next-line
-  style: PropTypes.object,
+  opacity: PropTypes.number,
   textCallback: PropTypes.func,
   clickCallback: PropTypes.func,
+  visibility: PropTypes.string,
 };
 
 DraggableBox.defaultProps = {
@@ -220,7 +244,8 @@ DraggableBox.defaultProps = {
   h: 200,
   color: '#ff0000',
   aspect: 0,
-  style: { visibility: 'visible' },
+  opacity: 1,
+  visibility: 'visible',
   textCallback: () => {},
   clickCallback: () => {},
   z: 1,

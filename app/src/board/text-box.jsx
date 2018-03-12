@@ -24,21 +24,21 @@ export default class TextBox extends React.Component {
     const {
       editCallback,
       text,
-      uid,
+      uuid,
       ...other
     } = this.props;
     return (
       <div>
         <DraggableBox
           textCallback={() => { this.setState({ editing: true }); }}
-          uid={uid}
+          uuid={uuid}
           {...other}
         >
           <TextField
             edit={this.state.editing}
             editCallback={editCallback}
             value={text}
-            uid={uid}
+            uuid={uuid}
             blurFunc={() => { this.setState({ editing: false }); }}
           />
         </DraggableBox>
@@ -50,5 +50,5 @@ export default class TextBox extends React.Component {
 TextBox.propTypes = {
   editCallback: PropTypes.func.isRequired,
   text: PropTypes.string.isRequired,
-  uid: PropTypes.string.isRequired,
+  uuid: PropTypes.string.isRequired,
 };

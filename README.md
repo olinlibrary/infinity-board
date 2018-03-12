@@ -1,4 +1,6 @@
 # InfinityBoard
+## Kyle Combes, Matt Brucker, Tobias Shapinsky
+
 InfinityBoard is a digital canvas with real-time collaborative editing
 for sharing pictures and text. The ability to pan infinitely means
 you'll never run out of collaborative and creative space.
@@ -92,3 +94,7 @@ To run the Jest tests, run:
 ```bash
 yarn run test
 ```
+
+# Acknowledgements
+Infinity Board is based on the original [FutureBoard](https://github.com/olinlibrary/oldfutureboard) project from Hacking the Library 2017.
+

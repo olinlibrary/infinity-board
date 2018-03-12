@@ -79,6 +79,7 @@ export default class BoardManager {
       state: element.state,
       type: element.type,
     };
+    board.zIndex = element.zIndex;
     // Save the board to the database
     this.dbConn.saveBoard(boardData);
 

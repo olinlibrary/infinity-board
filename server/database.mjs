@@ -53,7 +53,6 @@ export default class DatabaseConnection {
       } else {
         // We have all the information we need to connect, so attempt to do so
         const mongoUri = `mongodb://${username}:${password}@${cluster1}:${mongoPort},${cluster2}:${mongoPort},${cluster3}:${mongoPort}/${dbName}?ssl=true&replicaSet=${replicaSet}&authSource=${authSource}`;
-
         MongoClient.connect(mongoUri, (err, client) => {
           if (!err) {
             console.log('Successfully connected to MongoDB instance.');
@@ -96,7 +95,7 @@ export default class DatabaseConnection {
     return new Promise((resolve, reject) => {
       const now = new Date();
       if (!name) {
-        name = Names.toName(now.getTime());
+        name = Names.getRandomName();
       }
       const obj = {
         created: now, lastUsed: now, name, elements: [],

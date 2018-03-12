@@ -71,6 +71,10 @@ export default class ServerComm {
     this.receivedBoardListMessageHandler = callback;
   };
 
+  setReceivedBoardDataMessageHandler = (callback) => {
+    this.boardUpdateMessageHandler = callback;
+  };
+
   /**
    * Registers a function to be called when a board list message is received.
    * @param callback - the function to call when a 'boardListUpdate' message is received
