@@ -57,17 +57,23 @@ class Board extends React.Component {
    * @param msg - the WebSocket message containing updated state data for the board.
   */
   onUpdate = (msg) => {
-    const updatedState = Object.assign({}, this.state.boxes, {
-      [msg.uuid]: Object.assign({}, this.state.boxes[msg.uuid], {
-        state: msg.state,
-        type: msg.type,
-      }),
-    }); // TODO: Seems redundant from updateBoardState, should change
-    this.setState({
-      boxes: updatedState,
-      zIndex: msg.zIndex,
-      otherUsers: msg.clients,
-    });
+    if (msg.type === 'delete') {
+      const allBoxes = Object.assign({}, this.state.boxes);
+      delete allBoxes[msg.uuid];
+      this.setState({ boxes: allBoxes });
+    } else {
+      const updatedState = Object.assign({}, this.state.boxes, {
+        [msg.uuid]: Object.assign({}, this.state.boxes[msg.uuid], {
+          state: msg.state,
+          type: msg.type,
+        }),
+      }); // TODO: Seems redundant from updateBoardState, should change
+      this.setState({
+        boxes: updatedState,
+        zIndex: msg.zIndex,
+        otherUsers: msg.clients,
+      });
+    }
   };
 
 
@@ -78,7 +84,8 @@ class Board extends React.Component {
     if (uuid === this.state.curDragging) { // Check to see that we're deleting the correct box
       const allBoxes = Object.assign({}, this.state.boxes);
       delete allBoxes[uuid];
-      this.setState({ boxes: allBoxes, curDragging: '' })
+      this.setState({ boxes: allBoxes, curDragging: '' });
+      this.io.sendUpdateMessage({ type: 'delete', uuid: uuid });
     }
   }
 
@@ -118,6 +125,7 @@ class Board extends React.Component {
 
     // Push the update out over WebSockets
     this.io.sendUpdateMessage({
+      type: 'update',
       // eslint-disable-next-line
       zIndex: this.state.zIndex,
       // eslint-disable-next-line no-underscore-dangle
