@@ -4,6 +4,7 @@ import {
   BrowserRouter,
   Route,
   Switch,
+  withRouter,
 } from 'react-router-dom';
 import Board from './board/board';
 import './App.css';
@@ -35,12 +36,6 @@ class App extends React.Component {
     this.setState({ boards });
   };
 
-  createBoard = () => {
-    if (this.serverComm) {
-      this.serverComm.createBoard();
-    }
-  };
-
   render() {
     const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
     return (
@@ -50,10 +45,11 @@ class App extends React.Component {
             <Route
               exact
               path="/"
-              component={() => (
+              render={({ history }) => (
                 <BoardList
                   boards={boardObjects}
-                  boardSelected={uuid => this.serverComm.getBoardData(uuid)}
+                  serverComm={this.serverComm}
+                  history={history}
                   createBoard={this.createBoard}
                 />
               )}
