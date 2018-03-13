@@ -1,5 +1,10 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import Board from './board/board';
 import './App.css';
 import BoardList from './board-list';
@@ -17,11 +22,12 @@ class App extends React.Component {
       boards: {},
       currentBoardData: null,
     };
+
+    this.serverComm = new ServerComm(window.SERVER_URI);
+    this.serverComm.connect();
   }
 
   componentDidMount() {
-    this.serverComm = new ServerComm(window.SERVER_URI);
-    this.serverComm.connect();
     this.serverComm.setReceivedBoardListMessageHandler(this.setBoardList);
     this.serverComm.setReceivedBoardDataMessageHandler(this.receivedBoardData);
     this.serverComm.getBoardList();
@@ -43,21 +49,34 @@ class App extends React.Component {
 
   render() {
     const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
-    const content = this.state.currentBoardData
-      ? <Board data={this.state.currentBoardData} />
-      : (
-        <BoardList
-          boards={boardObjects}
-          boardSelected={uuid => this.serverComm.getBoardData(uuid)}
-          createBoard={this.createBoard}
-        />
-      );
-
-      // Now show it
     return (
-      <div className="app">
-        {content}
-      </div>
+      <BrowserRouter>
+        <div className="app">
+          <Switch>
+            <Route
+              exact
+              path="/"
+              component={() => (
+                <BoardList
+                  boards={boardObjects}
+                  boardSelected={uuid => this.serverComm.getBoardData(uuid)}
+                  createBoard={this.createBoard}
+                />
+              )}
+            />
+            <Route
+              path="/:boardName"
+              component={props => (
+                <Board
+                  data={this.state.currentBoardData}
+                  getBoardData={this.serverComm.getBoardData}
+                  boardName={props.match.params.boardName}
+                />
+              )}
+            />
+          </Switch>
+        </div>
+      </BrowserRouter>
     );
   }
 }

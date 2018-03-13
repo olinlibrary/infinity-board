@@ -101,9 +101,10 @@ export default class ServerComm {
   /**
    * Requests the full board data for a particular board.
    * @param {string} id - the UUID of the board
+   * @param {string} name - the human-memorable name
    */
-  getBoardData = (id) => {
-    this.io.emit('getBoardData', id);
+  getBoardData = (id, name) => {
+    this.io.emit('getBoardData', { id, name });
   };
 
   /**

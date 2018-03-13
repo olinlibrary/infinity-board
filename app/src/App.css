@@ -61,6 +61,9 @@ body,
 
 .add-button,
 .board-li {
+  display: block;
+  text-decoration: none;
+  color: black;
   border-bottom: 1px solid #e1e1e1;
   cursor: pointer;
   -webkit-user-select: none;
@@ -83,6 +86,14 @@ body,
 .add-button:hover,
 .board-li:hover {
   background-color: #eee;
+}
+
+.loading {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
 }
 
 .Box {

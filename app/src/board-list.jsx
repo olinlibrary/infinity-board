@@ -1,18 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 export default class BoardList extends React.Component {
   render() {
     const boards = [];
     this.props.boards.forEach((board) => {
       /* eslint-disable */
-      boards.push(<div
+      boards.push(<Link
         className="board-li"
-        onClick={ () => this.props.boardSelected(board._id) }
+        // onClick={ () => this.props.boardSelected(board._id) }
+        to={{ pathname: `/${board.name}` }}
         key={ board._id }>
         { board.name }
-      </div>);
-      /* eslint-enable */
+      </Link>);
     });
     return (
       <div className="board-list-super-container">

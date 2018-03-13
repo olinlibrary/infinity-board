@@ -15,16 +15,13 @@ import FileDragger from './file-dragger';
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    this.io = new ServerComm(window.SERVER_URI);
-    this.io.setReceivedUpdateMessageHandler(this.onUpdate);
-    this.io.connect();
     this.state = {
       windowX: 0,
       windowY: 0,
       prevX: 0,
       prevY: 0,
       zIndex: 1,
-      boxes: props.data.elements,
+      boxes: props.data ? props.data.elements : null,
       curDragging: '',
       onDelete: false,
     };
@@ -36,6 +33,7 @@ class Board extends React.Component {
   componentDidMount() {
     // We have to add document listeners so it will update pos even when
     document.addEventListener('mousedown', this.mouseDown);
+    this.props.getBoardData(null, this.props.boardName);
   }
 
 
@@ -105,7 +103,7 @@ class Board extends React.Component {
       // eslint-disable-next-line
       zIndex: this.state.zIndex,
       // eslint-disable-next-line no-underscore-dangle
-      boardId: this.props.data._id,
+      boardName: this.props.data._id,
       uuid: uuidVal,
       state: updatedState,
       type: origState[uuidVal].type,
@@ -241,6 +239,10 @@ class Board extends React.Component {
   };
 
   render() {
+    if (!this.state.boxes) {
+      return <span className="loading">Loading...</span>;
+    }
+
     const allKeys = Object.keys(this.state.boxes);
     const boxes = [];
     for (let i = 0; i < allKeys.length; i++) {
@@ -344,7 +346,13 @@ class Board extends React.Component {
 
 Board.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  data: PropTypes.object.isRequired,
+  data: PropTypes.object,
+  boardName: PropTypes.number.isRequired,
+  getBoardData: PropTypes.func.isRequired,
+};
+
+Board.defaultProps = {
+  data: null,
 };
 
 export default Board;

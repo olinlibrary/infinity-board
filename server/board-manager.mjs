@@ -74,7 +74,7 @@ export default class BoardManager {
    */
   receivedBoardUpdate(element, socket) {
     const boards = this.getBoardList();
-    const boardData = boards[element.boardId];
+    const boardData = boards[element.boardName];
     boardData.elements[element.uuid] = {
       state: element.state,
       type: element.type,
@@ -123,11 +123,11 @@ export default class BoardManager {
 
   /**
    * Gets all the data associated with a board, including its elements.
-   * @param {string} boardId - the UUID of the board to look up
+   * @param {object} query - the UUID or name of the board to look up
    * @param socket - the WebSockets connection to the client requesting the data
    */
-  getBoardData(boardId, socket) {
-    this.dbConn.getBoard(null, boardId).then((board) => {
+  getBoardData(query, socket) {
+    this.dbConn.getBoard(query.name, query.id).then((board) => {
       socket.emit('boardData', board);
     });
   }
