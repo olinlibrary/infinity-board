@@ -96,6 +96,7 @@ class Board extends React.Component {
     this.setState({
       data: board,
       boxes: board.elements,
+      zIndex: board.zIndex,
     });
   };
 
