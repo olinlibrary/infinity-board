@@ -93,7 +93,6 @@ class Board extends React.Component {
   };
 
   receivedBoardData = (board) => {
-    console.log(board.elements);
     this.setState({
       data: board,
       boxes: board.elements,
@@ -274,7 +273,10 @@ class Board extends React.Component {
         initState[uuid].state.h = h; // Otherwise, set based on aspect ratio
         initState[uuid].state.w = initState[uuid].state.h * initState[uuid].aspect;
       }
-      this.updateBoardState(uuid, { w: w, h: h }); // Update the size on other clients
+      this.updateBoardState(uuid, {
+        w: initState[uuid].state.w,
+        h: initState[uuid].state.h,
+      }); // Update the size on other clients
       this.setState({ boxes: initState });
     }
   };
