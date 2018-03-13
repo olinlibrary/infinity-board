@@ -67,7 +67,6 @@ class Board extends React.Component {
     const allClients = Object.assign({}, this.state.otherUsers)
     allClients[msg.client] = { x: msg.x, y: msg.y, color: msg.color };
     this.setState({ otherUsers: allClients });
-    console.log(msg.color);
   }
 
   /**
@@ -349,7 +348,6 @@ class Board extends React.Component {
         {clientBoxes}
         {boxes}
         <div className="View" style={bgStyle} id="bg" ref={(view) => { this.view = view; }} />
-        <FileDragger generateBox={this.generateBox} inputFile={this.inputFile} />
         <div className="Button-wrapper" style={buttonStyle}>
           <div className="Box-button">
             <button className="Box-button" onClick={() => { this.setState({ windowX: 0, windowY: 0 }); }}>
@@ -372,8 +370,6 @@ class Board extends React.Component {
               accept="image/*"
               onFinish={this.onUploadFinish}
               uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
-              autoUpload
-              server={window.SERVER_URI}
               inputRef={(input) => { this.input = input; }}
               style={{ display: 'none' }}
             />
