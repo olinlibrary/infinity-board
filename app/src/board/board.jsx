@@ -118,6 +118,18 @@ class Board extends React.Component {
       this.setState({ curDragging: newState.curDragging });
     }
 
+    const uuid = this.state.clientUUID;
+    const myClient = Object.assign({}, this.state.otherUsers,
+      {
+        uuid:
+        {
+          x: this.state.windowX - (window.innerWidth / 2),
+          y: this.state.windowY - (window.innerHeight / 2),
+          color: this.state.clientColor,
+        },
+      },
+    );
+
     origState[uuidVal].state = updatedState;
     this.setState({
       boxes: origState,
@@ -133,6 +145,7 @@ class Board extends React.Component {
       uuid: uuidVal,
       state: updatedState,
       type: origState[uuidVal].type,
+      clients: myClient,
     });
   };
 
