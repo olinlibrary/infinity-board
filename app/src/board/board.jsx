@@ -74,7 +74,7 @@ class Board extends React.Component {
    * @param msg - the WebSocket message containing updated state data for the board.
   */
   onUpdate = (msg) => {
-    if (msg.type === 'delete') {
+    if (msg.action === 'delete') {
       const allBoxes = Object.assign({}, this.state.boxes);
       delete allBoxes[msg.uuid];
       this.setState({ boxes: allBoxes });
@@ -104,7 +104,7 @@ class Board extends React.Component {
       const allBoxes = Object.assign({}, this.state.boxes);
       delete allBoxes[uuid];
       this.setState({ boxes: allBoxes, curDragging: '' });
-      this.io.sendUpdateMessage({ type: 'delete', uuid, boardId: this.state.data._id });
+      this.io.sendUpdateMessage({ action: 'delete', uuid, boardId: this.state.data._id });
     }
   };
 
@@ -131,7 +131,7 @@ class Board extends React.Component {
 
     // Push the update out over WebSockets
     this.io.sendUpdateMessage({
-      type: 'update',
+      action: 'update',
       // eslint-disable-next-line
       zIndex: this.state.zIndex,
       // eslint-disable-next-line no-underscore-dangle
