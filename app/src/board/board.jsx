@@ -19,8 +19,8 @@ class Board extends React.Component {
     this.io.setReceivedUpdateMessageHandler(this.onUpdate);
     this.io.setReceivedClientMessageHandler(this.onClientUpdate);
     this.io.connect();
+    this.uuid = uuidv4();
     this.state = {
-      clientUUID: uuidv4(),
       clientColor: randomColor(),
       windowX: 0,
       windowY: 0,
@@ -40,6 +40,15 @@ class Board extends React.Component {
   componentDidMount() {
     // We have to add document listeners so it will update pos even when
     document.addEventListener('mousedown', this.mouseDown);
+    window.addEventListener('beforeunload', (e) => {
+      e.preventDefault();
+      this.io.sendClientUpdate({
+        client: this.uuid,
+        x: 0,
+        y: 0,
+        color: 'transparent',
+      });
+    });
   }
 
 
@@ -57,6 +66,7 @@ class Board extends React.Component {
     const allClients = Object.assign({}, this.state.otherUsers)
     allClients[msg.client] = { x: msg.x, y: msg.y, color: msg.color };
     this.setState({ otherUsers: allClients });
+    console.log(msg.color);
   }
 
   /**
@@ -173,8 +183,8 @@ class Board extends React.Component {
         prevY: e.clientY,
       });
       this.io.sendClientUpdate({
-        client: this.state.clientUUID,
-        x: this.state.windowX - window.innerWidth/2, 
+        client: this.uuid,
+        x: this.state.windowX - window.innerWidth/2,
         y: this.state.windowY - window.innerHeight/2,
         color: this.state.clientColor });
     }
@@ -264,7 +274,7 @@ class Board extends React.Component {
     const clientBoxes = [];
     for (let i = 0; i < allClients.length; i++) {
       const curKey = allClients[i];
-      if (curKey !== this.state.clientUUID) {
+      if (curKey !== this.uuid) {
         const xVal = -this.state.otherUsers[curKey].x + this.state.windowX;
         const yVal = -this.state.otherUsers[curKey].y + this.state.windowY;
         const clientStyle = ({ left: xVal, top: yVal, zIndex: this.state.zIndex + 2, backgroundColor: this.state.otherUsers[curKey].color });
