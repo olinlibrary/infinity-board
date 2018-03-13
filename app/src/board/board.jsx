@@ -277,7 +277,7 @@ class Board extends React.Component {
       if (curKey !== this.uuid) {
         const xVal = -this.state.otherUsers[curKey].x + this.state.windowX;
         const yVal = -this.state.otherUsers[curKey].y + this.state.windowY;
-        const clientStyle = ({ left: xVal, top: yVal, zIndex: this.state.zIndex + 2, backgroundColor: this.state.otherUsers[curKey].color });
+        const clientStyle = ({ left: xVal, top: yVal, zIndex: this.state.zIndex + 1, backgroundColor: this.state.otherUsers[curKey].color });
         clientBoxes.push(<div className="Client-box" key={curKey} style={clientStyle} />)
       }
     }
@@ -323,7 +323,7 @@ class Board extends React.Component {
         }
       }
     }
-    const buttonStyle = { zIndex: this.state.zIndex + 1 };
+    const buttonStyle = { zIndex: this.state.zIndex + 2 };
 
     const bgStyle = { // Set the position for the grid background
       // eslint-disable-next-line
