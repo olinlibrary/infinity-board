@@ -20,7 +20,6 @@ class App extends React.Component {
 
     this.state = {
       boards: {},
-      currentBoardData: null,
     };
 
     this.serverComm = new ServerComm(window.SERVER_URI);
@@ -29,16 +28,11 @@ class App extends React.Component {
 
   componentDidMount() {
     this.serverComm.setReceivedBoardListMessageHandler(this.setBoardList);
-    this.serverComm.setReceivedBoardDataMessageHandler(this.receivedBoardData);
     this.serverComm.getBoardList();
   }
 
   setBoardList = (boards) => {
     this.setState({ boards });
-  };
-
-  receivedBoardData = (board) => {
-    this.setState({ currentBoardData: board });
   };
 
   createBoard = () => {
@@ -66,13 +60,7 @@ class App extends React.Component {
             />
             <Route
               path="/:boardName"
-              component={props => (
-                <Board
-                  data={this.state.currentBoardData}
-                  getBoardData={this.serverComm.getBoardData}
-                  boardName={props.match.params.boardName}
-                />
-              )}
+              component={props => <Board boardName={props.match.params.boardName} />}
             />
           </Switch>
         </div>

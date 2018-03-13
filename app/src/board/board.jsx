@@ -26,8 +26,8 @@ class Board extends React.Component {
       windowY: 0,
       prevX: 0,
       prevY: 0,
-      zIndex: props.data ? props.data.zIndex : null,
-      boxes: props.data ? props.data.elements : null,
+      zIndex: null,
+      boxes: null,
       curDragging: '',
       onDelete: false,
       otherUsers: {},
@@ -49,9 +49,9 @@ class Board extends React.Component {
         color: 'transparent',
       });
     });
-    this.props.getBoardData(null, this.props.boardName);
+    this.io.setReceivedBoardDataMessageHandler(this.receivedBoardData);
+    this.io.getBoardData(null, this.props.boardName);
   }
-
 
   /**
    * On finishing upload of an image, create a box containing that image
@@ -93,12 +93,19 @@ class Board extends React.Component {
     }
   };
 
+  receivedBoardData = (board) => {
+    this.setState({
+      data: board,
+      boxes: board.elements,
+    });
+  };
+
   handleDelete = (uuid) => {
     if (uuid === this.state.curDragging) { // Check to see that we're deleting the correct box
       const allBoxes = Object.assign({}, this.state.boxes);
       delete allBoxes[uuid];
       this.setState({ boxes: allBoxes, curDragging: '' });
-      this.io.sendUpdateMessage({ type: 'delete', uuid: uuid, boardId: this.props.data._id });
+      this.io.sendUpdateMessage({ type: 'delete', uuid, boardId: this.state.data._id });
     }
   };
 
@@ -129,7 +136,7 @@ class Board extends React.Component {
       // eslint-disable-next-line
       zIndex: this.state.zIndex,
       // eslint-disable-next-line no-underscore-dangle
-      boardName: this.props.data._id,
+      boardName: this.state.data._id,
       uuid: uuidVal,
       state: updatedState,
       type: origState[uuidVal].type,
@@ -390,7 +397,6 @@ Board.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object,
   boardName: PropTypes.string.isRequired,
-  getBoardData: PropTypes.func.isRequired,
 };
 
 Board.defaultProps = {
