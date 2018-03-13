@@ -28,7 +28,7 @@ class Board extends React.Component {
       prevX: 0,
       prevY: 0,
       zIndex: 1,
-      boxes: null,
+      boxes: {},
       curDragging: '',
       onDelete: false,
       otherUsers: {},
@@ -99,12 +99,13 @@ class Board extends React.Component {
     });
   };
 
-  handleDelete = (uuid) => {
-    if (uuid === this.state.curDragging) { // Check to see that we're deleting the correct box
+  handleDelete = (uuidVal) => {
+    if (uuidVal === this.state.curDragging) { // Check to see that we're deleting the correct box
       const allBoxes = Object.assign({}, this.state.boxes);
-      delete allBoxes[uuid];
+      delete allBoxes[uuidVal];
       this.setState({ boxes: allBoxes, curDragging: '' });
-      this.io.sendUpdateMessage({ action: 'delete', uuid, boardId: this.state.data._id });
+      // eslint-disable-next-line
+      this.io.sendUpdateMessage({ action: 'delete', uuid: uuidVal, boardName: this.state.data._id });
     }
   };
 
@@ -190,9 +191,10 @@ class Board extends React.Component {
       });
       this.io.sendClientUpdate({
         client: this.uuid,
-        x: this.state.windowX - window.innerWidth/2,
-        y: this.state.windowY - window.innerHeight/2,
-        color: this.state.clientColor });
+        x: this.state.windowX - (window.innerWidth / 2),
+        y: this.state.windowY - (window.innerHeight / 2),
+        color: this.state.clientColor,
+      });
     }
   };
 
@@ -286,8 +288,13 @@ class Board extends React.Component {
       if (curKey !== this.uuid) {
         const xVal = -this.state.otherUsers[curKey].x + this.state.windowX;
         const yVal = -this.state.otherUsers[curKey].y + this.state.windowY;
-        const clientStyle = ({ left: xVal, top: yVal, zIndex: this.state.zIndex + 1, backgroundColor: this.state.otherUsers[curKey].color });
-        clientBoxes.push(<div className="Client-box" key={curKey} style={clientStyle} />)
+        const clientStyle = ({
+          left: xVal,
+          top: yVal,
+          zIndex: this.state.zIndex + 1,
+          backgroundColor: this.state.otherUsers[curKey].color,
+        });
+        clientBoxes.push(<div className="Client-box" key={curKey} style={clientStyle} />);
       }
     }
     const allKeys = Object.keys(this.state.boxes);

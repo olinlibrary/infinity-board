@@ -77,11 +77,15 @@ export default class BoardManager {
   receivedBoardUpdate(element, socket) {
     const boards = this.getBoardList();
     const boardData = boards[element.boardName];
-    boardData.elements[element.uuid] = {
-      state: element.state,
-      type: element.type,
-    };
-    boardData.zIndex = element.zIndex;
+    if (element.action === 'delete') { // Delete the box from the element stored in DB
+      delete boardData.elements[element.uuid];
+    } else {
+      boardData.elements[element.uuid] = {
+        state: element.state,
+        type: element.type,
+      };
+      boardData.zIndex = element.zIndex;
+    }
     // console.log(element.state);
     // Save the board to the database
     this.dbConn.saveBoard(boardData);
