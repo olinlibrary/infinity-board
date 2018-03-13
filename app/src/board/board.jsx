@@ -17,8 +17,11 @@ class Board extends React.Component {
     super(props);
     this.io = new ServerComm(window.SERVER_URI);
     this.io.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.io.setReceivedClientMessageHandler(this.onClientUpdate);
     this.io.connect();
+    this.uuid = uuidv4();
     this.state = {
+      clientColor: randomColor(),
       windowX: 0,
       windowY: 0,
       prevX: 0,
@@ -27,6 +30,7 @@ class Board extends React.Component {
       boxes: props.data.elements,
       curDragging: '',
       onDelete: false,
+      otherUsers: {},
     };
   }
 
@@ -36,6 +40,15 @@ class Board extends React.Component {
   componentDidMount() {
     // We have to add document listeners so it will update pos even when
     document.addEventListener('mousedown', this.mouseDown);
+    window.addEventListener('beforeunload', (e) => {
+      e.preventDefault();
+      this.io.sendClientUpdate({
+        client: this.uuid,
+        x: 0,
+        y: 0,
+        color: 'transparent',
+      });
+    });
   }
 
 
@@ -49,32 +62,42 @@ class Board extends React.Component {
     this.generateBox('image', imgUrl, true);
   };
 
+  onClientUpdate = (msg) => {
+    const allClients = Object.assign({}, this.state.otherUsers)
+    allClients[msg.client] = { x: msg.x, y: msg.y, color: msg.color };
+    this.setState({ otherUsers: allClients });
+    console.log(msg.color);
+  }
+
   /**
    * Update the state for a given board based on a message from the WebSocket.
    * @param msg - the WebSocket message containing updated state data for the board.
   */
   onUpdate = (msg) => {
-    const updatedState = Object.assign({}, this.state.boxes, {
-      [msg.uuid]: Object.assign({}, this.state.boxes[msg.uuid], {
-        state: msg.state,
-        type: msg.type,
-      }),
-    }); // TODO: Seems redundant from updateBoardState, should change
-    this.setState({
-      boxes: updatedState,
-      zIndex: msg.zIndex,
-    });
+    if (msg.type === 'delete') {
+      const allBoxes = Object.assign({}, this.state.boxes);
+      delete allBoxes[msg.uuid];
+      this.setState({ boxes: allBoxes });
+    } else {
+      const updatedState = Object.assign({}, this.state.boxes, {
+        [msg.uuid]: Object.assign({}, this.state.boxes[msg.uuid], {
+          state: msg.state,
+          type: msg.type,
+        }),
+      }); // TODO: Seems redundant from updateBoardState, should change
+      this.setState({
+        boxes: updatedState,
+        zIndex: msg.zIndex,
+      });
+    }
   };
-
-
-  inputFile = () => {
-  }
 
   handleDelete = (uuid) => {
     if (uuid === this.state.curDragging) { // Check to see that we're deleting the correct box
       const allBoxes = Object.assign({}, this.state.boxes);
       delete allBoxes[uuid];
-      this.setState({ boxes: allBoxes, curDragging: '' })
+      this.setState({ boxes: allBoxes, curDragging: '' });
+      this.io.sendUpdateMessage({ type: 'delete', uuid: uuid });
     }
   }
 
@@ -95,6 +118,18 @@ class Board extends React.Component {
       this.setState({ curDragging: newState.curDragging });
     }
 
+    const uuid = this.state.clientUUID;
+    const myClient = Object.assign({}, this.state.otherUsers,
+      {
+        uuid:
+        {
+          x: this.state.windowX - (window.innerWidth / 2),
+          y: this.state.windowY - (window.innerHeight / 2),
+          color: this.state.clientColor,
+        },
+      },
+    );
+
     origState[uuidVal].state = updatedState;
     this.setState({
       boxes: origState,
@@ -102,6 +137,7 @@ class Board extends React.Component {
 
     // Push the update out over WebSockets
     this.io.sendUpdateMessage({
+      type: 'update',
       // eslint-disable-next-line
       zIndex: this.state.zIndex,
       // eslint-disable-next-line no-underscore-dangle
@@ -109,6 +145,7 @@ class Board extends React.Component {
       uuid: uuidVal,
       state: updatedState,
       type: origState[uuidVal].type,
+      clients: myClient,
     });
   };
 
@@ -158,6 +195,11 @@ class Board extends React.Component {
         prevX: e.clientX,
         prevY: e.clientY,
       });
+      this.io.sendClientUpdate({
+        client: this.uuid,
+        x: this.state.windowX - window.innerWidth/2,
+        y: this.state.windowY - window.innerHeight/2,
+        color: this.state.clientColor });
     }
   };
 
@@ -241,6 +283,18 @@ class Board extends React.Component {
   };
 
   render() {
+    const allClients = Object.keys(this.state.otherUsers);
+    const clientBoxes = [];
+    for (let i = 0; i < allClients.length; i++) {
+      const curKey = allClients[i];
+      if (curKey !== this.uuid) {
+        const xVal = -this.state.otherUsers[curKey].x + this.state.windowX;
+        const yVal = -this.state.otherUsers[curKey].y + this.state.windowY;
+        const clientStyle = ({ left: xVal, top: yVal, zIndex: this.state.zIndex + 1, backgroundColor: this.state.otherUsers[curKey].color });
+        clientBoxes.push(<div className="Client-box" key={curKey} style={clientStyle} />)
+      }
+    }
+
     const allKeys = Object.keys(this.state.boxes);
     const boxes = [];
     for (let i = 0; i < allKeys.length; i++) {
@@ -282,7 +336,7 @@ class Board extends React.Component {
         }
       }
     }
-    const buttonStyle = { zIndex: this.state.zIndex + 1 };
+    const buttonStyle = { zIndex: this.state.zIndex + 2 };
 
     const bgStyle = { // Set the position for the grid background
       // eslint-disable-next-line
@@ -296,6 +350,7 @@ class Board extends React.Component {
         onMouseUp={this.mouseUp}
         style={{ cursor: this.state.cursor }}
       >
+        {clientBoxes}
         {boxes}
         <div className="View" style={bgStyle} id="bg" ref={(view) => { this.view = view; }} />
         <FileDragger generateBox={this.generateBox} inputFile={this.inputFile} />
@@ -321,7 +376,7 @@ class Board extends React.Component {
               accept="image/*"
               onFinish={this.onUploadFinish}
               uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
-              autoUpload
+              // eslint-disable-next-line
               server={window.SERVER_URI}
               inputRef={(input) => { this.input = input; }}
               style={{ display: 'none' }}

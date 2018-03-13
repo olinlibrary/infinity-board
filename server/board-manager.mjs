@@ -23,6 +23,7 @@ export default class BoardManager {
     // Bind contexts
     this.createBoard = this.createBoard.bind(this);
     this.receivedBoardUpdate = this.receivedBoardUpdate.bind(this);
+    this.receivedClientUpdate = this.receivedClientUpdate.bind(this);
     this.handleBoardListRequest = this.handleBoardListRequest.bind(this);
     this.getBoardList = this.getBoardList.bind(this);
     this.getBoardData = this.getBoardData.bind(this);
@@ -30,6 +31,7 @@ export default class BoardManager {
     // Register WebSocket message handlers
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
     this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
+    this.wsServer.registerMessageHandler('clientUpdate', this.receivedClientUpdate);
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
     this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
   }
@@ -73,18 +75,25 @@ export default class BoardManager {
    * @param socket - the socket.io connection
    */
   receivedBoardUpdate(element, socket) {
+    console.log(element);
     const boards = this.getBoardList();
     const boardData = boards[element.boardId];
     boardData.elements[element.uuid] = {
       state: element.state,
       type: element.type,
     };
-    board.zIndex = element.zIndex;
+    boardData.zIndex = element.zIndex;
+    // console.log(element.state);
     // Save the board to the database
     this.dbConn.saveBoard(boardData);
 
     // Broadcast the update to the other connected clients
     this.wsServer.broadcastBoardUpdate(element, socket);
+  }
+
+  receivedClientUpdate(element, socket) {
+    // Broadcast the update to the other connected clients
+    this.wsServer.broadcastClientUpdate(element, socket);
   }
 
   /**

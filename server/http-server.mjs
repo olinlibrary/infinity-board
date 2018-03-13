@@ -51,6 +51,8 @@ export default class HttpServer {
     this.app.get('/', (req, res) => {
       res.send(indexHTML);
     });
+
+
     this.app.get('/bundle.js', (req, res) => {
       res.sendFile(`${rootDir}/bundle.js`);
     });
