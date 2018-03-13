@@ -26,7 +26,7 @@ class Board extends React.Component {
       windowY: 0,
       prevX: 0,
       prevY: 0,
-      zIndex: null,
+      zIndex: 1,
       boxes: null,
       curDragging: '',
       onDelete: false,
