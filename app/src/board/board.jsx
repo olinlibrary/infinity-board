@@ -26,7 +26,7 @@ class Board extends React.Component {
       windowY: 0,
       prevX: 0,
       prevY: 0,
-      zIndex: props.data.zIndex,
+      zIndex: props.data ? props.data.zIndex : null,
       boxes: props.data ? props.data.elements : null,
       curDragging: '',
       onDelete: false,
@@ -389,7 +389,7 @@ class Board extends React.Component {
 Board.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object,
-  boardName: PropTypes.number.isRequired,
+  boardName: PropTypes.string.isRequired,
   getBoardData: PropTypes.func.isRequired,
 };
 
