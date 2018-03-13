@@ -274,9 +274,9 @@ class Board extends React.Component {
         initState[uuid].state.h = h; // Otherwise, set based on aspect ratio
         initState[uuid].state.w = initState[uuid].state.h * initState[uuid].aspect;
       }
+      this.updateBoardState(uuid, { w: w, h: h }); // Update the size on other clients
+      this.setState({ boxes: initState });
     }
-    this.updateBoardState(uuid, { w: w, h: h }); // Update the size on other clients
-    this.setState({ boxes: initState });
   };
 
   render() {
