@@ -17,6 +17,7 @@ class Board extends React.Component {
     super(props);
     this.io = new ServerComm(window.SERVER_URI);
     this.io.setReceivedUpdateMessageHandler(this.onUpdate);
+    this.io.setReceivedClientMessageHandler(this.onClientUpdate);
     this.io.connect();
     this.state = {
       clientUUID: uuidv4(),
@@ -52,6 +53,12 @@ class Board extends React.Component {
     this.generateBox('image', imgUrl, true);
   };
 
+  onClientUpdate = (msg) => {
+    const allClients = Object.assign({}, this.state.otherUsers)
+    allClients[msg.client] = { x: msg.x, y: msg.y, color: msg.color };
+    this.setState({ otherUsers: allClients });
+  }
+
   /**
    * Update the state for a given board based on a message from the WebSocket.
    * @param msg - the WebSocket message containing updated state data for the board.
@@ -71,14 +78,9 @@ class Board extends React.Component {
       this.setState({
         boxes: updatedState,
         zIndex: msg.zIndex,
-        otherUsers: msg.clients,
       });
     }
   };
-
-
-  inputFile = () => {
-  }
 
   handleDelete = (uuid) => {
     if (uuid === this.state.curDragging) { // Check to see that we're deleting the correct box
@@ -106,18 +108,6 @@ class Board extends React.Component {
       this.setState({ curDragging: newState.curDragging });
     }
 
-    const uuid = this.state.clientUUID;
-    const myClient = Object.assign({}, this.state.otherUsers,
-      {
-        uuid:
-        {
-          x: this.state.windowX - (window.innerWidth / 2),
-          y: this.state.windowY - (window.innerHeight / 2),
-          color: this.state.clientColor,
-        },
-      },
-    );
-
     origState[uuidVal].state = updatedState;
     this.setState({
       boxes: origState,
@@ -133,7 +123,6 @@ class Board extends React.Component {
       uuid: uuidVal,
       state: updatedState,
       type: origState[uuidVal].type,
-      clients: myClient,
     });
   };
 
@@ -183,6 +172,11 @@ class Board extends React.Component {
         prevX: e.clientX,
         prevY: e.clientY,
       });
+      this.io.sendClientUpdate({
+        client: this.state.clientUUID,
+        x: this.state.windowX - window.innerWidth/2, 
+        y: this.state.windowY - window.innerHeight/2,
+        color: this.state.clientColor });
     }
   };
 
@@ -270,12 +264,13 @@ class Board extends React.Component {
     const clientBoxes = [];
     for (let i = 0; i < allClients.length; i++) {
       const curKey = allClients[i];
-      const xVal = -this.state.otherUsers[curKey].x + this.state.windowX;
-      const yVal = -this.state.otherUsers[curKey].y + this.state.windowY;
-      const clientStyle = ({ left: xVal, top: yVal, zIndex: this.state.zIndex + 2, backgroundColor: this.state.otherUsers[curKey].color });
-      clientBoxes.push(<div className="Client-box" key={curKey} style={clientStyle} />)
+      if (curKey !== this.state.clientUUID) {
+        const xVal = -this.state.otherUsers[curKey].x + this.state.windowX;
+        const yVal = -this.state.otherUsers[curKey].y + this.state.windowY;
+        const clientStyle = ({ left: xVal, top: yVal, zIndex: this.state.zIndex + 2, backgroundColor: this.state.otherUsers[curKey].color });
+        clientBoxes.push(<div className="Client-box" key={curKey} style={clientStyle} />)
+      }
     }
-
 
     const allKeys = Object.keys(this.state.boxes);
     const boxes = [];
