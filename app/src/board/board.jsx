@@ -70,7 +70,11 @@ class Board extends React.Component {
     const allClients = Object.assign({}, this.state.otherUsers);
     allClients[msg.client] = { x: msg.x, y: msg.y, color: msg.color };
     this.setState({ otherUsers: allClients });
+<<<<<<< HEAD
   };
+=======
+  }
+>>>>>>> Fixing stuff.
 
   /**
    * Update the state for a given board based on a message from the WebSocket.
