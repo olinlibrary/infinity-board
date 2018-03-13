@@ -59,7 +59,7 @@ class Board extends React.Component {
   */
   onUploadFinish = (e) => {
     // eslint-disable-next-line
-    const imgUrl = window.SERVER_URI + e.publicUrl;
+    const imgUrl = e.publicUrl;
     this.generateBox('image', imgUrl, true);
   };
 
