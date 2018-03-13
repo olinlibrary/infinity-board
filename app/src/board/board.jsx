@@ -67,7 +67,6 @@ class Board extends React.Component {
     const allClients = Object.assign({}, this.state.otherUsers)
     allClients[msg.client] = { x: msg.x, y: msg.y, color: msg.color };
     this.setState({ otherUsers: allClients });
-    console.log(msg.color);
   }
 
   /**
@@ -75,7 +74,7 @@ class Board extends React.Component {
    * @param msg - the WebSocket message containing updated state data for the board.
   */
   onUpdate = (msg) => {
-    if (msg.type === 'delete') {
+    if (msg.action === 'delete') {
       const allBoxes = Object.assign({}, this.state.boxes);
       delete allBoxes[msg.uuid];
       this.setState({ boxes: allBoxes });
