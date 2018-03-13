@@ -26,7 +26,7 @@ class Board extends React.Component {
       windowY: 0,
       prevX: 0,
       prevY: 0,
-      zIndex: 1,
+      zIndex: props.data.zIndex,
       boxes: props.data ? props.data.elements : null,
       curDragging: '',
       onDelete: false,
@@ -98,7 +98,7 @@ class Board extends React.Component {
       const allBoxes = Object.assign({}, this.state.boxes);
       delete allBoxes[uuid];
       this.setState({ boxes: allBoxes, curDragging: '' });
-      this.io.sendUpdateMessage({ type: 'delete', uuid });
+      this.io.sendUpdateMessage({ type: 'delete', uuid: uuid, boardId: this.props.data._id });
     }
   };
 
@@ -118,19 +118,6 @@ class Board extends React.Component {
     if (newState.curDragging !== undefined) {
       this.setState({ curDragging: newState.curDragging });
     }
-
-    const uuid = this.state.clientUUID;
-    const myClient = Object.assign({}, this.state.otherUsers,
-      {
-        uuid:
-        {
-          x: this.state.windowX - (window.innerWidth / 2),
-          y: this.state.windowY - (window.innerHeight / 2),
-          color: this.state.clientColor,
-        },
-      },
-    );
-
     origState[uuidVal].state = updatedState;
     this.setState({
       boxes: origState,
@@ -146,7 +133,6 @@ class Board extends React.Component {
       uuid: uuidVal,
       state: updatedState,
       type: origState[uuidVal].type,
-      clients: myClient,
     });
   };
 
@@ -279,7 +265,7 @@ class Board extends React.Component {
         initState[uuid].state.w = initState[uuid].state.h * initState[uuid].aspect;
       }
     }
-
+    this.updateBoardState(uuid, { w: w, h: h }); // Update the size on other clients
     this.setState({ boxes: initState });
   };
 
