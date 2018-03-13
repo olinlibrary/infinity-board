@@ -75,7 +75,6 @@ export default class BoardManager {
    * @param socket - the socket.io connection
    */
   receivedBoardUpdate(element, socket) {
-    console.log(element);
     const boards = this.getBoardList();
     const boardData = boards[element.boardId];
     boardData.elements[element.uuid] = {

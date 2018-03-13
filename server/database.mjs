@@ -98,7 +98,7 @@ export default class DatabaseConnection {
         name = Names.getRandomName();
       }
       const obj = {
-        created: now, lastUsed: now, name, elements: [],
+          created: now, lastUsed: now, name, elements: {}, zIndex: 1,
       };
       this.db.collection('boards').insertOne(obj, (err, res) => {
         if (err) {
@@ -139,7 +139,7 @@ export default class DatabaseConnection {
    */
   saveBoard(board) {
     const query = { _id: ObjectId(board._id) };
-    const updatedVals = { $set: { elements: board.elements } };
+      const updatedVals = { $set: { elements: board.elements, zIndex: board.zIndex } };
     return this.db.collection('boards').updateOne(query, updatedVals, (err, res) => {
       if (err) throw err;
     });
