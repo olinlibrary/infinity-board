@@ -93,6 +93,7 @@ class Board extends React.Component {
   };
 
   receivedBoardData = (board) => {
+    console.log(board.elements);
     this.setState({
       data: board,
       boxes: board.elements,
