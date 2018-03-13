@@ -18,6 +18,7 @@ class Board extends React.Component {
     this.io = new ServerComm(window.SERVER_URI);
     this.io.setReceivedUpdateMessageHandler(this.onUpdate);
     this.io.setReceivedClientMessageHandler(this.onClientUpdate);
+    this.io.setReceivedBoardDataMessageHandler(this.receivedBoardData);
     this.io.connect();
     this.uuid = uuidv4();
     this.state = {
@@ -49,7 +50,6 @@ class Board extends React.Component {
         color: 'transparent',
       });
     });
-    this.io.setReceivedBoardDataMessageHandler(this.receivedBoardData);
     this.io.getBoardData(null, this.props.boardName);
   }
 
