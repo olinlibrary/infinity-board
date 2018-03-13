@@ -16,6 +16,7 @@ export default class WebSocketServer {
     this.broadcastBoardUpdate = this.broadcastBoardUpdate.bind(this);
     this.broadcastBoardListUpdate = this.broadcastBoardListUpdate.bind(this);
     this.registerMessageHandler = this.registerMessageHandler.bind(this);
+    this.broadcastClientUpdate = this.broadcastClientUpdate.bind(this);
   }
 
   /**
@@ -43,6 +44,12 @@ export default class WebSocketServer {
         this.messageHandlers.boardUpdate(data, socket);
       }
     });
+    socket.on('clientUpdate', (data) => {
+      if (Object.hasOwnProperty.call(this.messageHandlers, 'clientUpdate')) {
+        this.messageHandlers.clientUpdate(data, socket);
+      }
+    });
+
     socket.on('disconnect', () => this.onClientDisconnect(socket));
   }
 
@@ -64,6 +71,10 @@ export default class WebSocketServer {
     // this.io.emit('boardUpdate', boardElement);
     originatingSocket.broadcast.emit('boardUpdate', boardElement); // Only sends the updated state to the client who didn't send.
     // TODO Support having multiple boards open
+  }
+
+  broadcastClientUpdate(client, originatingSocket) {
+    originatingSocket.broadcast.emit('clientUpdate', client);
   }
 
   /**

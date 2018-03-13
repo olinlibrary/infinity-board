@@ -138,7 +138,7 @@ export default class DatabaseConnection {
    * @param {Board} board - a full Board object.
    */
   saveBoard(board) {
-    const query = { _id: board._id };
+    const query = { _id: ObjectId(board._id) };
     const updatedVals = { $set: { elements: board.elements } };
     return this.db.collection('boards').updateOne(query, updatedVals, (err, res) => {
       if (err) throw err;

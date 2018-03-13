@@ -9,6 +9,7 @@ export default class ServerComm {
     this.receivedUpdateMessageHandler = null;
     this.receivedBoardListMessageHandler = null;
     this.receivedBoardDataMessageHandler = null;
+    this.receivedClientUpdateMessageHandler = null;
   }
 
   /**
@@ -19,6 +20,7 @@ export default class ServerComm {
     this.io.on('boardUpdate', msg => this.receivedBoardUpdateMessage(msg, this.io));
     this.io.on('boardListUpdate', msg => this.receivedBoardListUpdate(msg, this.io));
     this.io.on('boardData', msg => this.receivedFullBoardDataMessage(msg, this.io));
+    this.io.on('clientUpdate', msg => this.receivedClientUpdateMessage(msg, this.io));
   };
 
 
@@ -56,6 +58,17 @@ export default class ServerComm {
   };
 
   /**
+   * Called when an update on the clients' status is received
+   * @param msg - the message payload
+   * @param socket - the socket.io connection to the server
+   */
+  receivedClientUpdateMessage = (msg, socket) => {
+    if (this.receivedClientUpdateMessageHandler) {
+      this.receivedClientUpdateMessageHandler(msg, socket);
+    }
+  }
+
+  /**
    * Registers a function to be called when a board update message is received.
    * @param callback - the function to call when an 'update' message is received
    */
@@ -75,6 +88,10 @@ export default class ServerComm {
     this.boardUpdateMessageHandler = callback;
   };
 
+  setReceivedClientMessageHandler = (callback) => {
+    this.receivedClientUpdateMessageHandler = callback;
+  }
+
   /**
    * Registers a function to be called when a board list message is received.
    * @param callback - the function to call when a 'boardListUpdate' message is received
@@ -90,6 +107,10 @@ export default class ServerComm {
   sendUpdateMessage = (data) => {
     this.io.emit('boardUpdate', data);
   };
+
+  sendClientUpdate = (data) => {
+    this.io.emit('clientUpdate', data);
+  }
 
   /**
    * Requests a list of boards from the server.
