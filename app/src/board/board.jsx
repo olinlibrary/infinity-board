@@ -7,7 +7,6 @@ import '../App.css';
 import ServerComm from '.././server-comm';
 import TextBox from './text-box';
 import ImageBox from './image-box';
-import FileDragger from './file-dragger';
 
 /**
  * The component responsible for drawing all elements of the board.
@@ -64,10 +63,10 @@ class Board extends React.Component {
   };
 
   onClientUpdate = (msg) => {
-    const allClients = Object.assign({}, this.state.otherUsers)
+    const allClients = Object.assign({}, this.state.otherUsers);
     allClients[msg.client] = { x: msg.x, y: msg.y, color: msg.color };
     this.setState({ otherUsers: allClients });
-  }
+  };
 
   /**
    * Update the state for a given board based on a message from the WebSocket.

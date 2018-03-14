@@ -12,14 +12,12 @@ you'll never run out of collaborative and creative space.
   * [Frontend React app](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/app.html)
   * [Backend server](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/server.html)
 
-![](UMLDiagram.png)
+![](docs/UMLDiagram.png)
 
 # Running InfinityBoard locally
 
 In order to run a local instance of InfinityBoard, you'll need to do a
 few things.
-up the backend server and the React frontend. For image upload functionality,
-you'll also need to [configure an AWS S3 bucket](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html).
 
 ## Setup MongoDB
 
@@ -59,7 +57,8 @@ AWS_IDENTITY_POOL_ID=""
 
 #### Install Node.js >8.5.0
 
-If you don't have Node.js v8.5.0 or greater already,
+If you don't have Node.js v8.5.0 or greater, as determined by running
+`node --version`,
 [do that first](http://nodesource.com/blog/installing-node-js-tutorial-using-nvm-on-mac-os-x-and-ubuntu/).
 
 If you can, install Yarn instead of NPM for package management (it's a lot faster).

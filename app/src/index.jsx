@@ -4,7 +4,6 @@ import {
   BrowserRouter,
   Route,
   Switch,
-  withRouter,
 } from 'react-router-dom';
 import Board from './board/board';
 import './App.css';
