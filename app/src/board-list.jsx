@@ -1,8 +1,14 @@
+/* eslint-disable jsx-a11y/anchor-is-valid,no-underscore-dangle */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 export default class BoardList extends React.Component {
+  onAddButtonKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === 'Space') {
+      this.createBoard();
+    }
+  };
 
   /**
    * Handles the pressing of the create board button.
@@ -21,14 +27,15 @@ export default class BoardList extends React.Component {
   render() {
     const boards = [];
     this.props.boards.forEach((board) => {
-      /* eslint-disable */
-      boards.push(<Link
-        className="board-li"
-        onClick={ () => this.boardSelected(board._id) }
-        to={{ pathname: `/${board.name}` }}
-        key={ board._id }>
-        { board.name }
-      </Link>);
+      boards.push((
+        <Link
+          className="board-li"
+          to={{ pathname: `/${board.name}` }}
+          key={board._id}
+        >
+          { board.name }
+        </Link>
+      ));
     });
     return (
       <div className="board-list-super-container">
@@ -36,7 +43,7 @@ export default class BoardList extends React.Component {
           <div className="board-list-header">
             <span>InfinityBoard</span>
           </div>
-          <div className="add-button" onClick={this.createBoard}>
+          <div className="add-button" onClick={this.createBoard} onKeyDown={this.onAddButtonKeyDown}>
             +
           </div>
           <div className="board-list">
@@ -49,10 +56,10 @@ export default class BoardList extends React.Component {
 }
 
 BoardList.propTypes = {
-  // TODO Use PropTypes.arrayOf(Board)
   // eslint-disable-next-line react/forbid-prop-types
   boards: PropTypes.array.isRequired,
   history: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
   serverComm: PropTypes.object.isRequired,
   createBoard: PropTypes.func.isRequired,
 };

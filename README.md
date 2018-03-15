@@ -120,7 +120,7 @@ In a separate terminal, simply run the following to launch the web app:
 yarn run start
 ```
 
-Now the frontend will be accessible from `http://localhost:8080/`
+Now the frontend will be accessible from `http://localhost:8080/`.
 
 # Tests
 
