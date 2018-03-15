@@ -86,12 +86,12 @@ export default class BoardManager {
       };
       boardData.zIndex = element.zIndex;
     }
-    // console.log(element.state);
-    // Save the board to the database
-    this.dbConn.saveBoard(boardData);
 
     // Broadcast the update to the other connected clients
     this.wsServer.broadcastBoardUpdate(element, socket);
+
+    // Save the board to the database
+    this.dbConn.saveBoard(boardData);
   }
 
   receivedClientUpdate(element, socket) {

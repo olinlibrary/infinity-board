@@ -29,7 +29,10 @@ is a great resource to help setting that up.
 
 ## Setup an AWS S3 bucket
 
-These instructions are based off of [this tutorial](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html). First, you'll need [an AWS account.](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/). Next, create an [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html) and ensure you have access to it. You'll also need to set the CORS policy as follows:
+These instructions are based off of [this tutorial](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html).
+First, you'll need [an AWS account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/).
+Next, create an [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html)
+and ensure you have access to it. You'll also need to set the CORS policy as follows:
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -91,7 +94,8 @@ AWS_S3_BUCKET_NAME=""
 
 #### Install Node.js >8.5.0
 
-If you don't have Node.js v8.5.0 or greater already,
+If you don't have Node.js v8.5.0 or greater, which can be determined by
+running `node --version`,
 [do that first](http://nodesource.com/blog/installing-node-js-tutorial-using-nvm-on-mac-os-x-and-ubuntu/).
 
 If you can, install Yarn instead of NPM for package management (it's a lot faster).

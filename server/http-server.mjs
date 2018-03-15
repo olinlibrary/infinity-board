@@ -51,6 +51,9 @@ export default class HttpServer {
     this.app.get('/bundle.js', (req, res) => {
       res.sendFile(`${rootDir}/bundle.js`);
     });
+    this.app.get('/favicon.ico', (req, res) => {
+      res.sendFile(`${rootDir}/favicon.ico`);
+    });
     this.app.get(['/', '/:board'], (req, res) => {
       res.send(indexHTML);
     });

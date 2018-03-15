@@ -15,11 +15,10 @@ export default class Names {
   }
 
   static getRandomName() {
-
     function getRandomInt(max) {
       return Math.floor(Math.random() * Math.floor(max));
     }
-    
+
     let name = '';
     const bases = [adjectives, adjectives, animals];
     bases.forEach((base) => {

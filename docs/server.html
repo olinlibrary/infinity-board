@@ -13,7 +13,7 @@
     <div class='flex'>
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
-          <h3 class='mb0 no-anchor'>InfinityBoard Server</h3>
+          <h3 class='mb0 no-anchor'>infinity-board</h3>
           <div class='mb1'><code>0.1.0</code></div>
           <input
             placeholder='Filter'
@@ -493,7 +493,7 @@ creation of a board
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>getBoardData(boardId, socket)</span>
+            <span class='code strong strong truncate'>getBoardData(query, socket)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -504,7 +504,7 @@ creation of a board
   <p>Gets all the data associated with a board, including its elements.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getBoardData(boardId: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, socket: any)</div>
+  <div class='pre p1 fill-light mt0'>getBoardData(query: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>, socket: any)</div>
   
   
 
@@ -521,8 +521,8 @@ creation of a board
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>boardId</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    the UUID of the board to look up
+            <span class='code bold'>query</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
+	    the UUID or name of the board to look up
 
           </div>
           

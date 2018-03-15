@@ -39,8 +39,8 @@
     "build": "webpack --config=webpack.config.js",
     "dev": "webpack-dev-server --inline --hot",
     "test": "jest",
-    "eject": "react-scripts eject",
-    "lint": "./node_modules/.bin/eslint --ext .jsx --ext .js --ext .mjs .",
+    "doc": "mkdir temp && documentation build server/*js* -f html -o temp && mv temp/index.html docs/server.html && documentation build app/src/**/*js* -f html -o temp && mv temp/index.html docs/app.html && rm -rf temp",
+    "lint": "eslint --ext .jsx --ext .js --ext .mjs .",
     "validate": "npm ls",
     "server": "node --experimental-modules server/index.mjs"
   },
