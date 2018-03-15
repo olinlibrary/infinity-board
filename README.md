@@ -12,7 +12,7 @@ you'll never run out of collaborative and creative space.
   * [Frontend React app](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/app.html)
   * [Backend server](http://htmlpreview.github.io/?https://github.com/olinlibrary/infinity-board/blob/master/docs/server.html)
 
-![](UMLDiagram.png)
+![](docs/UMLDiagram.png)
 
 # Running InfinityBoard locally
 
