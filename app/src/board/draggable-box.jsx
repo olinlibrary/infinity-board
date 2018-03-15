@@ -142,7 +142,7 @@ class DraggableBox extends React.Component {
         this.setState({ resizing: true });
       } else {
         this.setState({ draggable: true });
-        this.props.callback(this.props.uuid, { curDragging: this.props.uuid })
+        this.props.callback(this.props.uuid, { curDragging: this.props.uuid });
       }
     }
   };
@@ -152,14 +152,11 @@ class DraggableBox extends React.Component {
   */
   mouseUp = (e) => {
     e.preventDefault();
-    if (this.props.overDelete) {
-      this.props.deleteCallback(this.props.uuid);
-    } else {
-      this.setState({ draggable: false, resizing: false });
-      this.props.callback(this.props.uuid, { curDragging: '' })
-      if (!this.state.mouseMoved) {
-        this.props.textCallback();
-      }
+    this.props.deleteCallback(this.props.uuid);
+    this.setState({ draggable: false, resizing: false });
+    this.props.callback(this.props.uuid, { curDragging: '' });
+    if (!this.state.mouseMoved) {
+      this.props.textCallback();
     }
   };
 
@@ -228,6 +225,7 @@ DraggableBox.propTypes = {
   textCallback: PropTypes.func,
   clickCallback: PropTypes.func,
   visibility: PropTypes.string,
+  deleteCallback: PropTypes.func.isRequired,
 };
 
 DraggableBox.defaultProps = {

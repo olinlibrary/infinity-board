@@ -26,8 +26,9 @@ export default class ImageBox extends React.Component {
       img.offsetHeight,
       this.props.isUpload,
     );
-    console.log("Image loaded.")
-    this.setState({ isLoaded: true })
+    // eslint-disable-next-line
+    console.log("Image loaded.");
+    this.setState({ isLoaded: true });
   }
 
   render() {
@@ -45,7 +46,7 @@ export default class ImageBox extends React.Component {
           textCallback={this.textFunc}
           defaultWidth={this.state.width}
           defaultHeight={this.state.height}
-          visibility={'hidden'}
+          visibility="hidden"
           {...other}
         >
           {loaded ? (

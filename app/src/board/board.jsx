@@ -63,8 +63,12 @@ class Board extends React.Component {
     this.generateBox('image', imgUrl, true);
   };
 
+  /**
+   * On receiving a websocket update of the positions of other clients, update the clients list
+   * @param msg - the websocket message
+  */
   onClientUpdate = (msg) => {
-    const allClients = Object.assign({}, this.state.otherUsers)
+    const allClients = Object.assign({}, this.state.otherUsers);
     allClients[msg.client] = { x: msg.x, y: msg.y, color: msg.color };
     this.setState({ otherUsers: allClients });
   }
@@ -92,6 +96,10 @@ class Board extends React.Component {
     }
   };
 
+  /**
+   * Called when the initial board data is loaded.
+   * @param board - the board object.
+  */
   receivedBoardData = (board) => {
     this.setState({
       data: board,
@@ -100,6 +108,10 @@ class Board extends React.Component {
     });
   };
 
+  /**
+   * Handles the deletion of a box/image from this board, other boards, and the database.
+   * @param {string} uuidVal - the UUID of the box to delete.
+  */
   handleDelete = (uuidVal) => {
     if (uuidVal === this.state.curDragging) { // Check to see that we're deleting the correct box
       const allBoxes = Object.assign({}, this.state.boxes);

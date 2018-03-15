@@ -17,9 +17,8 @@ you'll never run out of collaborative and creative space.
 # Running InfinityBoard locally
 
 In order to run a local instance of InfinityBoard, you'll need to do a
-few things.
-up the backend server and the React frontend. For image upload functionality,
-you'll also need to [configure an AWS S3 bucket](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html).
+few things, including setting up the backend server and the React frontend. For image upload functionality,
+you'll also need to configure an AWS S3 bucket, described later.
 
 ## Setup MongoDB
 
@@ -30,10 +29,44 @@ is a great resource to help setting that up.
 
 ## Setup an AWS S3 bucket
 
-This step is more involved than the prior, but [these instructions](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html)
-can help you get one configured.
+These instructions are based off of [this tutorial](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html). First, you'll need [an AWS account.](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/). Next, create an [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html) and ensure you have access to it. You'll also need to set the CORS policy as follows:
 
-## Backend server
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>POST</AllowedMethod>
+        <AllowedMethod>GET</AllowedMethod>
+        <AllowedMethod>PUT</AllowedMethod>
+        <AllowedMethod>DELETE</AllowedMethod>
+        <AllowedMethod>HEAD</AllowedMethod>
+        <AllowedHeader>*</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+```
+Then, create an [IAM user](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) and attach the following policy to it:
+
+```
+{
+   "Version": "2012-10-17",
+   "Statement": [
+      {
+         "Effect": "Allow",
+         "Action": [
+            "s3:*"
+         ],
+         "Resource": [
+            "arn:aws:s3:::BUCKET_NAME/*"
+         ]
+      }
+   ]
+}
+```
+
+where `BUCKET_NAME` is the name you gave to the bucket. Now, [create an API key for your IAM user](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) - you'll use this to set up the environment in the next step.
+
+## Server/client setup - local
 
 #### Set environment variables
 
@@ -54,7 +87,6 @@ MONGO_REPLICA_SET=""
 AWS_ACCESS_KEY_ID=""
 AWS_SECRET_ACCESS_KEY=""
 AWS_S3_BUCKET_NAME=""
-AWS_IDENTITY_POOL_ID=""
 ```
 
 #### Install Node.js >8.5.0
@@ -88,6 +120,8 @@ In a separate terminal, simply run the following to launch the web app:
 yarn run start
 ```
 
+Now the frontend will be accessible from `http://localhost:8080/`
+
 # Tests
 
 To run the Jest tests, run:
@@ -97,4 +131,3 @@ yarn run test
 
 # Acknowledgements
 Infinity Board is based on the original [FutureBoard](https://github.com/olinlibrary/oldfutureboard) project from Hacking the Library 2017.
-

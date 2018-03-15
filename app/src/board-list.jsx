@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 
 export default class BoardList extends React.Component {
 
+  /**
+   * Handles the pressing of the create board button.
+  */
   createBoard = () => {
     if (this.props.serverComm) {
       this.props.serverComm.setReceivedBoardDataMessageHandler(this.receivedBoardData);
