@@ -23,7 +23,6 @@ export default class BoardManager {
     // Bind contexts
     this.createBoard = this.createBoard.bind(this);
     this.receivedBoardUpdate = this.receivedBoardUpdate.bind(this);
-    this.receivedClientUpdate = this.receivedClientUpdate.bind(this);
     this.handleBoardListRequest = this.handleBoardListRequest.bind(this);
     this.getBoardList = this.getBoardList.bind(this);
     this.getBoardData = this.getBoardData.bind(this);
@@ -31,7 +30,6 @@ export default class BoardManager {
     // Register WebSocket message handlers
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
     this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
-    this.wsServer.registerMessageHandler('clientUpdate', this.receivedClientUpdate);
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
     this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
   }
@@ -77,6 +75,8 @@ export default class BoardManager {
   receivedBoardUpdate(element, socket) {
     const boards = this.getBoardList();
     const boardData = boards[element.boardName];
+    if (!boardData) return;
+
     if (element.action === 'delete') { // Delete the box from the element stored in DB
       delete boardData.elements[element.uuid];
     } else {
@@ -94,20 +94,18 @@ export default class BoardManager {
     this.dbConn.saveBoard(boardData);
   }
 
-  receivedClientUpdate(element, socket) {
-    // Broadcast the update to the other connected clients
-    this.wsServer.broadcastClientUpdate(element, socket);
-  }
-
   /**
    * Called when a client requests a list of all the boards.
    * @param data - the WebSockets message payload (should be null)
    * @param socket - the WebSockets connection to the client requesting the list
+   * @param registerSocketWithBoard - lets the WebSockets server know which board
+   * the current client is viewing
    * @private
    */
-  handleBoardListRequest(data, socket) {
+  handleBoardListRequest(data, socket, registerSocketWithBoard) {
     const boards = this.getBoardList();
     socket.emit('boardListUpdate', boards);
+    registerSocketWithBoard(socket, null);
   }
 
   /**
@@ -137,9 +135,13 @@ export default class BoardManager {
    * Gets all the data associated with a board, including its elements.
    * @param {object} query - the UUID or name of the board to look up
    * @param socket - the WebSockets connection to the client requesting the data
+   * @param registerSocketWithBoard - lets the WebSockets server know which board
+   * the current client is viewing
    */
-  getBoardData(query, socket) {
+  getBoardData(query, socket, registerSocketWithBoard) {
     this.dbConn.getBoard(query.name, query.id).then((board) => {
+      // eslint-disable-next-line no-underscore-dangle
+      registerSocketWithBoard(socket, board._id);
       socket.emit('boardData', board);
     });
   }

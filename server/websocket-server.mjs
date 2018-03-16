@@ -9,6 +9,7 @@ export default class WebSocketServer {
     this.io = null;
     this.messageHandlers = {};
     this.boardToClientsViewingMap = {};
+    this.clientsToBoardsViewingMap = {};
 
     // Bind the current context to the following functions (weird JS thing)
     this.start = this.start.bind(this);
@@ -17,6 +18,8 @@ export default class WebSocketServer {
     this.broadcastBoardListUpdate = this.broadcastBoardListUpdate.bind(this);
     this.registerMessageHandler = this.registerMessageHandler.bind(this);
     this.broadcastClientUpdate = this.broadcastClientUpdate.bind(this);
+    this.registerSocketWithBoard = this.registerSocketWithBoard.bind(this);
+    this.deregisterClientFromBoards = this.deregisterClientFromBoards.bind(this);
   }
 
   /**
@@ -37,18 +40,16 @@ export default class WebSocketServer {
     console.log('Client connected');
     // Register the message handlers
     Object.keys(this.messageHandlers).forEach((msgName) => {
-      socket.on(msgName, data => this.messageHandlers[msgName](data, socket));
+      socket.on(msgName, data =>
+        this.messageHandlers[msgName](data, socket, this.registerSocketWithBoard));
     });
     socket.on('boardUpdate', (data) => {
       if (Object.hasOwnProperty.call(this.messageHandlers, 'boardUpdate')) {
-        this.messageHandlers.boardUpdate(data, socket);
+        this.messageHandlers.boardUpdate(data, socket, this.registerSocketWithBoard);
       }
     });
-    socket.on('clientUpdate', (data) => {
-      if (Object.hasOwnProperty.call(this.messageHandlers, 'clientUpdate')) {
-        this.messageHandlers.clientUpdate(data, socket);
-      }
-    });
+    // Dot indicating where other people are looking
+    socket.on('clientUpdate', data => this.broadcastClientUpdate(data, socket));
 
     socket.on('disconnect', () => this.onClientDisconnect(socket));
   }
@@ -68,13 +69,34 @@ export default class WebSocketServer {
    * @param originatingSocket - the WebSocket connection to the client that emitted the update
    */
   broadcastBoardUpdate(boardElement, originatingSocket) {
-    // this.io.emit('boardUpdate', boardElement);
-    originatingSocket.broadcast.emit('boardUpdate', boardElement); // Only sends the updated state to the client who didn't send.
-    // TODO Support having multiple boards open
+    // eslint-disable-next-line no-underscore-dangle
+    const clientsUsingBoard = this.boardToClientsViewingMap[boardElement._id];
+    if (clientsUsingBoard) {
+      clientsUsingBoard.forEach((socket) => {
+        if (socket !== originatingSocket) {
+          if (socket.connected) {
+            socket.emit('boardUpdate', boardElement);
+          } else {
+            this.deregisterClientFromBoards(socket); // Socket no longer connected
+          }
+        }
+      });
+    }
   }
 
-  broadcastClientUpdate(client, originatingSocket) {
-    originatingSocket.broadcast.emit('clientUpdate', client);
+  broadcastClientUpdate(data, originatingSocket) {
+    const board = this.clientsToBoardsViewingMap[originatingSocket];
+    if (board) {
+      this.boardToClientsViewingMap[board].forEach((socket) => {
+        if (socket !== originatingSocket) {
+          if (socket.connected) {
+            socket.emit('clientUpdate', data);
+          } else {
+            this.deregisterClientFromBoards(socket); // Socket no longer connected
+          }
+        }
+      });
+    }
   }
 
   /**
@@ -89,5 +111,28 @@ export default class WebSocketServer {
 
   onClientDisconnect(socket) {
     console.log('Client disconnected');
+    this.deregisterClientFromBoards(socket);
+    // Remove the client from the list of clients currently connected
+    delete this.clientsToBoardsViewingMap[socket];
+  }
+
+  registerSocketWithBoard(socket, boardId) {
+    this.deregisterClientFromBoards(socket);
+    if (!Object.hasOwnProperty.call(this.boardToClientsViewingMap, boardId)) {
+      this.boardToClientsViewingMap[boardId] = [];
+    }
+    this.clientsToBoardsViewingMap[socket] = boardId;
+    if (boardId) { // Will be null if clearing open board for client
+      this.boardToClientsViewingMap[boardId].push(socket);
+    }
+  }
+
+  deregisterClientFromBoards(socket) {
+    const openBoard = this.clientsToBoardsViewingMap[socket];
+    if (openBoard) {
+      // Remove the socket from the list of connected devices for this board
+      const boardConnectedClients = this.boardToClientsViewingMap[openBoard];
+      boardConnectedClients.splice(boardConnectedClients.indexOf(socket), 1);
+    }
   }
 }

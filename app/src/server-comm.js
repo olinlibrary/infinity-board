@@ -66,7 +66,7 @@ export default class ServerComm {
     if (this.receivedClientUpdateMessageHandler) {
       this.receivedClientUpdateMessageHandler(msg, socket);
     }
-  }
+  };
 
   /**
    * Registers a function to be called when a board update message is received.
@@ -85,20 +85,12 @@ export default class ServerComm {
   };
 
   /**
-   * Registers a function to be called when the initial board data is received.
-   * @param callback - the function to call when a 'boardData' message is received.
-  */
-  setReceivedBoardDataMessageHandler = (callback) => {
-    this.boardUpdateMessageHandler = callback;
-  };
-
-  /**
    * Registers a function to be called when an update in client positions is received.
    * @param callback - the function to call when a 'clientUpdate' message is received.
   */
   setReceivedClientMessageHandler = (callback) => {
     this.receivedClientUpdateMessageHandler = callback;
-  }
+  };
 
   /**
    * Registers a function to be called when a board list message is received.
@@ -122,7 +114,7 @@ export default class ServerComm {
    */
   sendClientUpdate = (data) => {
     this.io.emit('clientUpdate', data);
-  }
+  };
 
   /**
    * Requests a list of boards from the server.
