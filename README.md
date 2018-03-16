@@ -29,7 +29,9 @@ is a great resource to help setting that up.
 
 ## Setup an AWS S3 bucket
 
-These instructions are based off of [this tutorial](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html).
+In order to upload images to InfinityBoard, you will need to set up an
+AWS S3 bucket. The following instructions are based off of [this tutorial](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/s3-example-photo-album.html).
+
 First, you'll need [an AWS account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/).
 Next, create an [S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html)
 and ensure you have access to it. You'll also need to set the CORS policy as follows:
@@ -126,12 +128,20 @@ yarn run start
 
 Now the frontend will be accessible from `http://localhost:8080/`.
 
-# Tests
+# Running Tests
 
 To run the Jest tests, run:
 ```bash
 yarn run test
 ```
+
+# Generating Documentation
+
+To regenerate the documentation in `docs`, run:
+
+ ```bash
+ yarn run doc
+ ```
 
 # Acknowledgements
 Infinity Board is based on the original [FutureBoard](https://github.com/olinlibrary/oldfutureboard) project from Hacking the Library 2017.
