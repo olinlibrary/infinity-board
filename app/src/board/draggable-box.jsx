@@ -152,7 +152,9 @@ class DraggableBox extends React.Component {
   */
   mouseUp = (e) => {
     e.preventDefault();
-    this.props.deleteCallback(this.props.uuid);
+    if (this.props.overDelete) {
+      this.props.deleteCallback(this.props.uuid);
+    };
     this.setState({ draggable: false, resizing: false });
     this.props.callback(this.props.uuid, { curDragging: '' });
     if (!this.state.mouseMoved) {

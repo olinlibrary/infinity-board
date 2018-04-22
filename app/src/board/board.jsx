@@ -42,6 +42,7 @@ class Board extends React.Component {
     document.addEventListener('mousedown', this.mouseDown);
     window.addEventListener('beforeunload', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       this.io.sendClientUpdate({
         client: this.uuid,
         x: 0,
@@ -70,11 +71,7 @@ class Board extends React.Component {
     const allClients = Object.assign({}, this.state.otherUsers);
     allClients[msg.client] = { x: msg.x, y: msg.y, color: msg.color };
     this.setState({ otherUsers: allClients });
-<<<<<<< HEAD
   };
-=======
-  }
->>>>>>> Fixing stuff.
 
   /**
    * Update the state for a given board based on a message from the WebSocket.

@@ -69,8 +69,7 @@ export default class WebSocketServer {
    * @param originatingSocket - the WebSocket connection to the client that emitted the update
    */
   broadcastBoardUpdate(boardElement, originatingSocket) {
-    // eslint-disable-next-line no-underscore-dangle
-    const clientsUsingBoard = this.boardToClientsViewingMap[boardElement._id];
+    const clientsUsingBoard = this.boardToClientsViewingMap[boardElement.boardName];
     if (clientsUsingBoard) {
       clientsUsingBoard.forEach((socket) => {
         if (socket !== originatingSocket) {
@@ -85,7 +84,7 @@ export default class WebSocketServer {
   }
 
   broadcastClientUpdate(data, originatingSocket) {
-    const board = this.clientsToBoardsViewingMap[originatingSocket];
+    const board = this.clientsToBoardsViewingMap[originatingSocket.id];
     if (board) {
       this.boardToClientsViewingMap[board].forEach((socket) => {
         if (socket !== originatingSocket) {
@@ -117,11 +116,11 @@ export default class WebSocketServer {
   }
 
   registerSocketWithBoard(socket, boardId) {
-    this.deregisterClientFromBoards(socket);
+    this.deregisterClientFromBoards(socket.id);
     if (!Object.hasOwnProperty.call(this.boardToClientsViewingMap, boardId)) {
       this.boardToClientsViewingMap[boardId] = [];
     }
-    this.clientsToBoardsViewingMap[socket] = boardId;
+    this.clientsToBoardsViewingMap[socket.id] = boardId;
     if (boardId) { // Will be null if clearing open board for client
       this.boardToClientsViewingMap[boardId].push(socket);
     }
