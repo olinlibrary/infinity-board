@@ -6,10 +6,11 @@ const board = (state = {}, action) => {
       return Object.assign(
         {},
         state,
-        action.uid: {
-          x: action.xPos,
-          y: action.yPos,
-        }
+        {x: action.xPos, y: action.yPos},
+        // action.uid: {
+        //   x: action.xPos,
+        //   y: action.yPos,
+        // }
       )
     }
   }

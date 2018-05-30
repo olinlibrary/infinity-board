@@ -5,8 +5,8 @@ export const ActionTypes = {
 };
 
 
-export function setPosition(uid, xPos, yPos) {
-  return { type: ActionTypes.SET_POSITION, uid, xPos, yPos };
+export function setPosition(xPos, yPos) {
+  return { type: ActionTypes.SET_POSITION, xPos, yPos };
 }
 
 export function setSize(w, h) {
