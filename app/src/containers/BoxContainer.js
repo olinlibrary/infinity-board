@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { setPosition } from '../data/actions'
-import DraggableBox from '../board/draggable-box'
+import Box from '../board/box'
 
 // Maps the state to props
 const mapStateToProps = state => ({
@@ -10,11 +10,14 @@ const mapStateToProps = state => ({
 
 // Defines callbacks to pass a props
 const mapDispatchToProps = dispatch => ({
-  callback: dispatch(() => {}),
-  deleteCallback: dispatch(() => {}),
+  moveCallback: (xPos, yPos) => {
+    dispatch(setPosition(xPos, yPos))
+  }
 });
 
-export default connect(
+const BoxContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(DraggableBox)
+)(Box)
+
+export default BoxContainer;

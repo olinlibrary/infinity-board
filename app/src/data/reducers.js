@@ -1,17 +1,16 @@
 import { ActionTypes } from './actions';
 
-const board = (state = {}, action) => {
+function board(state = {}, action) {
   switch (action.type) {
-    if (action.type === ActionTypes.SET_POSITION) {
+    case ActionTypes.SET_POSITION:
       return Object.assign(
         {},
         state,
-        {x: action.xPos, y: action.yPos},
-        // action.uid: {
-        //   x: action.xPos,
-        //   y: action.yPos,
-        // }
+        { x: action.xPos, y: action.yPos },
       )
-    }
+    default:
+      return state
   }
 }
+
+export default board;

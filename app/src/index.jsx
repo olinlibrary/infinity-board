@@ -10,6 +10,11 @@ import './App.css';
 import BoardList from './board-list';
 import ServerComm from './server-comm';
 
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import board from './data/reducers';
+import BoxContainer from './containers/BoxContainer';
+
 /**
  * The main React container for the app. It holds the state and passes it down
  * as props to its child components.
@@ -17,10 +22,7 @@ import ServerComm from './server-comm';
 class App extends React.Component {
   constructor() {
     super();
-
-    this.state = {
-      boards: {},
-    };
+    this.store = createStore(board)
 
     this.serverComm = new ServerComm(window.SERVER_URI);
     this.serverComm.connect();
@@ -36,31 +38,36 @@ class App extends React.Component {
   };
 
   render() {
-    const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
     return (
-      <BrowserRouter>
-        <div className="app">
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={({ history }) => (
-                <BoardList
-                  boards={boardObjects}
-                  serverComm={this.serverComm}
-                  history={history}
-                  createBoard={this.createBoard}
-                />
-              )}
-            />
-            <Route
-              path="/:boardName"
-              component={props => <Board boardName={props.match.params.boardName} />}
-            />
-          </Switch>
-        </div>
-      </BrowserRouter>
+      <Provider store={this.store}>
+        <BoxContainer />
+      </Provider>
     );
+    // const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
+    // return (
+    //   <BrowserRouter>
+    //     <div className="app">
+    //       <Switch>
+    //         <Route
+    //           exact
+    //           path="/"
+    //           render={({ history }) => (
+    //             <BoardList
+    //               boards={boardObjects}
+    //               serverComm={this.serverComm}
+    //               history={history}
+    //               createBoard={this.createBoard}
+    //             />
+    //           )}
+    //         />
+    //         <Route
+    //           path="/:boardName"
+    //           component={props => <Board boardName={props.match.params.boardName} />}
+    //         />
+    //       </Switch>
+    //     </div>
+    //   </BrowserRouter>
+    // );
   }
 }
 
