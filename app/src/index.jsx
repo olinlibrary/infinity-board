@@ -12,7 +12,7 @@ import ServerComm from './server-comm';
 
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import board from './data/reducers';
+import box from './data/reducers';
 import BoxContainer from './containers/BoxContainer';
 
 /**
@@ -22,7 +22,7 @@ import BoxContainer from './containers/BoxContainer';
 class App extends React.Component {
   constructor() {
     super();
-    this.store = createStore(board)
+    this.store = createStore(box)
 
     this.serverComm = new ServerComm(window.SERVER_URI);
     this.serverComm.connect();
@@ -40,7 +40,7 @@ class App extends React.Component {
   render() {
     return (
       <Provider store={this.store}>
-        <BoxContainer />
+        <BoxContainer uid="12345"/>
       </Provider>
     );
     // const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
