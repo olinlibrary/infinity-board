@@ -24,8 +24,8 @@ class Box extends React.Component {
   getBoxStyle = () => {
     const boxStyle = {
       backgroundColor: '#112233',
-      left: `${this.props.x + this.props.mouseX}px`,
-      top: `${this.props.y + this.props.mouseY}px`,
+      left: `${this.props.x}px`,
+      top: `${this.props.y}px`,
       width: '200px',
       height: '200px',
     };
@@ -38,14 +38,15 @@ class Box extends React.Component {
   */
   mouseDown = (e) => {
     this.props.clickCallback(true);
-    this.props.setMouseDown(this.props.x - e.screenX, -this.props.y + e.screenY)
+    this.props.setMouseDown(-this.props.x + e.screenX, -this.props.y + e.screenY)
+    console.log(e.screenY)
   }
 
 
   mouseMove = (e) => {
-    console.log(this.props.y + " " + this.props.mouseY)
+    console.log(this.props.y + " " + String(e.screenY-this.props.mouseY))
     if (this.props.dragging) {
-      this.props.moveCallback(e.clientX, e.clientY);
+      this.props.moveCallback(e.screenX-this.props.mouseX, e.screenY-this.props.mouseY);
     }
   };
 
