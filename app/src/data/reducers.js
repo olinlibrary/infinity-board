@@ -33,11 +33,18 @@ function board(state = {}, action) {
         mouseX: 0,
         mouseY: 0,
         dragging: false,
+        color: action.color,
       }
       return Object.assign(
         {},
         state,
         { boxes: curBoxes },
+      )
+    case ActionTypes.SET_CUR_DRAGGING:
+      return Object.assign(
+        {},
+        state,
+        { curDragging: action.uuid },
       )
     default:
       return state

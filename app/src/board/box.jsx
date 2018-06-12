@@ -23,12 +23,12 @@ class Box extends React.Component {
   */
   getBoxStyle = () => {
     const boxStyle = {
-      backgroundColor: '#112233',
+      backgroundColor: this.props.color,
       left: `${this.props.x}px`,
       top: `${this.props.y}px`,
       width: '200px',
       height: '200px',
-      zIndex: 5, //TODO: Make this actually be an updated z-index
+      zIndex: this.props.zIndex, //TODO: Make this actually be an updated z-index
     };
     return boxStyle;
   };
@@ -38,9 +38,9 @@ class Box extends React.Component {
   whether we're resizing or dragging.
   */
   mouseDown = (e) => {
+    this.props.setCurDragging(this.props.uuid);
     this.props.clickCallback(this.props.uuid, true);
     this.props.setMouseDown(this.props.uuid, -this.props.x + e.screenX, -this.props.y + e.screenY)
-    // console.log(e.screenY)
   }
 
 
@@ -70,6 +70,8 @@ class Box extends React.Component {
 
 Box.propTypes = {
   moveCallback: PropTypes.func.isRequired,
+  setCurDragging: PropTypes.func.isRequired,
+  color: PropTypes.string.isRequired,
   x: PropTypes.number,
   y: PropTypes.number,
   mouseX: PropTypes.number,
@@ -78,6 +80,7 @@ Box.propTypes = {
   dragging: PropTypes.bool,
   setMouseDown: PropTypes.func.isRequired,
   uuid: PropTypes.string.isRequired,
+  zIndex: PropTypes.number,
 };
 
 Box.defaultProps = {
@@ -86,6 +89,7 @@ Box.defaultProps = {
   mouseX: 0,
   mouseY: 0,
   dragging: false,
+  zIndex: 1,
 }
 
 

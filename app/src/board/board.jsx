@@ -14,7 +14,7 @@ class Board extends React.Component {
   };
 
   generateBox = () => {
-    this.props.generateBox(uuidv4());
+    this.props.generateBox(uuidv4(), randomColor());
   }
 
   render() {
@@ -30,14 +30,22 @@ class Board extends React.Component {
     for (let i = 0; i < allKeys.length; i++) {
       const curKey = allKeys[i];
       const boxProps = this.props.boxes[curKey];
-      console.log(this.props.boxes[curKey])
+
+      // If box is being dragged, make its z-index higher
+      if (curKey === this.props.curDragging) {
+        boxProps.zIndex = 2;
+      } else {
+        boxProps.zIndex = 1;
+      }
+
       boxes.push(<Box
         key={curKey}
         uuid={curKey}
         setMouseDown={this.props.setMouseDown}
         moveCallback={this.props.moveCallback}
         clickCallback={this.props.clickCallback}
-        {...this.props.boxes[curKey]}
+        setCurDragging={this.props.setCurDragging}
+        {...boxProps}
       />);
     };
     console.log(boxes)
