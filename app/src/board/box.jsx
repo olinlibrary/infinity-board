@@ -38,7 +38,7 @@ class Box extends React.Component {
   */
   mouseDown = (e) => {
     this.props.clickCallback(true);
-    this.props.setMouseDown(-this.props.x + e.screenX, -this.props.y + e.screenY)
+    this.props.setMouseDown(this.props.uuid, -this.props.x + e.screenX, -this.props.y + e.screenY)
     console.log(e.screenY)
   }
 
@@ -46,12 +46,12 @@ class Box extends React.Component {
   mouseMove = (e) => {
     console.log(this.props.y + " " + String(e.screenY-this.props.mouseY))
     if (this.props.dragging) {
-      this.props.moveCallback(e.screenX-this.props.mouseX, e.screenY-this.props.mouseY);
+      this.props.moveCallback(this.props.uuid, e.screenX-this.props.mouseX, e.screenY-this.props.mouseY);
     }
   };
 
   mouseUp = () => {
-    this.props.clickCallback(false);
+    this.props.clickCallback(this.props.uuid, false);
   }
 
 

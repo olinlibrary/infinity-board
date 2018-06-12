@@ -13,14 +13,14 @@ const mapStateToProps = state => ({
 
 // Defines callbacks to pass a props
 const mapDispatchToProps = dispatch => ({
-  moveCallback: (xPos, yPos) => {
-    dispatch(setPosition(xPos, yPos))
+  moveCallback: (uuid, xPos, yPos) => {
+    dispatch(setPosition(uuid, xPos, yPos))
   },
-  clickCallback: (draggingState) => {
-    dispatch(setDragging(draggingState))
+  clickCallback: (uuid, draggingState) => {
+    dispatch(setDragging(uuid, draggingState))
   },
-  setMouseDown: (xPos, yPos) => {
-    dispatch(setMouseClickPosition(xPos, yPos))
+  setMouseDown: (uuid, xPos, yPos) => {
+    dispatch(setMouseClickPosition(uuid, xPos, yPos))
   }
 });
 
