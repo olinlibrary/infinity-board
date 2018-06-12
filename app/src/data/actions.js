@@ -16,6 +16,7 @@ export function setPosition(uuid, xPos, yPos) {
 }
 
 export function setDragging(uuid, value) {
+  console.log(value)
   return { type: ActionTypes.SET_DRAGGING, uuid, value };
 }
 
@@ -23,6 +24,6 @@ export function setSize(uuid, w, h) {
   return { type: ActionTypes.SET_SIZE, uuid, w, h };
 }
 
-export function generateBox() {
-  return { type: ActionTypes.GENERATE_BOX };
+export function generateBox(uuid) {
+  return { type: ActionTypes.GENERATE_BOX, uuid };
 }

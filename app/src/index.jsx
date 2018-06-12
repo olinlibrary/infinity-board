@@ -40,7 +40,7 @@ class App extends React.Component {
   render() {
     return (
       <Provider store={this.store}>
-        <Board />
+        <BoardContainer />
       </Provider>
     );
     // const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);

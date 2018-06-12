@@ -9,7 +9,7 @@ function board(state = {}, action) {
       return Object.assign(
         {},
         state,
-        curBoxes,
+        { boxes: curBoxes },
       )
     case ActionTypes.SET_DRAGGING:
       curBoxes[action.uuid].dragging = action.value;
@@ -24,7 +24,20 @@ function board(state = {}, action) {
       return Object.assign(
         {},
         state,
-        curBoxes,
+        { boxes: curBoxes },
+      )
+    case ActionTypes.GENERATE_BOX:
+      curBoxes[action.uuid] = {
+        x: 200,
+        y: 200,
+        mouseX: 0,
+        mouseY: 0,
+        dragging: false,
+      }
+      return Object.assign(
+        {},
+        state,
+        { boxes: curBoxes },
       )
     default:
       return state

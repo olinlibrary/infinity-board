@@ -28,6 +28,7 @@ class Box extends React.Component {
       top: `${this.props.y}px`,
       width: '200px',
       height: '200px',
+      zIndex: 5, //TODO: Make this actually be an updated z-index
     };
     return boxStyle;
   };
@@ -37,16 +38,16 @@ class Box extends React.Component {
   whether we're resizing or dragging.
   */
   mouseDown = (e) => {
-    this.props.clickCallback(true);
+    this.props.clickCallback(this.props.uuid, true);
     this.props.setMouseDown(this.props.uuid, -this.props.x + e.screenX, -this.props.y + e.screenY)
-    console.log(e.screenY)
+    // console.log(e.screenY)
   }
 
 
   mouseMove = (e) => {
-    console.log(this.props.y + " " + String(e.screenY-this.props.mouseY))
+    // console.log(this.props.y + " " + String(e.screenY-this.props.mouseY))
     if (this.props.dragging) {
-      this.props.moveCallback(this.props.uuid, e.screenX-this.props.mouseX, e.screenY-this.props.mouseY);
+      this.props.moveCallback(this.props.uuid, e.screenX - this.props.mouseX, e.screenY-this.props.mouseY);
     }
   };
 
@@ -76,6 +77,7 @@ Box.propTypes = {
   clickCallback: PropTypes.func.isRequired,
   dragging: PropTypes.bool,
   setMouseDown: PropTypes.func.isRequired,
+  uuid: PropTypes.string.isRequired,
 };
 
 Box.defaultProps = {
