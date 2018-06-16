@@ -22,7 +22,7 @@ import BoardContainer from './containers/BoardContainer';
 class App extends React.Component {
   constructor() {
     super();
-    this.store = createStore(board)
+    this.store = createStore(board, preloadedState = { boxOrder: [] })
 
     this.serverComm = new ServerComm(window.SERVER_URI);
     this.serverComm.connect();

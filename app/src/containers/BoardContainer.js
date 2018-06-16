@@ -1,11 +1,12 @@
 import { connect } from 'react-redux'
-import { setPosition, setDragging, setMouseClickPosition, generateBox, setCurDragging } from '../data/actions'
+import { setPosition, setDragging, setMouseClickPosition, generateBox, setCurDragging, resizeBox, setCursor, setTabVisibility } from '../data/actions'
 import Board from '../board/board'
 
 // Maps the state to props
 const mapStateToProps = state => ({
   boxes: state.boxes,
   curDragging: state.curDragging,
+  cursor: state.cursor,
 });
 
 // Defines callbacks to pass a props
@@ -24,6 +25,15 @@ const mapDispatchToProps = dispatch => ({
   },
   setCurDragging: (uuid) => {
     dispatch(setCurDragging(uuid))
+  },
+  resizeCallback: (uuid, wVal, hVal) => {
+    dispatch(resizeBox(uuid, wVal, hVal))
+  },
+  visibilityCallback: (uuid, visibility) => {
+    dispatch(setTabVisibility(uuid, visibility))
+  },
+  cursorCallback: (cursor) => {
+    dispatch(setCursor(cursor))
   }
 });
 

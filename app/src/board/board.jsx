@@ -23,9 +23,9 @@ class Board extends React.Component {
       // eslint-disable-next-line
       // backgroundPosition: String(this.state.windowX % 50) + 'px ' +  String(this.state.windowY % 50) + 'px',
     };
-    console.log(this.props.boxes)
+    // console.log(this.props.boxes)
     const allKeys = Object.keys(this.props.boxes);
-    console.log(allKeys)
+    // console.log(allKeys)
     const boxes = [];
     for (let i = 0; i < allKeys.length; i++) {
       const curKey = allKeys[i];
@@ -41,19 +41,23 @@ class Board extends React.Component {
       boxes.push(<Box
         key={curKey}
         uuid={curKey}
+        cursor={this.props.cursor}
         setMouseDown={this.props.setMouseDown}
         moveCallback={this.props.moveCallback}
         clickCallback={this.props.clickCallback}
         setCurDragging={this.props.setCurDragging}
+        resizeCallback={this.props.resizeCallback}
+        cursorCallback ={this.props.cursorCallback}
+        visibilityCallback={this.props.visibilityCallback}
         {...boxProps}
       />);
     };
-    console.log(boxes)
+    // console.log(boxes)
     // const buttonStyle = { zIndex: this.state.zIndex + 2 };
     const buttonStyle = { zIndex: 1 };
     return (
       // eslint-disable-next-line
-      <div className="View">
+      <div className="View" state={{ cursor: this.props.cursor }}>
         {boxes}
         <div className="View" style={bgStyle} id="bg" ref={(view) => { this.view = view; }} />
         <div className="Button-wrapper" style={buttonStyle}>
@@ -71,14 +75,18 @@ class Board extends React.Component {
 Board.propTypes = {
   // eslint-disable-next-line
   boxes: PropTypes.object,
+  cursor: PropTypes.string,
   generateBox: PropTypes.func.isRequired,
   setMouseDown: PropTypes.func.isRequired,
   moveCallback: PropTypes.func.isRequired,
   clickCallback: PropTypes.func.isRequired,
+  cursorCallback: PropTypes.func.isRequired,
+  visibilityCallback: PropTypes.func.isRequired,
 };
 
 Board.defaultProps = {
-  boxes: {}
+  cursor: 'move',
+  boxes: {},
 }
 
 export default Board;

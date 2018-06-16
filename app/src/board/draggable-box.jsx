@@ -192,7 +192,6 @@ class DraggableBox extends React.Component {
         style={this.getBoxStyle()}
       >
         {this.props.children}
-        <div className="pull-tab" style={{ zIndex: this.props.z + 2, opacity: this.state.tabVisible }} />
 
       </div>
     );

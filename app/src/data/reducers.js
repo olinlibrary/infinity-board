@@ -32,7 +32,7 @@ function board(state = {}, action) {
         y: 200,
         mouseX: 0,
         mouseY: 0,
-        dragging: false,
+        dragging: '',
         color: action.color,
       }
       return Object.assign(
@@ -41,13 +41,36 @@ function board(state = {}, action) {
         { boxes: curBoxes },
       )
     case ActionTypes.SET_CUR_DRAGGING:
+      const newBoxOrder = state.boxOrder;
+      newBoxOrder.unshift(action.uuid); // Move new box to the front
       return Object.assign(
         {},
         state,
-        { curDragging: action.uuid },
+        { curDragging: action.uuid, boxOrder: newBoxOrder },
+      )
+    case ActionTypes.RESIZE_BOX:
+      curBoxes[action.uuid].w = action.wVal;
+      curBoxes[action.uuid].h = action.hVal;
+      return Object.assign(
+        {},
+        state,
+        { boxes: curBoxes },
       )
     default:
       return state
+    case ActionTypes.SET_CURSOR:
+      return Object.assign(
+        {},
+        state,
+        { cursor: action.cursor }
+      )
+    case ActionTypes.SET_TAB_VISIBILITY:
+      curBoxes[action.uuid].tabVisibility = action.visibility;
+      return Object.assign(
+        {},
+        state,
+        { boxes: curBoxes },
+      )
   }
 }
 

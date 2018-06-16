@@ -6,6 +6,9 @@ export const ActionTypes = {
   SET_SIZE: 'SET_SIZE',
   GENERATE_BOX: 'GENERATE_BOX',
   SET_CUR_DRAGGING: 'SET_CUR_DRAGGING',
+  RESIZE_BOX: 'RESIZE_BOX',
+  SET_CURSOR: 'SET_CURSOR',
+  SET_TAB_VISIBILITY: 'SET_TAB_VISIBILITY',
 };
 
 export function setMouseClickPosition(uuid, xPos, yPos) {
@@ -30,4 +33,16 @@ export function generateBox(uuid, color) {
 
 export function setCurDragging(uuid) {
   return { type: ActionTypes.SET_CUR_DRAGGING, uuid };
+}
+
+export function resizeBox(uuid, wVal, hVal) {
+  return { type: ActionTypes.RESIZE_BOX, uuid, wVal, hVal };
+}
+
+export function setTabVisibility(uuid, visibility) {
+  return { type: ActionTypes.SET_TAB_VISIBILITY, uuid, visibility}
+}
+
+export function setCursor(cursor) {
+  return { type: ActionTypes.SET_CURSOR, cursor };
 }
