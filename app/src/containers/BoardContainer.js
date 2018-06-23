@@ -4,9 +4,10 @@ import Board from '../board/board'
 
 // Maps the state to props
 const mapStateToProps = state => ({
-  boxes: state.boxes,
-  curDragging: state.curDragging,
-  cursor: state.cursor,
+  boxOrder: state.boardReducer.boxOrder,
+  boxes: state.boardReducer.boxes,
+  curDragging: state.boardReducer.curDragging,
+  cursor: state.boardReducer.cursor,
 });
 
 // Defines callbacks to pass a props
@@ -37,9 +38,9 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-const BoxContainer = connect(
+const BoardContainer = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Board)
 
-export default BoxContainer;
+export default BoardContainer;

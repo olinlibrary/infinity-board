@@ -12,8 +12,9 @@ import ServerComm from './server-comm';
 
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import board from './data/reducers';
+import defaultReducer from './data/reducers';
 import BoardContainer from './containers/BoardContainer';
+import BoardWindowContainer from './containers/BoardWindowContainer';
 
 /**
  * The main React container for the app. It holds the state and passes it down
@@ -22,8 +23,8 @@ import BoardContainer from './containers/BoardContainer';
 class App extends React.Component {
   constructor() {
     super();
-    this.store = createStore(board, preloadedState = { boxOrder: [] })
-
+    this.store = createStore(defaultReducer, { boardReducer: { boxOrder: [] }})
+    console.log(this.store)
     this.serverComm = new ServerComm(window.SERVER_URI);
     this.serverComm.connect();
   }
@@ -40,7 +41,9 @@ class App extends React.Component {
   render() {
     return (
       <Provider store={this.store}>
-        <BoardContainer />
+        <BoardWindowContainer>
+          <BoardContainer />
+        </BoardWindowContainer>
       </Provider>
     );
     // const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);

@@ -166,6 +166,7 @@ body,
   display: flex;
   justify-content: center;
   flex-direction: column;
+  z-index: 3;
 }
 
 .Box-button {

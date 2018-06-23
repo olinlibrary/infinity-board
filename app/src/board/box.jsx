@@ -16,7 +16,20 @@ class Box extends React.Component {
     document.removeEventListener('mousemove', this.mouseMove);
     document.removeEventListener('mouseup', this.mouseUp)
   }
-
+    /**
+      Handles the resizing of the given box.
+      @param mouseVal: the position value (x or y) for the mouse
+      @param elemVal: the position value for the element
+      @param min: the minimum width or height of the box
+      @return the resulting width or height value
+    */
+    getResize = (mouseVal, elemVal, min) => {
+      const newSize = mouseVal - elemVal;
+      if (newSize >= min) {
+        return newSize;
+      }
+      return min;
+    };
   /**
     Gives the CSS styling for the given box.
     @return boxStyle - the JS object containing the correct styling for the box.
@@ -27,9 +40,9 @@ class Box extends React.Component {
       backgroundColor: this.props.color,
       left: `${this.props.x}px`,
       top: `${this.props.y}px`,
-      width: `${this.props.w}px`,
-      height: `${this.props.h}px`,
-      zIndex: this.props.zIndex, //TODO: Make this actually be an updated z-index
+      width: `${this.props.w - (2 * this.props.padding)}px`,
+      height: `${this.props.h - (2 * this.props.padding)}px`,
+      zIndex: 1,
     };
     return boxStyle;
   };
@@ -46,7 +59,7 @@ class Box extends React.Component {
     }
     return 'default';
   };
-  
+
   /**
   Handles mouse movement events. Updates the size or position of the box based on
   whether we're resizing or dragging.
@@ -55,13 +68,12 @@ class Box extends React.Component {
     if (e.button === 0) {
       this.props.setCurDragging(this.props.uuid);
       if (this.cursorInDraggingPosition(e)) {
-        console.log('resize')
         this.props.clickCallback(this.props.uuid, 'resize')
       } else {
         this.props.clickCallback(this.props.uuid, 'drag')
       }
       // Defines the position of the mouse click relative to the top left corner of the box
-      this.props.setMouseDown(this.props.uuid, -this.props.x + e.clientX, -this.props.y + e.clientY)
+      this.props.setMouseDown(this.props.uuid, this.props.x - e.screenX, this.props.y - e.screenY)
     }
   }
 
@@ -75,16 +87,17 @@ class Box extends React.Component {
 
     if (this.props.dragging === 'drag') {
       this.props.moveCallback(
-        this.props.uuid, e.clientX - this.props.mouseX,
-        e.clientY - this.props.mouseY
+        this.props.uuid,
+        e.screenX + this.props.mouseX,
+        e.screenY + this.props.mouseY
       );
     } else if (this.props.dragging === 'resize') {
       this.props.cursorCallback('move');
       // Resize the current box
       this.props.resizeCallback(
         this.props.uuid,
-        e.clientX - this.props.x - 40,
-        e.clientY - this.props.y - 40
+        this.getResize(e.clientX, this.props.x, this.props.minWidth),
+        this.getResize(e.clientY, this.props.y, this.props.minHeight),
       );
     }
   }
@@ -99,14 +112,13 @@ class Box extends React.Component {
   @return a bool indicating whether the mouse is in dragging position
   */
   cursorInDraggingPosition = (e) => {
-    const cornerX = (e.clientX - this.props.x - this.props.w - 40) ** 2;
-    const cornerY = (e.clientY - this.props.y - this.props.h - 40) ** 2;
+    const cornerX = (e.clientX - this.props.x - this.props.w) ** 2;
+    const cornerY = (e.clientY - this.props.y - this.props.h) ** 2;
     const dist = Math.sqrt(cornerX + cornerY);
     return (dist < 20);
   };
 
   render() {
-    console.log(this.props.tabVisibility)
     return (
       // eslint-disable-next-line
       <div>
@@ -119,7 +131,7 @@ class Box extends React.Component {
         >
           <div className="pull-tab"
             style={{
-            zIndex: this.props.zIndex + 2,
+            zIndex: 2,
             opacity: this.props.tabVisibility }} />
         </div>
       </div>
@@ -148,9 +160,11 @@ Box.propTypes = {
   mouseX: PropTypes.number,
   mouseY: PropTypes.number,
   dragging: PropTypes.string,
-  zIndex: PropTypes.number,
   cursor: PropTypes.string.isRequired,
   tabVisibility: PropTypes.number,
+  padding: PropTypes.number,
+  minWidth: PropTypes.number,
+  minHeight: PropTypes.number,
 };
 
 Box.defaultProps = {
@@ -161,8 +175,10 @@ Box.defaultProps = {
   mouseX: 0,
   mouseY: 0,
   dragging: '',
-  zIndex: 1,
   tabVisibility: 0,
+  padding: 20,
+  minWidth: 200,
+  minHeight: 200,
 }
 
 

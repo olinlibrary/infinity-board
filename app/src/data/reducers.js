@@ -1,7 +1,17 @@
+import { combineReducers } from 'redux';
 import { ActionTypes } from './actions';
 
-function board(state = {}, action) {
+function boardWindowReducer(state = {}, action) {
+  switch (action.type) {
+    default:
+      return state;
+  }
+}
+
+function boardReducer(state = {}, action) {
   const curBoxes = Object.assign({}, state.boxes);
+  const newBoxOrder = state.boxOrder;
+  const first = action.uuid;
   switch (action.type) {
     case ActionTypes.SET_POSITION:
       curBoxes[action.uuid].x = action.xPos;
@@ -27,6 +37,7 @@ function board(state = {}, action) {
         { boxes: curBoxes },
       )
     case ActionTypes.GENERATE_BOX:
+      newBoxOrder.push(action.uuid); // Move new box to the front
       curBoxes[action.uuid] = {
         x: 200,
         y: 200,
@@ -38,11 +49,10 @@ function board(state = {}, action) {
       return Object.assign(
         {},
         state,
-        { boxes: curBoxes },
+        { boxes: curBoxes, boxOrder: newBoxOrder },
       )
     case ActionTypes.SET_CUR_DRAGGING:
-      const newBoxOrder = state.boxOrder;
-      newBoxOrder.unshift(action.uuid); // Move new box to the front
+      newBoxOrder.push(newBoxOrder.splice(newBoxOrder.indexOf(first), 1)[0]);
       return Object.assign(
         {},
         state,
@@ -56,6 +66,13 @@ function board(state = {}, action) {
         state,
         { boxes: curBoxes },
       )
+    case ActionTypes.SET_TAB_VISIBILITY:
+      curBoxes[action.uuid].tabVisibility = action.visibility;
+      return Object.assign(
+        {},
+        state,
+        { boxes: curBoxes },
+      )
     default:
       return state
     case ActionTypes.SET_CURSOR:
@@ -64,14 +81,9 @@ function board(state = {}, action) {
         state,
         { cursor: action.cursor }
       )
-    case ActionTypes.SET_TAB_VISIBILITY:
-      curBoxes[action.uuid].tabVisibility = action.visibility;
-      return Object.assign(
-        {},
-        state,
-        { boxes: curBoxes },
-      )
   }
 }
 
-export default board;
+const defaultReducer = combineReducers({ boardReducer, boardWindowReducer });
+
+export default defaultReducer;
