@@ -24,7 +24,6 @@ class App extends React.Component {
   constructor() {
     super();
     this.store = createStore(defaultReducer, { boardReducer: { boxOrder: [] }})
-    console.log(this.store)
     this.serverComm = new ServerComm(window.SERVER_URI);
     this.serverComm.connect();
   }

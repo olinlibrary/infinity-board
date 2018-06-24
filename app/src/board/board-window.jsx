@@ -4,9 +4,62 @@ import ReactS3Uploader from 'react-s3-uploader';
 import BoardContainer from '../containers/BoardContainer';
 
 class BoardWindow extends React.Component {
-  constructor(props) {
-    super(props);
+  // constructor(props) {
+  //   super(props);
+  // }
+
+  /**
+   * Called once the component has rendered on the screen.
+   */
+  componentDidMount() {
+    // We have to add document listeners so it will update pos even when
+    document.addEventListener('mousedown', this.mouseDown);
+    // window.addEventListener('beforeunload', (e) => {
+    //   e.preventDefault();
+    //   e.stopPropagation();
+    //   this.io.sendClientUpdate({
+    //     client: this.uuid,
+    //     x: 0,
+    //     y: 0,
+    //     color: 'transparent',
+    //   });
+    // });
+    // this.io.getBoardData(null, this.props.boardName);
   }
+
+
+  getBGStyle = () => {
+    return { // Set the position for the grid background
+      // eslint-disable-next-line
+      // backgroundPosition: String(this.state.windowX % 50) + 'px ' +  String(this.state.windowY % 50) + 'px',
+    };
+  }
+
+  /**
+   * Handles the movement of the board view window.
+  */
+  dragWindow = (e) => {
+    if (this.props.windowDrag) {
+      const curX = this.props.windowX;
+      const curY = this.props.windowY;
+      this.props.setWindowPos(
+        curX + (e.clientX - this.props.prevX),
+        curY + (e.clientY - this.props.prevY),
+      );
+      this.props.setPrevWindowPosition(
+        e.clientX,
+        e.clientY,
+      );
+      // this.io.sendClientUpdate({
+      //   client: this.uuid,
+      //   x: this.state.windowX - (window.innerWidth / 2),
+      //   y: this.state.windowY - (window.innerHeight / 2),
+      //   color: this.state.clientColor,
+      // });
+    }
+  };
+
+
   /**
    * Updates the board state to allow window movement on mouse press.
   */
@@ -22,18 +75,14 @@ class BoardWindow extends React.Component {
   /**
    * Stops movement of the board window.
   */
-  // mouseUp = () => {
-  //   this.setState({ dragging: false, cursor: 'default' });
-  // };
+  mouseUp = () => {
+    this.props.setWindowDrag(false);
+    this.props.setCursor('default');
+  };
 
-  getBGStyle = () => {
-    return { // Set the position for the grid background
-      // eslint-disable-next-line
-      // backgroundPosition: String(this.state.windowX % 50) + 'px ' +  String(this.state.windowY % 50) + 'px',
-    };
-  }
 
   render() {
+    console.log(this.props.cursor)
     return (
       // eslint-disable-next-line
       <div className="View"
@@ -59,10 +108,19 @@ class BoardWindow extends React.Component {
 }
 
 BoardWindow.propTypes = {
+  // Callback props
   // eslint-disable-next-line
   setWindowDrag: PropTypes.func.isRequired,
   setPrevWindowPosition: PropTypes.func.isRequired,
   setCursor: PropTypes.func.isRequired,
+  setWindowPos: PropTypes.func.isRequired,
+
+  // State props
+  windowDrag: PropTypes.bool.isRequired,
+  windowX: PropTypes.number.isRequired,
+  windowY: PropTypes.number.isRequired,
+  prevX: PropTypes.number.isRequired,
+  prevY: PropTypes.number.isRequired,
 };
 
 BoardWindow.defaultProps = {

@@ -1,8 +1,27 @@
 import { combineReducers } from 'redux';
-import { ActionTypes } from './actions';
+import { BoardActionTypes } from './board-actions';
+import { WindowActionTypes } from './window-actions';
 
 function boardWindowReducer(state = {}, action) {
   switch (action.type) {
+    case WindowActionTypes.SET_CURSOR:
+      return Object.assign(
+        {},
+        state,
+        { cursor: action.cursor },
+      );
+    case WindowActionTypes.SET_WINDOW_DRAG:
+      return Object.assign(
+        {},
+        state,
+        { windowDrag: action.val },
+      )
+    case WindowActionTypes.SET_PREV_WINDOW_POSITION:
+      return Object.assign(
+        {},
+        state,
+        { prevX: action.xVal, prevY: action.yVal },
+      )
     default:
       return state;
   }
@@ -13,7 +32,7 @@ function boardReducer(state = {}, action) {
   const newBoxOrder = state.boxOrder;
   const first = action.uuid;
   switch (action.type) {
-    case ActionTypes.SET_POSITION:
+    case BoardActionTypes.SET_POSITION:
       curBoxes[action.uuid].x = action.xPos;
       curBoxes[action.uuid].y = action.yPos;
       return Object.assign(
@@ -21,14 +40,14 @@ function boardReducer(state = {}, action) {
         state,
         { boxes: curBoxes },
       )
-    case ActionTypes.SET_DRAGGING:
+    case BoardActionTypes.SET_DRAGGING:
       curBoxes[action.uuid].dragging = action.value;
       return Object.assign(
         {},
         state,
         curBoxes,
       )
-    case ActionTypes.SET_MOUSE_CLICK_POSITION:
+    case BoardActionTypes.SET_MOUSE_CLICK_POSITION:
       curBoxes[action.uuid].mouseX = action.xPos;
       curBoxes[action.uuid].mouseY = action.yPos;
       return Object.assign(
@@ -36,7 +55,7 @@ function boardReducer(state = {}, action) {
         state,
         { boxes: curBoxes },
       )
-    case ActionTypes.GENERATE_BOX:
+    case BoardActionTypes.GENERATE_BOX:
       newBoxOrder.push(action.uuid); // Move new box to the front
       curBoxes[action.uuid] = {
         x: 200,
@@ -51,14 +70,14 @@ function boardReducer(state = {}, action) {
         state,
         { boxes: curBoxes, boxOrder: newBoxOrder },
       )
-    case ActionTypes.SET_CUR_DRAGGING:
+    case BoardActionTypes.SET_CUR_DRAGGING:
       newBoxOrder.push(newBoxOrder.splice(newBoxOrder.indexOf(first), 1)[0]);
       return Object.assign(
         {},
         state,
         { curDragging: action.uuid, boxOrder: newBoxOrder },
       )
-    case ActionTypes.RESIZE_BOX:
+    case BoardActionTypes.RESIZE_BOX:
       curBoxes[action.uuid].w = action.wVal;
       curBoxes[action.uuid].h = action.hVal;
       return Object.assign(
@@ -66,7 +85,7 @@ function boardReducer(state = {}, action) {
         state,
         { boxes: curBoxes },
       )
-    case ActionTypes.SET_TAB_VISIBILITY:
+    case BoardActionTypes.SET_TAB_VISIBILITY:
       curBoxes[action.uuid].tabVisibility = action.visibility;
       return Object.assign(
         {},
@@ -75,12 +94,6 @@ function boardReducer(state = {}, action) {
       )
     default:
       return state
-    case ActionTypes.SET_CURSOR:
-      return Object.assign(
-        {},
-        state,
-        { cursor: action.cursor }
-      )
   }
 }
 

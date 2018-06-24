@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
-import { setPosition, setDragging, setMouseClickPosition, generateBox, setCurDragging, resizeBox, setCursor, setTabVisibility } from '../data/actions'
+import { setPosition, setDragging, setMouseClickPosition, generateBox, setCurDragging, resizeBox, setTabVisibility } from '../data/board-actions'
+import { setCursor } from '../data/window-actions'
 import Board from '../board/board'
 
 // Maps the state to props
@@ -7,7 +8,7 @@ const mapStateToProps = state => ({
   boxOrder: state.boardReducer.boxOrder,
   boxes: state.boardReducer.boxes,
   curDragging: state.boardReducer.curDragging,
-  cursor: state.boardReducer.cursor,
+  cursor: state.boardWindowReducer.cursor,
 });
 
 // Defines callbacks to pass a props

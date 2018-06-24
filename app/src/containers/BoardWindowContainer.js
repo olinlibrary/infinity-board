@@ -1,9 +1,12 @@
 import { connect } from 'react-redux';
 import BoardWindow from '../board/board-window'
-import { setWindowDrag, setPrevWindowPosition, setCursor } from '../data/actions'
+import { setWindowDrag, setPrevWindowPosition, setCursor } from '../data/window-actions'
 
 const mapStateToProps = state => ({
-  cursor: state.boardReducer.cursor,
+  cursor: state.boardWindowReducer.cursor,
+  windowDrag: state.boardWindowReducer.windowDrag,
+  prevX: state.boardWindowReducer.prevX,
+  prevY: state.boardWindowReducer.prevY,
 });
 
 const mapDispatchToProps = dispatch => ({
