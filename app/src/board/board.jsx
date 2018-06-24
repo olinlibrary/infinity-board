@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import randomColor from 'randomcolor';
-import uuidv4 from 'uuid/v4';
 import '../App.css';
 import ServerComm from '.././server-comm';
 import Box from './box'
@@ -17,16 +15,11 @@ class Board extends React.Component {
     }
   }
 
-  // Creates a new box
-  generateBox = () => {
-    this.props.generateBox(uuidv4(), randomColor());
-  }
 
   render() {
     // console.log(this.props.boxes)
     // console.log(this.props.boxes)
     const allKeys = this.props.boxOrder;
-    console.log(allKeys)
     const boxes = [];
     for (let i = 0; i < allKeys.length; i++) {
       const curKey = allKeys[i];

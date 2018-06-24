@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { setPosition, setDragging, setMouseClickPosition, generateBox, setCurDragging, resizeBox, setTabVisibility } from '../data/board-actions'
+import { setPosition, setDragging, setMouseClickPosition, setCurDragging, resizeBox, setTabVisibility } from '../data/board-actions'
 import { setCursor } from '../data/window-actions'
 import Board from '../board/board'
 
@@ -9,6 +9,10 @@ const mapStateToProps = state => ({
   boxes: state.boardReducer.boxes,
   curDragging: state.boardReducer.curDragging,
   cursor: state.boardWindowReducer.cursor,
+
+  // Window state
+  windowX: state.boardWindowReducer.windowX,
+  windowY: state.boardWindowReducer.windowY,
 });
 
 // Defines callbacks to pass a props
@@ -21,9 +25,6 @@ const mapDispatchToProps = dispatch => ({
   },
   setMouseDown: (uuid, xPos, yPos) => {
     dispatch(setMouseClickPosition(uuid, xPos, yPos))
-  },
-  generateBox: (uuid, color) => {
-    dispatch(generateBox(uuid, color))
   },
   setCurDragging: (uuid) => {
     dispatch(setCurDragging(uuid))

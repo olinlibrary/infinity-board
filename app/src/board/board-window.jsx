@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import randomColor from 'randomcolor';
+import uuidv4 from 'uuid/v4';
 import ReactS3Uploader from 'react-s3-uploader';
-import BoardContainer from '../containers/BoardContainer';
 
 class BoardWindow extends React.Component {
   // constructor(props) {
@@ -27,12 +28,16 @@ class BoardWindow extends React.Component {
     // this.io.getBoardData(null, this.props.boardName);
   }
 
-
   getBGStyle = () => {
     return { // Set the position for the grid background
       // eslint-disable-next-line
-      // backgroundPosition: String(this.state.windowX % 50) + 'px ' +  String(this.state.windowY % 50) + 'px',
+      backgroundPosition: String(this.props.windowX % 50) + 'px ' +  String(this.props.windowY % 50) + 'px',
     };
+  }
+
+  // Creates a new box
+  generateBox = () => {
+    this.props.generateBox(uuidv4(), randomColor());
   }
 
   /**
@@ -82,7 +87,6 @@ class BoardWindow extends React.Component {
 
 
   render() {
-    console.log(this.props.cursor)
     return (
       // eslint-disable-next-line
       <div className="View"
@@ -114,16 +118,24 @@ BoardWindow.propTypes = {
   setPrevWindowPosition: PropTypes.func.isRequired,
   setCursor: PropTypes.func.isRequired,
   setWindowPos: PropTypes.func.isRequired,
+  generateBox: PropTypes.func.isRequired,
 
   // State props
-  windowDrag: PropTypes.bool.isRequired,
-  windowX: PropTypes.number.isRequired,
-  windowY: PropTypes.number.isRequired,
-  prevX: PropTypes.number.isRequired,
-  prevY: PropTypes.number.isRequired,
+  windowDrag: PropTypes.bool,
+  windowX: PropTypes.number,
+  windowY: PropTypes.number,
+  prevX: PropTypes.number,
+  prevY: PropTypes.number,
+  cursor: PropTypes.string,
 };
 
 BoardWindow.defaultProps = {
+  windowDrag: false,
+  windowX: 0,
+  windowY: 0,
+  prevX: 0,
+  prevY: 0,
+  cursor: 'default',
 }
 
 

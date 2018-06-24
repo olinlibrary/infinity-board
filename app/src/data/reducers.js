@@ -22,6 +22,12 @@ function boardWindowReducer(state = {}, action) {
         state,
         { prevX: action.xVal, prevY: action.yVal },
       )
+    case WindowActionTypes.SET_WINDOW_POS:
+      return Object.assign(
+        {},
+        state,
+        { windowX: action.xVal, windowY: action.yVal },
+      )
     default:
       return state;
   }
