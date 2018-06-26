@@ -28,6 +28,18 @@ function boardWindowReducer(state = {}, action) {
         state,
         { windowX: action.xVal, windowY: action.yVal },
       )
+    case WindowActionTypes.SET_OVER_DELETE:
+      return Object.assign(
+        {},
+        state,
+        { overDelete: action.val },
+      )
+    case WindowActionTypes.SET_MOUSE_MOVE:
+      return Object.assign(
+        {},
+        state,
+        { mouseMove: action.val },
+      )
     default:
       return state;
   }
@@ -35,7 +47,7 @@ function boardWindowReducer(state = {}, action) {
 
 function boardReducer(state = {}, action) {
   const curBoxes = Object.assign({}, state.boxes);
-  const newBoxOrder = state.boxOrder;
+  let newBoxOrder = state.boxOrder;
   const first = action.uuid;
   switch (action.type) {
     case BoardActionTypes.SET_POSITION:
@@ -70,6 +82,8 @@ function boardReducer(state = {}, action) {
         mouseY: 0,
         dragging: '',
         color: action.color,
+        type: action.boxType,
+        ...action.optionalArgs
       }
       return Object.assign(
         {},
@@ -93,6 +107,35 @@ function boardReducer(state = {}, action) {
       )
     case BoardActionTypes.SET_TAB_VISIBILITY:
       curBoxes[action.uuid].tabVisibility = action.visibility;
+      return Object.assign(
+        {},
+        state,
+        { boxes: curBoxes },
+      )
+    case BoardActionTypes.DELETE_BOX:
+      delete curBoxes[action.uuid];
+      newBoxOrder.splice(-1, 1);
+      return Object.assign(
+        {},
+        state,
+        { boxes: curBoxes, boxOrder: newBoxOrder },
+      )
+    case BoardActionTypes.UPDATE_TEXT:
+      curBoxes[action.uuid].text = action.text;
+      return Object.assign(
+        {},
+        state,
+        { boxes: curBoxes },
+      )
+    case BoardActionTypes.SET_EDITING:
+      curBoxes[action.uuid].editing = action.val;
+      return Object.assign(
+        {},
+        state,
+        { boxes: curBoxes },
+      )
+    case BoardActionTypes.SET_IMG_LOADED:
+      curBoxes[action.uuid].isLoaded = action.val;
       return Object.assign(
         {},
         state,

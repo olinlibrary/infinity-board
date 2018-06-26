@@ -1,5 +1,16 @@
 import { connect } from 'react-redux'
-import { setPosition, setDragging, setMouseClickPosition, setCurDragging, resizeBox, setTabVisibility } from '../data/board-actions'
+import {
+  setPosition,
+  setDragging,
+  setMouseClickPosition,
+  setCurDragging,
+  resizeBox,
+  setTabVisibility,
+  deleteBox,
+  updateText,
+  setEditing,
+  setImgLoaded
+} from '../data/board-actions'
 import { setCursor } from '../data/window-actions'
 import Board from '../board/board'
 
@@ -8,11 +19,14 @@ const mapStateToProps = state => ({
   boxOrder: state.boardReducer.boxOrder,
   boxes: state.boardReducer.boxes,
   curDragging: state.boardReducer.curDragging,
-  cursor: state.boardWindowReducer.cursor,
 
   // Window state
   windowX: state.boardWindowReducer.windowX,
   windowY: state.boardWindowReducer.windowY,
+  overDelete: state.boardWindowReducer.overDelete,
+  mouseMove: state.boardWindowReducer.mouseMove,
+  cursor: state.boardWindowReducer.cursor,
+
 });
 
 // Defines callbacks to pass a props
@@ -37,6 +51,18 @@ const mapDispatchToProps = dispatch => ({
   },
   cursorCallback: (cursor) => {
     dispatch(setCursor(cursor))
+  },
+  deleteBox: (uuid) => {
+    dispatch(deleteBox(uuid))
+  },
+  updateText: (uuid, text) => {
+    dispatch(updateText(uuid, text))
+  },
+  setEditing: (uuid, val) => {
+    dispatch(setEditing(uuid, val))
+  },
+  setImgLoaded: (uuid, val) => {
+    dispatch(setImgLoaded(uuid, val))
   }
 });
 

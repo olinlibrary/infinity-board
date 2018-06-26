@@ -38,11 +38,12 @@ class Box extends React.Component {
     const boxStyle = {
       cursor: this.props.cursor,
       backgroundColor: this.props.color,
-      left: `${this.props.x}px`,
-      top: `${this.props.y}px`,
+      left: `${this.props.renderX}px`,
+      top: `${this.props.renderY}px`,
       width: `${this.props.w - (2 * this.props.padding)}px`,
       height: `${this.props.h - (2 * this.props.padding)}px`,
       zIndex: 1,
+      padding: this.props.padding
     };
     return boxStyle;
   };
@@ -65,6 +66,8 @@ class Box extends React.Component {
   whether we're resizing or dragging.
   */
   mouseDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.button === 0) {
       this.props.setCurDragging(this.props.uuid);
       if (this.cursorInDraggingPosition(e)) {
@@ -96,15 +99,24 @@ class Box extends React.Component {
       // Resize the current box
       this.props.resizeCallback(
         this.props.uuid,
-        this.getResize(e.clientX, this.props.x, this.props.minWidth),
-        this.getResize(e.clientY, this.props.y, this.props.minHeight),
+        this.getResize(e.clientX, this.props.renderX, this.props.minWidth),
+        this.getResize(e.clientY, this.props.renderY, this.props.minHeight),
       );
     }
   }
 
-  mouseUp = () => {
+  /*
+    Handles actions that occur on mouseUp events
+  */
+  mouseUp = (e) => {
     this.props.setCurDragging('')
     this.props.clickCallback(this.props.uuid, '');
+    if (this.props.overDelete) {
+      this.props.deleteBox(this.props.uuid)
+    }
+    // Change the editing state of the box
+    // console.log(this.props.x - e.screenX)
+    // console.log(this.props.mouseX)
   };
 
   /**
@@ -112,16 +124,17 @@ class Box extends React.Component {
   @return a bool indicating whether the mouse is in dragging position
   */
   cursorInDraggingPosition = (e) => {
-    const cornerX = (e.clientX - this.props.x - this.props.w) ** 2;
-    const cornerY = (e.clientY - this.props.y - this.props.h) ** 2;
+    const cornerX = (e.clientX - this.props.renderX - this.props.w) ** 2;
+    const cornerY = (e.clientY - this.props.renderY - this.props.h) ** 2;
     const dist = Math.sqrt(cornerX + cornerY);
     return (dist < 20);
   };
 
   render() {
+    const boxOpacity = this.props.overDelete ? 0.5 : 1;
     return (
       // eslint-disable-next-line
-      <div>
+      <div style={{ opacity: boxOpacity }}>
         <div
           className="Box"
           onMouseDown={this.mouseDown}
@@ -129,6 +142,7 @@ class Box extends React.Component {
           onMouseEnter={() => { this.props.visibilityCallback(this.props.uuid, 1) }}
           onMouseLeave={() => { this.props.visibilityCallback(this.props.uuid, 0) }}
         >
+          {this.props.children}
           <div className="pull-tab"
             style={{
             zIndex: 2,
@@ -147,14 +161,18 @@ Box.propTypes = {
   setCurDragging: PropTypes.func.isRequired,
   resizeCallback: PropTypes.func.isRequired,
   cursorCallback: PropTypes.func.isRequired,
+  deleteBox: PropTypes.func.isRequired,
 
   // Box attributes
   color: PropTypes.string.isRequired,
   uuid: PropTypes.string.isRequired,
+  padding: PropTypes.number,
 
   // Box state
   x: PropTypes.number,
   y: PropTypes.number,
+  renderX: PropTypes.number,
+  renderY: PropTypes.number,
   w: PropTypes.number,
   h: PropTypes.number,
   mouseX: PropTypes.number,
@@ -165,11 +183,14 @@ Box.propTypes = {
   padding: PropTypes.number,
   minWidth: PropTypes.number,
   minHeight: PropTypes.number,
+  overDelete: PropTypes.bool,
 };
 
 Box.defaultProps = {
   x: 0,
   y: 0,
+  renderX: 0,
+  renderY: 0,
   w: 200,
   h: 200,
   mouseX: 0,
@@ -179,6 +200,8 @@ Box.defaultProps = {
   padding: 20,
   minWidth: 200,
   minHeight: 200,
+  overDelete: false,
+  padding: 20,
 }
 
 

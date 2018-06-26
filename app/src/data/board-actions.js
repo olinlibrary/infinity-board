@@ -9,6 +9,10 @@ export const BoardActionTypes = {
   RESIZE_BOX: 'RESIZE_BOX',
   SET_CURSOR: 'SET_CURSOR',
   SET_TAB_VISIBILITY: 'SET_TAB_VISIBILITY',
+  DELETE_BOX: 'DELETE_BOX',
+  UPDATE_TEXT: 'UPDATE_TEXT',
+  SET_EDITING: 'SET_EDITING',
+  SET_IMG_LOADED: 'SET_IMG_LOADED'
 };
 
 export function setMouseClickPosition(uuid, xPos, yPos) {
@@ -27,8 +31,8 @@ export function setSize(uuid, w, h) {
   return { type: BoardActionTypes.SET_SIZE, uuid, w, h };
 }
 
-export function generateBox(uuid, color) {
-  return { type: BoardActionTypes.GENERATE_BOX, uuid, color };
+export function generateBox(uuid, color, boxType, optionalArgs) {
+  return { type: BoardActionTypes.GENERATE_BOX, uuid, color, boxType, optionalArgs };
 }
 
 export function setCurDragging(uuid) {
@@ -45,4 +49,20 @@ export function setTabVisibility(uuid, visibility) {
 
 export function setCursor(cursor) {
   return { type: BoardActionTypes.SET_CURSOR, cursor };
+}
+
+export function deleteBox(uuid) {
+  return { type: BoardActionTypes.DELETE_BOX, uuid };
+}
+
+export function updateText(uuid, text) {
+  return { type: BoardActionTypes.UPDATE_TEXT, uuid, text };
+}
+
+export function setEditing(uuid, val) {
+  return { type: BoardActionTypes.SET_EDITING, uuid, val };
+}
+
+export function setImgLoaded(uuid, val) {
+  return { type: BoardActionTypes.SET_IMG_LOADED, uuid, val };
 }

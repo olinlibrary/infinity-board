@@ -3,6 +3,8 @@ export const WindowActionTypes = {
   SET_PREV_WINDOW_POSITION: 'SET_PREV_WINDOW_POSITION',
   SET_CURSOR: 'SET_CURSOR',
   SET_WINDOW_POS: 'SET_WINDOW_POS',
+  SET_OVER_DELETE: 'SET_OVER_DELETE',
+  SET_MOUSE_MOVE: 'SET_MOUSE_MOVE',
 };
 
 export function setWindowDrag(val) {
@@ -18,5 +20,13 @@ export function setCursor(cursor) {
 }
 
 export function setWindowPos(xVal, yVal) {
-  return {type: WindowActionTypes.SET_WINDOW_POS, xVal, yVal };
+  return { type: WindowActionTypes.SET_WINDOW_POS, xVal, yVal };
+}
+
+export function setOverDelete(val) {
+  return { type: WindowActionTypes.SET_OVER_DELETE, val };
+}
+
+export function setMouseMove(val) {
+  return { type: WindowActionTypes.SET_MOUSE_MOVE, val };
 }

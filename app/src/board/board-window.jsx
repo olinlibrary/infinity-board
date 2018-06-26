@@ -15,6 +15,7 @@ class BoardWindow extends React.Component {
   componentDidMount() {
     // We have to add document listeners so it will update pos even when
     document.addEventListener('mousedown', this.mouseDown);
+    document.addEventListener('mousemove', this.mouseMove);
     // window.addEventListener('beforeunload', (e) => {
     //   e.preventDefault();
     //   e.stopPropagation();
@@ -28,6 +29,21 @@ class BoardWindow extends React.Component {
     // this.io.getBoardData(null, this.props.boardName);
   }
 
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.mouseDown);
+    document.removeEventListener('mousemove', this.mouseMove);
+  }
+
+  /**
+   * On finishing upload of an image, create a box containing that image
+   * @param e - the upload finish event
+  */
+  onUploadFinish = (e) => {
+    // eslint-disable-next-line
+    const imgUrl = e.publicUrl;
+    this.generateBox('image', { src: imgUrl, isUpload: true });
+  };
+
   getBGStyle = () => {
     return { // Set the position for the grid background
       // eslint-disable-next-line
@@ -36,9 +52,22 @@ class BoardWindow extends React.Component {
   }
 
   // Creates a new box
-  generateBox = () => {
-    this.props.generateBox(uuidv4(), randomColor());
+  generateBox = (boxType, optionalArgs = {}) => {
+    console.log(optionalArgs)
+    this.props.generateBox(uuidv4(), randomColor(), boxType, optionalArgs);
   }
+
+  /**
+  * Handles the clicking of the box generation buttons.
+  */
+  handleButtonClick = (boxType) => {
+    if (boxType === 'image') {
+      // this.input.click(); // Manually bring up file dialog
+      this.generateBox(boxType, { src: "http://cdn1-www.dogtime.com/assets/uploads/gallery/30-impossibly-cute-puppies/impossibly-cute-puppy-2.jpg", isUpload: true })
+    } else if (boxType === 'text') {
+      this.generateBox(boxType, { text: '', editing: false });
+    }
+  };
 
   /**
    * Handles the movement of the board view window.
@@ -75,7 +104,12 @@ class BoardWindow extends React.Component {
       this.props.setPrevWindowPosition(e.clientX, e.clientY);
       this.props.setCursor('move');
     }
+    this.props.setMouseMove(false);
   };
+
+  mouseMove = () => {
+    this.props.setMouseMove(true);
+  }
 
   /**
    * Stops movement of the board window.
@@ -87,6 +121,7 @@ class BoardWindow extends React.Component {
 
 
   render() {
+    console.log(this.props.overDelete)
     return (
       // eslint-disable-next-line
       <div className="View"
@@ -100,8 +135,37 @@ class BoardWindow extends React.Component {
         <div className="View" style={this.getBGStyle()} id="bg" ref={(view) => { this.view = view; }} />
         <div className="Button-wrapper">
           <div className="Box-button">
-            <button className="Box-button" onClick={this.generateBox}>
+            <button className="Box-button" onClick={() => { this.props.setWindowPos(0, 0); }}>
               <i className="fa fa-home" />
+            </button>
+          </div>
+          <div className="Box-button">
+            <button className="Box-button text" onClick={() => this.handleButtonClick('text')} >
+              <i className="fa fa-font" data-type="text" />
+            </button>
+          </div>
+          <div className="Box-button">
+            <button className="Box-button image" onClick={() => this.handleButtonClick('image')} >
+              <i className="fa fa-image" />
+            </button>
+
+            <ReactS3Uploader
+              signingUrl="/s3/sign"
+              signingUrlMethod="GET"
+              accept="image/*"
+              onFinish={this.onUploadFinish}
+              uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
+              inputRef={(input) => { this.input = input; }}
+              style={{ display: 'none' }}
+            />
+          </div>
+          <div className="Box-button" style={{ zIndex: 6 }}>
+            <button
+              className="Box-button trash"
+              onMouseEnter={() => this.props.setOverDelete(true)}
+              onMouseLeave={() => this.props.setOverDelete(false)}
+            >
+              <i className="fa fa-trash" />
             </button>
           </div>
         </div>
@@ -119,6 +183,7 @@ BoardWindow.propTypes = {
   setCursor: PropTypes.func.isRequired,
   setWindowPos: PropTypes.func.isRequired,
   generateBox: PropTypes.func.isRequired,
+  setOverDelete: PropTypes.func.isRequired,
 
   // State props
   windowDrag: PropTypes.bool,
