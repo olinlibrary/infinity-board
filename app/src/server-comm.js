@@ -7,26 +7,123 @@ import { BoardActionTypes } from './data/board-actions';
 export default class ServerComm {
   constructor(serverURL) {
     this.comm = SocketIO(serverURL);
-    // this.comm.connect();
   }
 
   broadcastMessage = (action) => {
     this.comm.emit(action.type, { boardName: '1234', originatingSocket: this.comm.id, ...action })
   };
 
+  /**
+   * Called to initialize websocket handlers with store actions to dispatch
+   * @param store - the Redux store to pass in
+  */
   initializeSocket = (store) => {
     Object.keys(BoardActionTypes).forEach(type =>
       this.comm.on(type, (payload) => {
-        console.log(type)
         store.dispatch({ type, ...payload });
-      }))
+      }));
+
+    this.comm.on('boardListUpdate', msg => this.receivedBoardListUpdate(msg, this.comm));
+    this.comm.on('boardData', msg => this.receivedFullBoardDataMessage(msg, this.comm));
+    this.comm.on('clientUpdate', msg => this.receivedClientUpdateMessage(msg, this.comm));
   }
 
-
+  /**
+   * Called as middleware in the Redux store. Sends websocket updates on action dispatch.
+   */
   socketEmit = store => next => (action) => {
+    // Don't broadcast if the received message has an originating socket (avoids infinite message sending)
     if (!('originatingSocket' in action)) {
       this.broadcastMessage(action)
     }
     next(action);
+  }
+
+  /**
+   * Called when a complete data for a board is received from the server (a 'boardUpdate' event).
+   * @param data - the message payload
+   * @param socket - the socket.io connection to the server
+   */
+  receivedFullBoardDataMessage = (data, socket) => {
+    if (this.receivedBoardDataMessageHandler) {
+      this.receivedBoardDataMessageHandler(data, socket);
+    }
+  };
+
+  /**
+   * Registers a function to be called when an updated list of boards is received
+   * from the server. (Only one function can be registered at a time.)
+   * @param callback - the function to call when a 'boardListUpdate' event is received
+   */
+  receivedBoardListUpdate = (callback) => {
+    if (this.receivedBoardListMessageHandler) {
+      this.receivedBoardListMessageHandler(callback);
+    }
+  };
+
+  /**
+   * Called when an update on the clients' status is received
+   * @param msg - the message payload
+   * @param socket - the socket.io connection to the server
+   */
+  receivedClientUpdateMessage = (msg, socket) => {
+    if (this.receivedClientUpdateMessageHandler) {
+      this.receivedClientUpdateMessageHandler(msg, socket);
+    }
+  };
+
+  /**
+   * Registers a function to be called when a board list message is received.
+   * @param callback - the function to call when a 'boardListUpdate' message is received
+   */
+  setReceivedBoardListMessageHandler = (callback) => {
+    this.receivedBoardListMessageHandler = callback;
+  };
+
+  /**
+   * Registers a function to be called when an update in client positions is received.
+   * @param callback - the function to call when a 'clientUpdate' message is received.
+  */
+  setReceivedClientMessageHandler = (callback) => {
+    this.receivedClientUpdateMessageHandler = callback;
+  };
+
+  /**
+   * Registers a function to be called when a board list message is received.
+   * @param callback - the function to call when a 'boardListUpdate' message is received
+   */
+  setReceivedBoardDataMessageHandler = (callback) => {
+    this.receivedBoardDataMessageHandler = callback;
+  };
+
+  /**
+   * Broadcasts a client list update event to the server.
+   * @param data - the data to change (e.g. client positions)
+   */
+  sendClientUpdate = (data) => {
+    this.comm.emit('clientUpdate', data);
+  };
+
+  /**
+   * Requests a list of boards from the server.
+   */
+  getBoardList = () => {
+    this.comm.emit('getBoardList');
+  };
+
+  /**
+   * Requests the full board data for a particular board.
+   * @param {string} id - the UUID of the board
+   * @param {string} name - the human-memorable name
+   */
+  getBoardData = (id, name) => {
+    this.comm.emit('getBoardData', { id, name });
+  };
+
+  /**
+   * Creates a new board. The server will emit an event when the creation is completed.
+   */
+  createBoard = () => {
+    this.comm.emit('createBoard');
   }
 }

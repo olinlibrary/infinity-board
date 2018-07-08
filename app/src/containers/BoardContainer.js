@@ -15,10 +15,11 @@ import { setCursor } from '../data/window-actions'
 import Board from '../board/board'
 
 // Maps the state to props
-const mapStateToProps = state => ({
+const mapStateToProps = (state, ownProps) => ({
   boxOrder: state.boardReducer.boxOrder,
   boxes: state.boardReducer.boxes,
   curDragging: state.boardReducer.curDragging,
+  boardName: ownProps.boardName,
 
   // Window state
   windowX: state.boardWindowReducer.windowX,

@@ -25,59 +25,24 @@ import { BoardActionTypes } from './data/board-actions'
  */
 class App extends React.Component {
   constructor() {
-
-
-
-
     super();
     this.state = {
       boards: {},
     };
     this.comm = new ServerComm(window.SERVER_URI);
-    this
-
-    // this.serverComm = SocketIO(window.SERVER_URI);
-    // this.serverComm.on('SET_CURSOR', () => console.log("nice"))
-    // const init = (store) => {
-    //   Object.keys(BoardActionTypes).forEach( type =>
-    //     this.serverComm.on( type, (payload) => {
-    //       // console.log(payload.originatingSocket)
-    //       // console.log(type);
-    //       // console.log(payload);
-    //       store.dispatch({ type, ...payload });
-    //     })
-    //   )
-    // };
-    //
-    // this.emit = (action) => {
-    //   this.serverComm.emit(action.type, {boardName: "1234", originatingSocket: this.serverComm.id, ...action} )};
-    //
-    // const socketEmit = store => next => action => {
-    //   // console.log(action.type)
-    //   // console.log(action)
-    //
-    //   if (!("originatingSocket" in action)) {
-    //     // console.log(action.originatingSocket)
-    //     // console.log(action)
-    //     this.emit(action)
-    //   }
-    //   next(action);
-    // }
-    //
     this.store = createStore(
       defaultReducer,
       { boardReducer: { boxOrder: [] }},
+      // Apply websocket middleware
       applyMiddleware(this.comm.socketEmit)
     );
+    // Initialize socket to work with the store
     this.comm.initializeSocket(this.store);
-    // init(this.store)
-    // this.serverComm = new ServerComm(window.SERVER_URI);
-    // this.serverComm.connect();
   }
 
   componentDidMount() {
-    // this.serverComm.setReceivedBoardListMessageHandler(this.setBoardList);
-    // this.serverComm.getBoardList();
+    this.comm.setReceivedBoardListMessageHandler(this.setBoardList);
+    this.comm.getBoardList();
   }
 
   setBoardList = (boards) => {
@@ -90,24 +55,23 @@ class App extends React.Component {
       <BrowserRouter>
         <div className="app">
           <Switch>
-            {/* <Route
+            <Route
               exact
               path="/"
               render={({ history }) => (
                 <BoardList
                   boards={boardObjects}
-                  serverComm={this.serverComm}
+                  serverComm={this.comm}
                   history={history}
-                  createBoard={this.createBoard}
                 />
               )}
-            /> */}
+            />
             <Route
-              path="/"
+              path="/:boardName"
               component={props =>
                 <Provider store={this.store}>
                   <BoardWindowContainer>
-                    <BoardContainer />
+                    <BoardContainer boardName={props.match.params.boardName} />
                   </BoardWindowContainer>
                 </Provider>
               }

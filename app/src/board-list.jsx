@@ -58,8 +58,8 @@ export default class BoardList extends React.Component {
 BoardList.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   boards: PropTypes.array.isRequired,
-  history: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  history: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   serverComm: PropTypes.object.isRequired,
-  createBoard: PropTypes.func.isRequired,
 };
