@@ -53,7 +53,7 @@ class BoardWindow extends React.Component {
 
   // Creates a new box
   generateBox = (boxType, optionalArgs = {}) => {
-    console.log(optionalArgs)
+    // console.log(optionalArgs)
     this.props.generateBox(uuidv4(), randomColor(), boxType, optionalArgs);
   }
 
@@ -121,7 +121,7 @@ class BoardWindow extends React.Component {
 
 
   render() {
-    console.log(this.props.overDelete)
+    // console.log(this.props.overDelete)
     return (
       // eslint-disable-next-line
       <div className="View"

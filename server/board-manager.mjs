@@ -29,9 +29,11 @@ export default class BoardManager {
 
     // Register WebSocket message handlers
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
-    this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
     this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
+
+    // Register the handler for board update messages
+    this.wsServer.registerUpdateHandler(this.receivedBoardUpdate);
   }
 
   /**
@@ -69,29 +71,16 @@ export default class BoardManager {
 
   /**
    * Called when a boardUpdate message is received from one of the WebSocket clients.
-   * @param {object} element - the updated board element from the client
-   * @param socket - the socket.io connection
+   * @param type - the type of the message (defined by the Redux action)
+   * @param {object} payload - the payload of the message
    */
-  receivedBoardUpdate(element, socket) {
-    const boards = this.getBoardList();
-    const boardData = boards[element.boardName];
-    if (!boardData) return;
-
-    if (element.action === 'delete') { // Delete the box from the element stored in DB
-      delete boardData.elements[element.uuid];
-    } else {
-      boardData.elements[element.uuid] = {
-        state: element.state,
-        type: element.type,
-      };
-      boardData.zIndex = element.zIndex;
-    }
-
+  receivedBoardUpdate(type, payload, originatingSocket) {
     // Broadcast the update to the other connected clients
-    this.wsServer.broadcastBoardUpdate(element, socket);
+    this.wsServer.broadcastBoardUpdate(type, payload, originatingSocket);
 
     // Save the board to the database
-    this.dbConn.saveBoard(boardData);
+    // this.dbConn.saveBoard(boardData);
+    // TODO replace this bit with an actual bit of code
   }
 
   /**

@@ -1,4 +1,5 @@
 import SocketIO from 'socket.io';
+// import { BoardActionTypes } from '../app/src/data/board-actions'
 
 /**
  * A WebSockets server for keeping bidirectional data channels open for real-time communication.
@@ -6,10 +7,27 @@ import SocketIO from 'socket.io';
  */
 export default class WebSocketServer {
   constructor() {
+    this.BoardActionTypes = {
+      SET_MOUSE_CLICK_POSITION: 'SET_MOUSE_CLICK_POSITION',
+      SET_DRAGGING: 'SET_DRAGGING',
+      SET_POSITION: 'SET_POSITION',
+      SET_SIZE: 'SET_SIZE',
+      GENERATE_BOX: 'GENERATE_BOX',
+      SET_CUR_DRAGGING: 'SET_CUR_DRAGGING',
+      RESIZE_BOX: 'RESIZE_BOX',
+      SET_CURSOR: 'SET_CURSOR',
+      SET_TAB_VISIBILITY: 'SET_TAB_VISIBILITY',
+      DELETE_BOX: 'DELETE_BOX',
+      UPDATE_TEXT: 'UPDATE_TEXT',
+      SET_EDITING: 'SET_EDITING',
+      SET_IMG_LOADED: 'SET_IMG_LOADED'
+    };
     this.io = null;
+    this.updateHandler = null;
     this.messageHandlers = {};
     this.boardToClientsViewingMap = {};
     this.clientsToBoardsViewingMap = {};
+    this.boardToClientsViewingMap['1234'] = [];
 
     // Bind the current context to the following functions (weird JS thing)
     this.start = this.start.bind(this);
@@ -17,6 +35,7 @@ export default class WebSocketServer {
     this.broadcastBoardUpdate = this.broadcastBoardUpdate.bind(this);
     this.broadcastBoardListUpdate = this.broadcastBoardListUpdate.bind(this);
     this.registerMessageHandler = this.registerMessageHandler.bind(this);
+    this.registerUpdateHandler = this.registerUpdateHandler.bind(this);
     this.broadcastClientUpdate = this.broadcastClientUpdate.bind(this);
     this.registerSocketWithBoard = this.registerSocketWithBoard.bind(this);
     this.deregisterClientFromBoards = this.deregisterClientFromBoards.bind(this);
@@ -43,11 +62,13 @@ export default class WebSocketServer {
       socket.on(msgName, data =>
         this.messageHandlers[msgName](data, socket, this.registerSocketWithBoard));
     });
-    socket.on('boardUpdate', (data) => {
-      if (Object.hasOwnProperty.call(this.messageHandlers, 'boardUpdate')) {
-        this.messageHandlers.boardUpdate(data, socket, this.registerSocketWithBoard);
-      }
-    });
+    this.boardToClientsViewingMap['1234'].push(socket); // TODO: remove this hack
+
+    // Set up the handler for Redux actions for the socket
+    Object.keys(this.BoardActionTypes).forEach(type =>
+      socket.on(type, (payload) => {
+        this.updateHandler(type, payload, socket)
+      }))
     // Dot indicating where other people are looking
     socket.on('clientUpdate', data => this.broadcastClientUpdate(data, socket));
 
@@ -65,16 +86,18 @@ export default class WebSocketServer {
   /**
    * Sends a message to all of the connected clients (excluding the original emitter of the update)
    * with information about the new or modified board element.
-   * @param boardElement - the board element that was added or changed
-   * @param originatingSocket - the WebSocket connection to the client that emitted the update
    */
-  broadcastBoardUpdate(boardElement, originatingSocket) {
-    const clientsUsingBoard = this.boardToClientsViewingMap[boardElement.boardName];
+  broadcastBoardUpdate(type, payload, originatingSocket) {
+    const newPayload = Object.assign({}, payload)
+    const clientsUsingBoard = this.boardToClientsViewingMap[newPayload.boardName];
+    // console.log(newPayload)
     if (clientsUsingBoard) {
+      console.log("Nice")
       clientsUsingBoard.forEach((socket) => {
         if (socket !== originatingSocket) {
           if (socket.connected) {
-            socket.emit('boardUpdate', boardElement);
+            console.log(type)
+            socket.emit(type, newPayload);
           } else {
             this.deregisterClientFromBoards(socket); // Socket no longer connected
           }
@@ -108,6 +131,13 @@ export default class WebSocketServer {
     this.messageHandlers[eventName] = callback;
   }
 
+  /**
+   * Used to set the handler callback for board updates
+  */
+  registerUpdateHandler(callback) {
+    this.updateHandler = callback;
+  }
+
   onClientDisconnect(socket) {
     console.log('Client disconnected');
     this.deregisterClientFromBoards(socket);
@@ -122,7 +152,7 @@ export default class WebSocketServer {
     }
     this.clientsToBoardsViewingMap[socket.id] = boardId;
     if (boardId) { // Will be null if clearing open board for client
-      this.boardToClientsViewingMap[boardId].push(socket);
+      this.boardToClientsViewingMap['1234'].push(socket);
     }
   }
 
