@@ -91,11 +91,10 @@ function boardReducer(state = {}, action) {
         { boxes: curBoxes, boxOrder: newBoxOrder },
       )
     case BoardActionTypes.SET_CUR_DRAGGING:
-      newBoxOrder.push(newBoxOrder.splice(newBoxOrder.indexOf(first), 1)[0]);
       return Object.assign(
         {},
         state,
-        { curDragging: action.uuid, boxOrder: newBoxOrder },
+        { curDragging: action.uuid },
       )
     case BoardActionTypes.RESIZE_BOX:
       curBoxes[action.uuid].w = action.wVal;
@@ -140,6 +139,13 @@ function boardReducer(state = {}, action) {
         {},
         state,
         { boxes: curBoxes },
+      )
+    case BoardActionTypes.SET_FRONT_BOX:
+      newBoxOrder.push(newBoxOrder.splice(newBoxOrder.indexOf(first), 1)[0]);
+      return Object.assign(
+        {},
+        state,
+        { boxOrder: newBoxOrder },
       )
     default:
       return state

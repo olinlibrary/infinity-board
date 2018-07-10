@@ -9,17 +9,22 @@ import {
   deleteBox,
   updateText,
   setEditing,
-  setImgLoaded
+  setImgLoaded,
+  setFrontBox
 } from '../data/board-actions'
 import { setCursor } from '../data/window-actions'
 import Board from '../board/board'
 
 // Maps the state to props
 const mapStateToProps = (state, ownProps) => ({
+  // Passed in props
+  boardName: ownProps.boardName,
+  comm: ownProps.comm,
+
+  // Board state
   boxOrder: state.boardReducer.boxOrder,
   boxes: state.boardReducer.boxes,
   curDragging: state.boardReducer.curDragging,
-  boardName: ownProps.boardName,
 
   // Window state
   windowX: state.boardWindowReducer.windowX,
@@ -31,7 +36,10 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 // Defines callbacks to pass a props
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  setBoardName: (name) => {
+    ownProps.setBoardName(name)
+  },
   moveCallback: (uuid, xPos, yPos) => {
     dispatch(setPosition(uuid, xPos, yPos))
   },
@@ -64,6 +72,10 @@ const mapDispatchToProps = dispatch => ({
   },
   setImgLoaded: (uuid, val) => {
     dispatch(setImgLoaded(uuid, val))
+  },
+  setFrontBox: (uuid) => {
+    console.log(uuid);
+    dispatch(setFrontBox(uuid))
   }
 });
 

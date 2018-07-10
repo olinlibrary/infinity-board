@@ -8,14 +8,28 @@ import ImageBox from './image-box';
 
 
 class Board extends React.Component {
+  constructor(props) {
+    super(props);
 
+    this.props.comm.setReceivedBoardDataMessageHandler(this.receivedBoardData);
+  }
 
   // Avoids unnecessary calls to setCurDragging, which improves performance
   setDragging = (uuid) => {
     if (uuid !== this.props.curDragging) {
-      this.props.setCurDragging(uuid)
+      this.props.setCurDragging(uuid);
     }
   }
+
+  /**
+   * Called when the initial board data is loaded.
+   * @param board - the board object.
+  */
+  receivedBoardData = (board) => {
+    console.log("BoardID")
+    console.log(board._id)
+    this.props.setBoardName(board._id);
+  };
 
   /**
    * Called on ImageBox load to resize image correctly
@@ -73,6 +87,7 @@ class Board extends React.Component {
       boxProps.cursorCallback = this.props.cursorCallback;
       boxProps.visibilityCallback = this.props.visibilityCallback;
       boxProps.deleteBox = this.props.deleteBox;
+      boxProps.setFrontBox = this.props.setFrontBox;
 
       if (boxProps.type === 'text') {
         boxProps.editCallback = this.props.updateText;

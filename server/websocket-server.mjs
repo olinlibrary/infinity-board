@@ -1,5 +1,4 @@
 import SocketIO from 'socket.io';
-// import { BoardActionTypes } from '../app/src/data/board-actions'
 
 /**
  * A WebSockets server for keeping bidirectional data channels open for real-time communication.
@@ -7,27 +6,23 @@ import SocketIO from 'socket.io';
  */
 export default class WebSocketServer {
   constructor() {
-    this.BoardActionTypes = {
-      SET_MOUSE_CLICK_POSITION: 'SET_MOUSE_CLICK_POSITION',
+    this.SharedActionTypes = {
       SET_DRAGGING: 'SET_DRAGGING',
       SET_POSITION: 'SET_POSITION',
-      SET_SIZE: 'SET_SIZE',
       GENERATE_BOX: 'GENERATE_BOX',
-      SET_CUR_DRAGGING: 'SET_CUR_DRAGGING',
       RESIZE_BOX: 'RESIZE_BOX',
-      SET_CURSOR: 'SET_CURSOR',
-      SET_TAB_VISIBILITY: 'SET_TAB_VISIBILITY',
       DELETE_BOX: 'DELETE_BOX',
       UPDATE_TEXT: 'UPDATE_TEXT',
       SET_EDITING: 'SET_EDITING',
-      SET_IMG_LOADED: 'SET_IMG_LOADED'
+      SET_IMG_LOADED: 'SET_IMG_LOADED',
+      SET_FRONT_BOX: 'SET_FRONT_BOX',
     };
     this.io = null;
     this.updateHandler = null;
     this.messageHandlers = {};
     this.boardToClientsViewingMap = {};
     this.clientsToBoardsViewingMap = {};
-    this.boardToClientsViewingMap['1234'] = [];
+    // this.boardToClientsViewingMap['1234'] = [];
 
     // Bind the current context to the following functions (weird JS thing)
     this.start = this.start.bind(this);
@@ -65,7 +60,7 @@ export default class WebSocketServer {
     this.boardToClientsViewingMap['1234'].push(socket); // TODO: remove this hack
 
     // Set up the handler for Redux actions for the socket
-    Object.keys(this.BoardActionTypes).forEach(type =>
+    Object.keys(this.SharedActionTypes).forEach(type =>
       socket.on(type, (payload) => {
         this.updateHandler(type, payload, socket)
       }))

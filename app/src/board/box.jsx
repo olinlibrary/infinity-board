@@ -70,6 +70,8 @@ class Box extends React.Component {
     e.stopPropagation();
     if (e.button === 0) {
       this.props.setCurDragging(this.props.uuid);
+      // Callback for pushing box to front (also sent via websocket)
+      this.props.setFrontBox(this.props.uuid);
       if (this.cursorInDraggingPosition(e)) {
         this.props.clickCallback(this.props.uuid, 'resize')
       } else {
@@ -162,6 +164,7 @@ Box.propTypes = {
   resizeCallback: PropTypes.func.isRequired,
   cursorCallback: PropTypes.func.isRequired,
   deleteBox: PropTypes.func.isRequired,
+  setFrontBox: PropTypes.func.isRequired,
 
   // Box attributes
   color: PropTypes.string.isRequired,

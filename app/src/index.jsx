@@ -32,7 +32,7 @@ class App extends React.Component {
     this.comm = new ServerComm(window.SERVER_URI);
     this.store = createStore(
       defaultReducer,
-      { boardReducer: { boxOrder: [] }},
+      { boardReducer: { boxOrder: [], }, boardWindowReducer: { mouseMove: false, }},
       // Apply websocket middleware
       applyMiddleware(this.comm.socketEmit)
     );
@@ -49,7 +49,12 @@ class App extends React.Component {
     this.setState({ boards });
   };
 
+  setCurBoard = (name) => {
+    this.comm.setBoardName(name);
+  }
+
   render() {
+    // console.log(this.props.mouseMove)
     const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
     return (
       <BrowserRouter>
@@ -71,7 +76,11 @@ class App extends React.Component {
               component={props =>
                 <Provider store={this.store}>
                   <BoardWindowContainer>
-                    <BoardContainer boardName={props.match.params.boardName} />
+                    <BoardContainer
+                      boardName={props.match.params.boardName}
+                      comm={this.comm}
+                      setBoardName={this.setCurBoard}
+                    />
                   </BoardWindowContainer>
                 </Provider>
               }

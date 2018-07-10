@@ -1,5 +1,5 @@
 import SocketIO from 'socket.io-client';
-import { BoardActionTypes } from './data/board-actions';
+import { SharedActionTypes } from './data/board-actions';
 
 /**
  * Enables communication with the InfinityBoard backend server, handling all data transfers.
@@ -7,10 +7,15 @@ import { BoardActionTypes } from './data/board-actions';
 export default class ServerComm {
   constructor(serverURL) {
     this.comm = SocketIO(serverURL);
+    this.boardName = null;
+  }
+
+  setBoardName = name => {
+    this.boardName = name;
   }
 
   broadcastMessage = (action) => {
-    this.comm.emit(action.type, { boardName: '1234', originatingSocket: this.comm.id, ...action })
+    this.comm.emit(action.type, { boardName: this.boardName, originatingSocket: this.comm.id, ...action })
   };
 
   /**
@@ -18,7 +23,7 @@ export default class ServerComm {
    * @param store - the Redux store to pass in
   */
   initializeSocket = (store) => {
-    Object.keys(BoardActionTypes).forEach(type =>
+    Object.keys(SharedActionTypes).forEach(type =>
       this.comm.on(type, (payload) => {
         store.dispatch({ type, ...payload });
       }));

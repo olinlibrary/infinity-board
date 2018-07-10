@@ -3,7 +3,6 @@ export const BoardActionTypes = {
   SET_MOUSE_CLICK_POSITION: 'SET_MOUSE_CLICK_POSITION',
   SET_DRAGGING: 'SET_DRAGGING',
   SET_POSITION: 'SET_POSITION',
-  SET_SIZE: 'SET_SIZE',
   GENERATE_BOX: 'GENERATE_BOX',
   SET_CUR_DRAGGING: 'SET_CUR_DRAGGING',
   RESIZE_BOX: 'RESIZE_BOX',
@@ -12,8 +11,22 @@ export const BoardActionTypes = {
   DELETE_BOX: 'DELETE_BOX',
   UPDATE_TEXT: 'UPDATE_TEXT',
   SET_EDITING: 'SET_EDITING',
-  SET_IMG_LOADED: 'SET_IMG_LOADED'
+  SET_IMG_LOADED: 'SET_IMG_LOADED',
+  SET_FRONT_BOX: 'SET_FRONT_BOX',
 };
+
+export const SharedActionTypes = {
+  SET_DRAGGING: 'SET_DRAGGING',
+  SET_POSITION: 'SET_POSITION',
+  GENERATE_BOX: 'GENERATE_BOX',
+  RESIZE_BOX: 'RESIZE_BOX',
+  DELETE_BOX: 'DELETE_BOX',
+  UPDATE_TEXT: 'UPDATE_TEXT',
+  SET_EDITING: 'SET_EDITING',
+  SET_IMG_LOADED: 'SET_IMG_LOADED',
+  SET_FRONT_BOX: 'SET_FRONT_BOX',
+};
+
 
 export function setMouseClickPosition(uuid, xPos, yPos) {
   return { type: BoardActionTypes.SET_MOUSE_CLICK_POSITION, uuid, xPos, yPos };
@@ -25,10 +38,6 @@ export function setPosition(uuid, xPos, yPos) {
 
 export function setDragging(uuid, value) {
   return { type: BoardActionTypes.SET_DRAGGING, uuid, value };
-}
-
-export function setSize(uuid, w, h) {
-  return { type: BoardActionTypes.SET_SIZE, uuid, w, h };
 }
 
 export function generateBox(uuid, color, boxType, optionalArgs) {
@@ -65,4 +74,8 @@ export function setEditing(uuid, val) {
 
 export function setImgLoaded(uuid, val) {
   return { type: BoardActionTypes.SET_IMG_LOADED, uuid, val };
+}
+
+export function setFrontBox(uuid) {
+  return { type: BoardActionTypes.SET_FRONT_BOX, uuid };
 }
