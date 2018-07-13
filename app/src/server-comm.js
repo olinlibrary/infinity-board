@@ -10,13 +10,23 @@ export default class ServerComm {
     this.boardName = null;
   }
 
-  setBoardName = name => {
+  setBoardName = (name) => {
     this.boardName = name;
   }
 
   broadcastMessage = (action) => {
-    this.comm.emit(action.type, { boardName: this.boardName, originatingSocket: this.comm.id, ...action })
+    this.comm.emit(action.type, {
+      boardName: this.boardName,
+      originatingSocket: this.comm.id,
+      ...action
+    })
   };
+
+
+  broadcastBoardState = (store) => {
+    this.comm.emit('updateBoard',  { boardName: this.boardName, store: store.getState() })
+  }
+
 
   /**
    * Called to initialize websocket handlers with store actions to dispatch
@@ -39,7 +49,9 @@ export default class ServerComm {
   socketEmit = store => next => (action) => {
     // Don't broadcast if the received message has an originating socket (avoids infinite message sending)
     if (!('originatingSocket' in action)) {
-      this.broadcastMessage(action)
+      // Broadcast the message
+      this.broadcastMessage(action);
+      this.broadcastBoardState(store);
     }
     next(action);
   }
@@ -50,6 +62,8 @@ export default class ServerComm {
    * @param socket - the socket.io connection to the server
    */
   receivedFullBoardDataMessage = (data, socket) => {
+    // console.log("Board data")
+    // console.log(data)
     if (this.receivedBoardDataMessageHandler) {
       this.receivedBoardDataMessageHandler(data, socket);
     }

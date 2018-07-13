@@ -147,6 +147,13 @@ function boardReducer(state = {}, action) {
         state,
         { boxOrder: newBoxOrder },
       )
+    case BoardActionTypes.UPDATE_STORE:
+      console.log(action.store)
+      return Object.assign(
+        {},
+        state,
+        action.store,
+      )
     default:
       return state
   }

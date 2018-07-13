@@ -17,7 +17,6 @@ import { createStore, applyMiddleware } from 'redux';
 import defaultReducer from './data/reducers';
 import BoardContainer from './containers/BoardContainer';
 import BoardWindowContainer from './containers/BoardWindowContainer';
-import { BoardActionTypes } from './data/board-actions'
 
 /**
  * The main React container for the app. It holds the state and passes it down

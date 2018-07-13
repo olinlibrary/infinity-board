@@ -14,6 +14,12 @@ class Board extends React.Component {
     this.props.comm.setReceivedBoardDataMessageHandler(this.receivedBoardData);
   }
 
+  componentDidMount() {
+    // console.log(this.props.boardName);
+    // Retrieve board data
+    this.props.comm.getBoardData(null, this.props.boardName)
+  }
+
   // Avoids unnecessary calls to setCurDragging, which improves performance
   setDragging = (uuid) => {
     if (uuid !== this.props.curDragging) {
@@ -29,6 +35,7 @@ class Board extends React.Component {
     console.log("BoardID")
     console.log(board._id)
     this.props.setBoardName(board._id);
+    this.props.updateStore(board.store);
   };
 
   /**
@@ -112,6 +119,8 @@ class Board extends React.Component {
 }
 
 Board.propTypes = {
+  boardName: PropTypes.string,
+
   // eslint-disable-next-line
   boxes: PropTypes.object,
   cursor: PropTypes.string,
@@ -135,6 +144,7 @@ Board.defaultProps = {
   boxes: {},
   windowX: 0,
   windowY: 0,
+  boardName: '',
 }
 
 export default Board;

@@ -10,7 +10,8 @@ import {
   updateText,
   setEditing,
   setImgLoaded,
-  setFrontBox
+  setFrontBox,
+  updateStore
 } from '../data/board-actions'
 import { setCursor } from '../data/window-actions'
 import Board from '../board/board'
@@ -74,8 +75,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     dispatch(setImgLoaded(uuid, val))
   },
   setFrontBox: (uuid) => {
-    console.log(uuid);
     dispatch(setFrontBox(uuid))
+  },
+  updateStore: (store) => {
+    dispatch(updateStore(store))
   }
 });
 

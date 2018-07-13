@@ -13,6 +13,7 @@ export const BoardActionTypes = {
   SET_EDITING: 'SET_EDITING',
   SET_IMG_LOADED: 'SET_IMG_LOADED',
   SET_FRONT_BOX: 'SET_FRONT_BOX',
+  UPDATE_STORE: 'UPDATE_STORE',
 };
 
 export const SharedActionTypes = {
@@ -78,4 +79,8 @@ export function setImgLoaded(uuid, val) {
 
 export function setFrontBox(uuid) {
   return { type: BoardActionTypes.SET_FRONT_BOX, uuid };
+}
+
+export function updateStore(store) {
+  return { type: BoardActionTypes.UPDATE_STORE, store };
 }

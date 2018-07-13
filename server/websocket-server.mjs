@@ -57,7 +57,7 @@ export default class WebSocketServer {
       socket.on(msgName, data =>
         this.messageHandlers[msgName](data, socket, this.registerSocketWithBoard));
     });
-    this.boardToClientsViewingMap['1234'].push(socket); // TODO: remove this hack
+    // this.boardToClientsViewingMap['1234'].push(socket); // TODO: remove this hack
 
     // Set up the handler for Redux actions for the socket
     Object.keys(this.SharedActionTypes).forEach(type =>
@@ -87,11 +87,9 @@ export default class WebSocketServer {
     const clientsUsingBoard = this.boardToClientsViewingMap[newPayload.boardName];
     // console.log(newPayload)
     if (clientsUsingBoard) {
-      console.log("Nice")
       clientsUsingBoard.forEach((socket) => {
         if (socket !== originatingSocket) {
           if (socket.connected) {
-            console.log(type)
             socket.emit(type, newPayload);
           } else {
             this.deregisterClientFromBoards(socket); // Socket no longer connected
@@ -147,7 +145,7 @@ export default class WebSocketServer {
     }
     this.clientsToBoardsViewingMap[socket.id] = boardId;
     if (boardId) { // Will be null if clearing open board for client
-      this.boardToClientsViewingMap['1234'].push(socket);
+      this.boardToClientsViewingMap[boardId].push(socket);
     }
   }
 

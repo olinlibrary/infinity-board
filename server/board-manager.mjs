@@ -24,6 +24,7 @@ export default class BoardManager {
     this.createBoard = this.createBoard.bind(this);
     this.receivedBoardUpdate = this.receivedBoardUpdate.bind(this);
     this.handleBoardListRequest = this.handleBoardListRequest.bind(this);
+    this.handleBoardUpdate = this.handleBoardUpdate.bind(this);
     this.getBoardList = this.getBoardList.bind(this);
     this.getBoardData = this.getBoardData.bind(this);
 
@@ -31,6 +32,7 @@ export default class BoardManager {
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
     this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
+    this.wsServer.registerMessageHandler('updateBoard', this.handleBoardUpdate);
 
     // Register the handler for board update messages
     this.wsServer.registerUpdateHandler(this.receivedBoardUpdate);
@@ -77,10 +79,21 @@ export default class BoardManager {
   receivedBoardUpdate(type, payload, originatingSocket) {
     // Broadcast the update to the other connected clients
     this.wsServer.broadcastBoardUpdate(type, payload, originatingSocket);
-
     // Save the board to the database
     // this.dbConn.saveBoard(boardData);
     // TODO replace this bit with an actual bit of code
+  }
+
+  /*
+  * Handles a full board store update from a client.
+  *
+  */
+  handleBoardUpdate(data) {
+    const reducer = Object.assign({}, data.store.boardReducer);
+    if (reducer.hasOwnProperty('curDragging')) {
+      delete reducer.curDragging;
+    }
+    this.dbConn.saveBoard(data.boardName, reducer)
   }
 
   /**
