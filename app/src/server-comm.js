@@ -51,6 +51,7 @@ export default class ServerComm {
     if (!('originatingSocket' in action)) {
       // Broadcast the message
       this.broadcastMessage(action);
+      // Broadcast updated board state to server
       this.broadcastBoardState(store);
     }
     next(action);

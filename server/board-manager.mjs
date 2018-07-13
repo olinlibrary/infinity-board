@@ -36,6 +36,9 @@ export default class BoardManager {
 
     // Register the handler for board update messages
     this.wsServer.registerUpdateHandler(this.receivedBoardUpdate);
+
+    // Get the last time the database was updated
+    this.dbLastUpdated = null;
   }
 
   /**
@@ -79,9 +82,6 @@ export default class BoardManager {
   receivedBoardUpdate(type, payload, originatingSocket) {
     // Broadcast the update to the other connected clients
     this.wsServer.broadcastBoardUpdate(type, payload, originatingSocket);
-    // Save the board to the database
-    // this.dbConn.saveBoard(boardData);
-    // TODO replace this bit with an actual bit of code
   }
 
   /*
@@ -90,10 +90,16 @@ export default class BoardManager {
   */
   handleBoardUpdate(data) {
     const reducer = Object.assign({}, data.store.boardReducer);
-    if (reducer.hasOwnProperty('curDragging')) {
-      delete reducer.curDragging;
+    const curTime = new Date();
+    if (this.dbLastUpdated === null || (curTime.getTime() - this.dbLastUpdated.getTime()) / 1000 > 30) {
+      this.dbLastUpdated = new Date();
+      // Don't update certain state properties that aren't shared
+      if (reducer.hasOwnProperty('curDragging')) {
+        delete reducer.curDragging;
+      }
+      console.log("Updating DB")
+      this.dbConn.saveBoard(data.boardName, reducer)
     }
-    this.dbConn.saveBoard(data.boardName, reducer)
   }
 
   /**
