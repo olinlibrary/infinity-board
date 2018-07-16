@@ -54,10 +54,13 @@ class Box extends React.Component {
   */
   getCursor = (e) => {
     if (this.props.dragging === 'drag') {
+      console.log("move")
       return 'move';
     } else if (this.props.dragging === 'resize' || this.cursorInDraggingPosition(e)) {
+      console.log("resize")
       return 'se-resize';
     }
+    console.log("default")
     return 'default';
   };
 
@@ -79,6 +82,7 @@ class Box extends React.Component {
       }
       // Defines the position of the mouse click relative to the top left corner of the box
       this.props.setMouseDown(this.props.uuid, this.props.x - e.screenX, this.props.y - e.screenY)
+      // this.props.cursorCallback(this.getCursor(e));
     }
   }
 
@@ -87,9 +91,12 @@ class Box extends React.Component {
   whether we're resizing or dragging.
   */
   mouseMove = (e) => {
-    // Change the cursor based on what is currently happening
-    this.props.cursorCallback(this.getCursor(e))
+    // If the mouse is currently over the box, change the cursor
+    if (this.props.tabVisibility === 1) {
+      this.props.cursorCallback(this.getCursor(e))
+    }
 
+    // If dragging is happening, then move the box
     if (this.props.dragging === 'drag') {
       this.props.moveCallback(
         this.props.uuid,
@@ -97,7 +104,6 @@ class Box extends React.Component {
         e.screenY + this.props.mouseY
       );
     } else if (this.props.dragging === 'resize') {
-      this.props.cursorCallback('move');
       // Resize the current box
       this.props.resizeCallback(
         this.props.uuid,
@@ -111,14 +117,16 @@ class Box extends React.Component {
     Handles actions that occur on mouseUp events
   */
   mouseUp = (e) => {
-    this.props.setCurDragging('')
-    this.props.clickCallback(this.props.uuid, '');
-    if (this.props.overDelete) {
-      this.props.deleteBox(this.props.uuid)
+
+    // Check to ensure this event is firing on the correct box
+    if (this.props.dragging !== '') {
+      this.props.setCurDragging('')
+      this.props.clickCallback(this.props.uuid, '');
+      if (this.props.overDelete) {
+        this.props.deleteBox(this.props.uuid)
+      }
     }
-    // Change the editing state of the box
-    // console.log(this.props.x - e.screenX)
-    // console.log(this.props.mouseX)
+
   };
 
   /**
@@ -133,7 +141,7 @@ class Box extends React.Component {
   };
 
   render() {
-    const boxOpacity = this.props.overDelete ? 0.5 : 1;
+    const boxOpacity = (this.props.overDelete && this.props.dragging !== '') ? 0.5 : 1;
     return (
       // eslint-disable-next-line
       <div style={{ opacity: boxOpacity }}>

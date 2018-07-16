@@ -32,8 +32,8 @@ class Board extends React.Component {
    * @param board - the board object.
   */
   receivedBoardData = (board) => {
-    console.log("BoardID")
-    console.log(board._id)
+    // console.log("BoardID")
+    // console.log(board._id)
     this.props.setBoardName(board._id);
     this.props.updateStore(board.store);
   };
@@ -71,8 +71,6 @@ class Board extends React.Component {
 
 
   render() {
-    // console.log(this.props.boxes)
-    // console.log(this.props.boxes)
     const allKeys = this.props.boxOrder;
     const boxes = [];
     for (let i = 0; i < allKeys.length; i++) {

@@ -35,6 +35,7 @@ export default class ServerComm {
   initializeSocket = (store) => {
     Object.keys(SharedActionTypes).forEach(type =>
       this.comm.on(type, (payload) => {
+        // console.log(type)
         store.dispatch({ type, ...payload });
       }));
 
@@ -48,7 +49,7 @@ export default class ServerComm {
    */
   socketEmit = store => next => (action) => {
     // Don't broadcast if the received message has an originating socket (avoids infinite message sending)
-    if (!('originatingSocket' in action)) {
+    if (Object.values(SharedActionTypes).indexOf(action.type) !== -1 && !('originatingSocket' in action)) {
       // Broadcast the message
       this.broadcastMessage(action);
       // Broadcast updated board state to server

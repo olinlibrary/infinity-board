@@ -91,15 +91,15 @@ export default class BoardManager {
   handleBoardUpdate(data) {
     const reducer = Object.assign({}, data.store.boardReducer);
     const curTime = new Date();
-    if (this.dbLastUpdated === null || (curTime.getTime() - this.dbLastUpdated.getTime()) / 1000 > 30) {
-      this.dbLastUpdated = new Date();
-      // Don't update certain state properties that aren't shared
-      if (reducer.hasOwnProperty('curDragging')) {
-        delete reducer.curDragging;
-      }
-      console.log("Updating DB")
+    // eslint-disable-next-line
+    // if (this.dbLastUpdated === null || (curTime.getTime() - this.dbLastUpdated.getTime()) / 1000 > process.env.CACHE_PERIOD) {
+    //   this.dbLastUpdated = new Date();
+    //   // Don't update certain state properties that aren't shared
+    //   if (reducer.hasOwnProperty('curDragging')) {
+    //     delete reducer.curDragging;
+    //   }
       this.dbConn.saveBoard(data.boardName, reducer)
-    }
+    // }
   }
 
   /**
