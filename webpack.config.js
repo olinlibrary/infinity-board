@@ -4,8 +4,9 @@ const webpack = require('webpack');
 const BUILD_DIR = path.resolve(__dirname);
 const APP_DIR = path.resolve(__dirname, 'app', 'src');
 
-module.exports = (env) => {
-  console.log(env)
+module.exports = (env = {}) => {
+  const dev = ('dev' in env);
+
   return {
     devtool: 'source-map',
     entry: `${APP_DIR}/index.jsx`,
@@ -39,7 +40,7 @@ module.exports = (env) => {
       extensions: ['.js', '.jsx'],
     },
     plugins: [
-       new webpack.DefinePlugin({ LOCALDEV: JSON.stringify(env.dev) })
+      new webpack.DefinePlugin({ LOCALDEV: JSON.stringify(dev) })
     ],
 }
 };
