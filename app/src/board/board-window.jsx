@@ -41,7 +41,7 @@ class BoardWindow extends React.Component {
   onUploadFinish = (e) => {
     // eslint-disable-next-line
     const imgUrl = e.publicUrl;
-    this.generateBox('image', { src: imgUrl, isUpload: true });
+    this.generateBox('image', { src: imgUrl });
   };
 
   getBGStyle = () => {
@@ -62,8 +62,12 @@ class BoardWindow extends React.Component {
   */
   handleButtonClick = (boxType) => {
     if (boxType === 'image') {
-      // this.input.click(); // Manually bring up file dialog
-      this.generateBox(boxType, { src: "http://cdn1-www.dogtime.com/assets/uploads/gallery/30-impossibly-cute-puppies/impossibly-cute-puppy-2.jpg", isUpload: true })
+      // If running locally, mock the image box creation
+      if (LOCALDEV) {
+        this.generateBox(boxType, { src: "../../../favicon.png", isUpload: false })
+      } else {
+        this.input.click(); // Manually bring up file dialog
+      }
     } else if (boxType === 'text') {
       this.generateBox(boxType, { text: '', editing: false });
     }

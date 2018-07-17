@@ -140,6 +140,13 @@ function boardReducer(state = {}, action) {
         state,
         { boxes: curBoxes },
       )
+    case BoardActionTypes.SET_IMG_ASPECT:
+      curBoxes[action.uuid].aspect = action.w / action.h;
+      return Object.assign(
+        {},
+        state,
+        { boxes: curBoxes },
+      )
     case BoardActionTypes.SET_FRONT_BOX:
       newBoxOrder.push(newBoxOrder.splice(newBoxOrder.indexOf(first), 1)[0]);
       return Object.assign(

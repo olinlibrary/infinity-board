@@ -11,7 +11,8 @@ import {
   setEditing,
   setImgLoaded,
   setFrontBox,
-  updateStore
+  updateStore,
+  setImgAspect,
 } from '../data/board-actions'
 import { setCursor } from '../data/window-actions'
 import Board from '../board/board'
@@ -76,6 +77,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   setFrontBox: (uuid) => {
     dispatch(setFrontBox(uuid))
+  },
+  setImgAspect: (uuid, w, h) => {
+    dispatch(setImgAspect(uuid, w, h))
   },
   updateStore: (store) => {
     dispatch(updateStore(store))

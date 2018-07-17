@@ -19,11 +19,12 @@ export default class ImageBox extends React.Component {
       this.props.uuid,
       img.offsetWidth,
       img.offsetHeight,
-      this.props.isUpload,
     );
     // eslint-disable-next-line
     console.log("Image loaded.");
     this.props.setImgLoaded(this.props.uuid, true);
+    // Update the image aspect ratio
+    this.props.setImgAspect(this.props.uuid, img.offsetWidth, img.offsetHeight);
   }
 
   render() {
@@ -59,14 +60,13 @@ ImageBox.propTypes = {
   imgCallback: PropTypes.func.isRequired,
   setImgLoaded: PropTypes.func.isRequired,
   uuid: PropTypes.string.isRequired,
-  isUpload: PropTypes.bool,
   opacity: PropTypes.number,
+  setImgAspect: PropTypes.func.isRequired,
 
   isLoaded: PropTypes.bool,
 };
 
 ImageBox.defaultProps = {
   opacity: 1,
-  isUpload: false,
   isLoaded: false,
 };

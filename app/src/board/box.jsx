@@ -43,7 +43,8 @@ class Box extends React.Component {
       width: `${this.props.w - (2 * this.props.padding)}px`,
       height: `${this.props.h - (2 * this.props.padding)}px`,
       zIndex: 1,
-      padding: this.props.padding
+      padding: this.props.padding,
+      visibility: this.props.visibility
     };
     return boxStyle;
   };
@@ -54,13 +55,13 @@ class Box extends React.Component {
   */
   getCursor = (e) => {
     if (this.props.dragging === 'drag') {
-      console.log("move")
+      // console.log("move")
       return 'move';
     } else if (this.props.dragging === 'resize' || this.cursorInDraggingPosition(e)) {
-      console.log("resize")
+      // console.log("resize")/
       return 'se-resize';
     }
-    console.log("default")
+    // console.log("default")
     return 'default';
   };
 
@@ -98,18 +99,25 @@ class Box extends React.Component {
 
     // If dragging is happening, then move the box
     if (this.props.dragging === 'drag') {
+      console.log(this.props.curDragging + " " + this.props.uuid)
       this.props.moveCallback(
         this.props.uuid,
         e.screenX + this.props.mouseX,
         e.screenY + this.props.mouseY
       );
     } else if (this.props.dragging === 'resize') {
+
+      let xResize = this.getResize(e.clientX, this.props.renderX, this.props.minWidth);
+      let yResize = this.getResize(e.clientY, this.props.renderY, this.props.minHeight);
+      if (this.props.aspect !== 0) {
+        if (this.props.aspect < 1) {
+          yResize = xResize / this.props.aspect;
+        } else {
+          xResize = yResize * this.props.aspect;
+        }
+      }
       // Resize the current box
-      this.props.resizeCallback(
-        this.props.uuid,
-        this.getResize(e.clientX, this.props.renderX, this.props.minWidth),
-        this.getResize(e.clientY, this.props.renderY, this.props.minHeight),
-      );
+      this.props.resizeCallback(this.props.uuid, xResize, yResize);
     }
   }
 
@@ -178,6 +186,8 @@ Box.propTypes = {
   color: PropTypes.string.isRequired,
   uuid: PropTypes.string.isRequired,
   padding: PropTypes.number,
+  visibility: PropTypes.string,
+  aspect: PropTypes.number,
 
   // Box state
   x: PropTypes.number,
@@ -191,10 +201,10 @@ Box.propTypes = {
   dragging: PropTypes.string,
   cursor: PropTypes.string.isRequired,
   tabVisibility: PropTypes.number,
-  padding: PropTypes.number,
   minWidth: PropTypes.number,
   minHeight: PropTypes.number,
   overDelete: PropTypes.bool,
+  isLoaded: PropTypes.bool,
 };
 
 Box.defaultProps = {
@@ -212,7 +222,9 @@ Box.defaultProps = {
   minWidth: 200,
   minHeight: 200,
   overDelete: false,
-  padding: 20,
+  visibility: 'visible',
+  aspect: 0,
+  isLoaded: false,
 }
 
 

@@ -44,29 +44,21 @@ class Board extends React.Component {
    * @param w: the new width of the box
    * @param h: the new height of the box
   */
-  updateImage = (uuid, w, h, isUpload) => {
+  updateImage = (uuid, w, h) => {
     let wVal = 0;
     let hVal = 0;
     const aspect = w / h;
-    const initState = this.props.boxes;
-    initState[uuid].aspect = w / h; // Track the aspect ratio
-    if (isUpload) { // If it's a newly uploaded picture, update the size
-      if (w > 500) { // Bound the initial render size to 500x500 to avoid huge images
-        wVal = 500;
-        hVal = wVal / aspect;
-      } else if (h > 500) {
-        hVal = 500;
-        wVal = hVal * aspect;
-      } else {
-        hVal = h; // Otherwise, set based on aspect ratio
-        wVal = hVal * aspect;
-      }
-      // this.updateBoardState(uuid, {
-      //   w: wVal,
-      //   h: hVal,
-      // }); // Update the size on other clients
-      this.props.resizeCallback(uuid, wVal, hVal);
+
+    // Update based on the minimum size, and the aspect ratio of the image
+    if (w < h) {
+      wVal = Math.min(200, Math.max(500, w));
+      hVal = wVal / aspect;
+    } else {
+      hVal = Math.min(200, Math.max(500, h));
+      wVal = hVal * aspect;
     }
+
+    this.props.resizeCallback(uuid, wVal, hVal);
   };
 
 
@@ -100,6 +92,7 @@ class Board extends React.Component {
         boxProps.mouseMove = this.props.mouseMove;
         boxes.push(<TextBox {...boxProps} />);
       } else if (boxProps.type === 'image') {
+        boxProps.setImgAspect = this.props.setImgAspect;
         boxProps.imgCallback = this.updateImage;
         boxProps.setImgLoaded = this.props.setImgLoaded;
         boxes.push(<ImageBox {...boxProps} />);
