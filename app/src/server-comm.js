@@ -48,8 +48,10 @@ export default class ServerComm {
    * Called as middleware in the Redux store. Sends websocket updates on action dispatch.
    */
   socketEmit = store => next => (action) => {
+
     // Don't broadcast if the received message has an originating socket (avoids infinite message sending)
     if (Object.values(SharedActionTypes).indexOf(action.type) !== -1 && !('originatingSocket' in action)) {
+
       // Broadcast the message
       this.broadcastMessage(action);
       // Broadcast updated board state to server

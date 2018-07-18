@@ -63,7 +63,7 @@ function boardReducer(state = {}, action) {
       return Object.assign(
         {},
         state,
-        curBoxes,
+        { boxes: curBoxes },
       )
     case BoardActionTypes.SET_MOUSE_CLICK_POSITION:
       curBoxes[action.uuid].mouseX = action.xPos;

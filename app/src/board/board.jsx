@@ -32,6 +32,8 @@ class Board extends React.Component {
    * @param board - the board object.
   */
   receivedBoardData = (board) => {
+    console.log("Received")
+    console.log(board)
     // console.log("BoardID")
     // console.log(board._id)
     this.props.setBoardName(board._id);
