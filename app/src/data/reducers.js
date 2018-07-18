@@ -85,6 +85,7 @@ function boardReducer(state = {}, action) {
         type: action.boxType,
         ...action.optionalArgs
       }
+      console.log(curBoxes)
       return Object.assign(
         {},
         state,
@@ -114,6 +115,7 @@ function boardReducer(state = {}, action) {
     case BoardActionTypes.DELETE_BOX:
       delete curBoxes[action.uuid];
       newBoxOrder.splice(-1, 1);
+      console.log(curBoxes)
       return Object.assign(
         {},
         state,

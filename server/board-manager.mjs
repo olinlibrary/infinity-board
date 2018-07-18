@@ -98,6 +98,8 @@ export default class BoardManager {
     //   if (reducer.hasOwnProperty('curDragging')) {
     //     delete reducer.curDragging;
     //   }
+    console.log("reducer")
+    console.log(reducer)
       this.dbConn.saveBoard(data.boardName, reducer)
     // }
   }

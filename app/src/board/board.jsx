@@ -15,7 +15,6 @@ class Board extends React.Component {
   }
 
   componentDidMount() {
-    // console.log(this.props.boardName);
     // Retrieve board data
     this.props.comm.getBoardData(null, this.props.boardName)
   }
@@ -32,10 +31,6 @@ class Board extends React.Component {
    * @param board - the board object.
   */
   receivedBoardData = (board) => {
-    console.log("Received")
-    console.log(board)
-    // console.log("BoardID")
-    // console.log(board._id)
     this.props.setBoardName(board._id);
     this.props.updateStore(board.store);
   };

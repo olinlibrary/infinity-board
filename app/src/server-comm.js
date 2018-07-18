@@ -35,7 +35,10 @@ export default class ServerComm {
   initializeSocket = (store) => {
     Object.keys(SharedActionTypes).forEach(type =>
       this.comm.on(type, (payload) => {
-        // console.log(type)
+        if (type === 'DELETE_BOX') {
+          console.log('remote')
+          console.log(payload)
+        }
         store.dispatch({ type, ...payload });
       }));
 
@@ -48,16 +51,19 @@ export default class ServerComm {
    * Called as middleware in the Redux store. Sends websocket updates on action dispatch.
    */
   socketEmit = store => next => (action) => {
-
+    let result = next(action);
     // Don't broadcast if the received message has an originating socket (avoids infinite message sending)
     if (Object.values(SharedActionTypes).indexOf(action.type) !== -1 && !('originatingSocket' in action)) {
-
+      if (action.type === 'DELETE_BOX') {
+        console.log('local')
+        console.log(action)
+      }
       // Broadcast the message
       this.broadcastMessage(action);
       // Broadcast updated board state to server
       this.broadcastBoardState(store);
     }
-    next(action);
+    return result
   }
 
   /**
@@ -140,6 +146,7 @@ export default class ServerComm {
    * @param {string} name - the human-memorable name
    */
   getBoardData = (id, name) => {
+    console.log('emitting')
     this.comm.emit('getBoardData', { id, name });
   };
 
