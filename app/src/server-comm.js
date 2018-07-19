@@ -51,12 +51,12 @@ export default class ServerComm {
    * Called as middleware in the Redux store. Sends websocket updates on action dispatch.
    */
   socketEmit = store => next => (action) => {
+    // We have to perform the action first so that all state changes are propagated after state is modified
     let result = next(action);
+
     // Don't broadcast if the received message has an originating socket (avoids infinite message sending)
     if (Object.values(SharedActionTypes).indexOf(action.type) !== -1 && !('originatingSocket' in action)) {
       if (action.type === 'DELETE_BOX') {
-        console.log('local')
-        console.log(action)
       }
       // Broadcast the message
       this.broadcastMessage(action);

@@ -27,6 +27,7 @@ export default class BoardManager {
     this.handleBoardUpdate = this.handleBoardUpdate.bind(this);
     this.getBoardList = this.getBoardList.bind(this);
     this.getBoardData = this.getBoardData.bind(this);
+    this.saveBoardsToDb = this.saveBoardsToDb.bind(this);
 
     // Register WebSocket message handlers
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
@@ -39,6 +40,11 @@ export default class BoardManager {
 
     // Get the last time the database was updated
     this.dbLastUpdated = null;
+
+    // Keep track of the current state of boards (for database saving)
+    this.curBoards = {};
+
+    setInterval(this.saveBoardsToDb, 5000);
   }
 
   /**
@@ -89,19 +95,26 @@ export default class BoardManager {
   *
   */
   handleBoardUpdate(data) {
-    const reducer = Object.assign({}, data.store.boardReducer);
-    const curTime = new Date();
-    // eslint-disable-next-line
-    // if (this.dbLastUpdated === null || (curTime.getTime() - this.dbLastUpdated.getTime()) / 1000 > process.env.CACHE_PERIOD) {
-    //   this.dbLastUpdated = new Date();
-    //   // Don't update certain state properties that aren't shared
-    //   if (reducer.hasOwnProperty('curDragging')) {
-    //     delete reducer.curDragging;
-    //   }
-    console.log("reducer")
-    console.log(reducer)
-      this.dbConn.saveBoard(data.boardName, reducer)
-    // }
+    // Remove elements of state that shouldn't be shared
+    // TODO: make curDragging not be shared state
+    if (data.store.boardReducer.hasOwnProperty('curDragging')) {
+      delete data.store.boardReducer.curDragging;
+    }
+    this.curBoards[data.boardName] = data;
+  }
+
+  /*
+  * Called periodically. Handles saving of all boards to the database.
+  */
+  saveBoardsToDb() {
+    const allKeys = Object.keys(this.curBoards);
+    for (let i = 0; i < allKeys.length; i++) {
+      const board = this.curBoards[allKeys[i]]
+      const reducer = board.store.boardReducer;
+      this.dbConn.saveBoard(board.boardName, reducer);
+      // Perform cleanup on boards to avoid saving boards that aren't being used
+      delete this.curBoards[allKeys[i]];
+    }
   }
 
   /**
@@ -123,7 +136,9 @@ export default class BoardManager {
    * @private
    */
   fetchBoardsFromDb() {
-    this.dbConn.listBoards().then((boards) => {
+    // Update board
+    this.saveBoardsToDb().then(
+    this.dbConn.listBoards()).then((boards) => {
       this.boards = boards;
     });
   }
