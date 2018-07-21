@@ -137,8 +137,8 @@ export default class BoardManager {
    */
   fetchBoardsFromDb() {
     // Update board
-    this.saveBoardsToDb().then(
-    this.dbConn.listBoards()).then((boards) => {
+    this.saveBoardsToDb();
+    this.dbConn.listBoards().then((boards) => {
       this.boards = boards;
     });
   }
@@ -148,6 +148,7 @@ export default class BoardManager {
    * @return {{object}} the list of boards
    */
   getBoardList() {
+    this.saveBoardsToDb();
     const map = {};
     this.boards.forEach((board) => {
       // eslint-disable-next-line no-underscore-dangle
@@ -164,6 +165,7 @@ export default class BoardManager {
    * the current client is viewing
    */
   getBoardData(query, socket, registerSocketWithBoard) {
+    this.saveBoardsToDb();
     this.dbConn.getBoard(query.name, query.id).then((board) => {
       // eslint-disable-next-line no-underscore-dangle
       registerSocketWithBoard(socket, board._id);
