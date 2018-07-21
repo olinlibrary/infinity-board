@@ -5,6 +5,7 @@ export const WindowActionTypes = {
   SET_WINDOW_POS: 'SET_WINDOW_POS',
   SET_OVER_DELETE: 'SET_OVER_DELETE',
   SET_MOUSE_MOVE: 'SET_MOUSE_MOVE',
+  UPDATE_CLIENTS: 'UPDATE_CLIENTS',
 };
 
 export function setWindowDrag(val) {
@@ -29,4 +30,8 @@ export function setOverDelete(val) {
 
 export function setMouseMove(val) {
   return { type: WindowActionTypes.SET_MOUSE_MOVE, val };
+}
+
+export function updateClients(clients) {
+  return { type: WindowActionTypes.UPDATE_CLIENTS, clients };
 }

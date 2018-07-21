@@ -125,7 +125,24 @@ class BoardWindow extends React.Component {
 
 
   render() {
-    // console.log(this.props.overDelete)
+    // Render clients
+    const allClients = Object.keys(this.props.clients);
+    const clientBoxes = [];
+    for (let i = 0; i < allClients.length; i++) {
+      const curKey = allClients[i];
+      if (curKey !== this.uuid) {
+        const xVal = -this.props.clients[curKey].x + this.props.windowX;
+        const yVal = -this.props.clients[curKey].y + this.props.windowY;
+        const clientStyle = ({
+          left: xVal,
+          top: yVal,
+          zIndex: 3,
+          backgroundColor: this.props.clients[curKey].color,
+        });
+        clientBoxes.push(<div className="Client-box" key={curKey} style={clientStyle} />);
+      }
+    }
+
     return (
       // eslint-disable-next-line
       <div className="View"
@@ -134,6 +151,7 @@ class BoardWindow extends React.Component {
         style={{ cursor: this.props.cursor }}
       >
         <div>
+          {clientBoxes}
           {this.props.children}
         </div>
         <div className="View" style={this.getBGStyle()} id="bg" ref={(view) => { this.view = view; }} />
@@ -196,6 +214,8 @@ BoardWindow.propTypes = {
   prevX: PropTypes.number,
   prevY: PropTypes.number,
   cursor: PropTypes.string,
+  // eslint-disable-next-line
+  clients: PropTypes.object,
 };
 
 BoardWindow.defaultProps = {
@@ -205,6 +225,7 @@ BoardWindow.defaultProps = {
   prevX: 0,
   prevY: 0,
   cursor: 'default',
+  clients: {},
 }
 
 

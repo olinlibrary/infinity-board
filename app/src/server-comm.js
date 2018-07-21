@@ -35,16 +35,12 @@ export default class ServerComm {
   initializeSocket = (store) => {
     Object.keys(SharedActionTypes).forEach(type =>
       this.comm.on(type, (payload) => {
-        if (type === 'DELETE_BOX') {
-          console.log('remote')
-          console.log(payload)
-        }
         store.dispatch({ type, ...payload });
       }));
 
     this.comm.on('boardListUpdate', msg => this.receivedBoardListUpdate(msg, this.comm));
     this.comm.on('boardData', msg => this.receivedFullBoardDataMessage(msg, this.comm));
-    this.comm.on('clientUpdate', msg => this.receivedClientUpdateMessage(msg, this.comm));
+    this.comm.on('clientUpdate', msg => this.receivedClientUpdateMessage(msg, this.comm, store));
   }
 
   /**
@@ -52,17 +48,17 @@ export default class ServerComm {
    */
   socketEmit = store => next => (action) => {
     // We have to perform the action first so that all state changes are propagated after state is modified
-    let result = next(action);
-
-    // Don't broadcast if the received message has an originating socket (avoids infinite message sending)
+    const result = next(action);
+    // Don't broadcast if the received message has an originating socket
     if (Object.values(SharedActionTypes).indexOf(action.type) !== -1 && !('originatingSocket' in action)) {
-      if (action.type === 'DELETE_BOX') {
-      }
       // Broadcast the message
       this.broadcastMessage(action);
       // Broadcast updated board state to server
       this.broadcastBoardState(store);
+    } else if (action.type === 'SET_WINDOW_POS') {
+      this.sendClientUpdate({ x: action.xVal, y: action.yVal })
     }
+
     return result
   }
 
@@ -95,10 +91,10 @@ export default class ServerComm {
    * @param msg - the message payload
    * @param socket - the socket.io connection to the server
    */
-  receivedClientUpdateMessage = (msg, socket) => {
-    if (this.receivedClientUpdateMessageHandler) {
-      this.receivedClientUpdateMessageHandler(msg, socket);
-    }
+  receivedClientUpdateMessage = (msg, socket, store) => {
+    // console.log('UPDATED CLIENTS')
+    // console.log(msg)
+    store.dispatch({ type: 'UPDATE_CLIENTS', clients: msg })
   };
 
   /**

@@ -6,7 +6,8 @@ import {
   setCursor,
   setWindowPos,
   setOverDelete,
-  setMouseMove
+  setMouseMove,
+  updateClients,
 } from '../data/window-actions'
 import { generateBox } from '../data/board-actions'
 
@@ -18,6 +19,7 @@ const mapStateToProps = state => ({
   windowX: state.boardWindowReducer.windowX,
   windowY: state.boardWindowReducer.windowY,
   overDelete: state.boardWindowReducer.overDelete,
+  clients: state.boardWindowReducer.clients,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -39,7 +41,6 @@ const mapDispatchToProps = dispatch => ({
   setMouseMove: (val) => {
     dispatch(setMouseMove(val));
   },
-
   // Board actions
   generateBox: (uuid, color, boxType, optionalArgs) => {
     dispatch(generateBox(uuid, color, boxType, optionalArgs))

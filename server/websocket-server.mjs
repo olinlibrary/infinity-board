@@ -1,4 +1,6 @@
 import SocketIO from 'socket.io';
+import randomColor from 'randomcolor';
+
 
 /**
  * A WebSockets server for keeping bidirectional data channels open for real-time communication.
@@ -22,7 +24,7 @@ export default class WebSocketServer {
     this.messageHandlers = {};
     this.boardToClientsViewingMap = {};
     this.clientsToBoardsViewingMap = {};
-    // this.boardToClientsViewingMap['1234'] = [];
+    this.boardToClientPosMap = {};
 
     // Bind the current context to the following functions (weird JS thing)
     this.start = this.start.bind(this);
@@ -57,7 +59,6 @@ export default class WebSocketServer {
       socket.on(msgName, data =>
         this.messageHandlers[msgName](data, socket, this.registerSocketWithBoard));
     });
-    // this.boardToClientsViewingMap['1234'].push(socket); // TODO: remove this hack
 
     // Set up the handler for Redux actions for the socket
     Object.keys(this.SharedActionTypes).forEach(type =>
@@ -102,10 +103,19 @@ export default class WebSocketServer {
   broadcastClientUpdate(data, originatingSocket) {
     const board = this.clientsToBoardsViewingMap[originatingSocket.id];
     if (board) {
+      // Updating list of client states
+      const newClientList = Object.assign(
+        {},
+        this.boardToClientPosMap[board][originatingSocket.id],
+        data
+      );
+      this.boardToClientPosMap[board][originatingSocket.id] = newClientList;
+
+      // Send client updates
       this.boardToClientsViewingMap[board].forEach((socket) => {
         if (socket !== originatingSocket) {
           if (socket.connected) {
-            socket.emit('clientUpdate', data);
+            socket.emit('clientUpdate', this.boardToClientPosMap[board]);
           } else {
             this.deregisterClientFromBoards(socket); // Socket no longer connected
           }
@@ -146,12 +156,21 @@ export default class WebSocketServer {
     this.clientsToBoardsViewingMap[socket.id] = boardId;
     if (boardId) { // Will be null if clearing open board for client
       this.boardToClientsViewingMap[boardId].push(socket);
+
+      // Handle clients viewing map
+      if (!Object.hasOwnProperty.call(this.boardToClientPosMap, boardId)) {
+        // If map doesn't exist, create it
+        this.boardToClientPosMap[boardId] = {};
+      }
+      this.boardToClientPosMap[boardId][socket.id] = { x: 0, y: 0, color: randomColor() };
     }
   }
 
   deregisterClientFromBoards(socket) {
     const openBoard = this.clientsToBoardsViewingMap[socket];
     if (openBoard) {
+      // Remove from position map
+      delete this.boardToClientPosMap[openBoard][socket];
       // Remove the socket from the list of connected devices for this board
       const boardConnectedClients = this.boardToClientsViewingMap[openBoard];
       boardConnectedClients.splice(boardConnectedClients.indexOf(socket), 1);

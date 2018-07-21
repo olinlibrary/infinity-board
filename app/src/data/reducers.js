@@ -40,6 +40,12 @@ function boardWindowReducer(state = {}, action) {
         state,
         { mouseMove: action.val },
       )
+    case WindowActionTypes.UPDATE_CLIENTS:
+      return Object.assign(
+        {},
+        state,
+        { clients: action.clients }
+      )
     default:
       return state;
   }
