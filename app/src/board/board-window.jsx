@@ -83,6 +83,8 @@ class BoardWindow extends React.Component {
       this.props.setWindowPos(
         curX + (e.clientX - this.props.prevX),
         curY + (e.clientY - this.props.prevY),
+        window.innerWidth,
+        window.innerHeight,
       );
       this.props.setPrevWindowPosition(
         e.clientX,

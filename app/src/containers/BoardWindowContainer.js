@@ -32,8 +32,8 @@ const mapDispatchToProps = dispatch => ({
   setCursor: (cursor) => {
     dispatch(setCursor(cursor));
   },
-  setWindowPos: (xVal, yVal) => {
-    dispatch(setWindowPos(xVal, yVal));
+  setWindowPos: (xVal, yVal, innerWidth, innerHeight) => {
+    dispatch(setWindowPos(xVal, yVal, innerWidth, innerHeight));
   },
   setOverDelete: (val) => {
     dispatch(setOverDelete(val));

@@ -115,7 +115,9 @@ export default class WebSocketServer {
       this.boardToClientsViewingMap[board].forEach((socket) => {
         if (socket !== originatingSocket) {
           if (socket.connected) {
-            socket.emit('clientUpdate', this.boardToClientPosMap[board]);
+            let newList = Object.assign({}, this.boardToClientPosMap[board]);
+            delete newList[socket.id]
+            socket.emit('clientUpdate', newList);
           } else {
             this.deregisterClientFromBoards(socket); // Socket no longer connected
           }

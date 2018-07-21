@@ -56,7 +56,9 @@ export default class ServerComm {
       // Broadcast updated board state to server
       this.broadcastBoardState(store);
     } else if (action.type === 'SET_WINDOW_POS') {
-      this.sendClientUpdate({ x: action.xVal, y: action.yVal })
+      this.sendClientUpdate({
+        x: action.xVal - (action.innerWidth / 2),
+        y: action.yVal - (action.innerHeight / 2)})
     }
 
     return result

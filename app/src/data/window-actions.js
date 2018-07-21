@@ -20,8 +20,8 @@ export function setCursor(cursor) {
   return { type: WindowActionTypes.SET_CURSOR, cursor };
 }
 
-export function setWindowPos(xVal, yVal) {
-  return { type: WindowActionTypes.SET_WINDOW_POS, xVal, yVal };
+export function setWindowPos(xVal, yVal, innerWidth, innerHeight) {
+  return { type: WindowActionTypes.SET_WINDOW_POS, xVal, yVal, innerWidth, innerHeight };
 }
 
 export function setOverDelete(val) {
