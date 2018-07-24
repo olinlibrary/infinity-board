@@ -1,3 +1,4 @@
+import * as AWS from 'aws-sdk';
 import DatabaseConnection from './database.mjs';
 import WebSocketServer from './websocket-server.mjs';
 
@@ -28,19 +29,19 @@ export default class BoardManager {
     this.getBoardList = this.getBoardList.bind(this);
     this.getBoardData = this.getBoardData.bind(this);
     this.saveBoardsToDb = this.saveBoardsToDb.bind(this);
+    this.deleteImage = this.deleteImage.bind(this);
 
     // Register WebSocket message handlers
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
     this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
     this.wsServer.registerMessageHandler('updateBoard', this.handleBoardUpdate);
+    this.wsServer.registerMessageHandler('deleteImage', this.deleteImage)
 
     // Register the handler for board update messages
     this.wsServer.registerUpdateHandler(this.receivedBoardUpdate);
 
-    // Get the last time the database was updated
-    this.dbLastUpdated = null;
-
+    this.S3Client = new AWS.default.S3();
     // Keep track of the current state of boards (for database saving)
     this.curBoards = {};
 
@@ -171,5 +172,13 @@ export default class BoardManager {
       registerSocketWithBoard(socket, board._id);
       socket.emit('boardData', board);
     });
+  }
+
+  deleteImage(key) {
+    const params = { Bucket: process.env.AWS_S3_BUCKET_NAME, Key: key };
+
+    this.S3Client.deleteObject(params, (err, data) => {
+      if (err) console.log(err, err.stack);
+    })
   }
 }

@@ -49,8 +49,8 @@ export default class ServerComm {
   socketEmit = store => next => (action) => {
     // This action has to be performed first in order to get the box data
     if (action.type === 'DELETE_BOX') {
-      console.log(action)
-      console.log(store.getState().boardReducer.boxes[action.uuid])
+      const curBox = store.getState().boardReducer.boxes[action.uuid]
+      this.removeFromS3(curBox.key)
     }
 
     // We have to perform the action first so that all state changes are propagated after state is modified
