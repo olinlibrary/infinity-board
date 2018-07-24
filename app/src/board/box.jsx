@@ -99,7 +99,6 @@ class Box extends React.Component {
 
     // If dragging is happening, then move the box
     if (this.props.dragging === 'drag') {
-      console.log(this.props.curDragging + " " + this.props.uuid)
       this.props.moveCallback(
         this.props.uuid,
         e.screenX + this.props.mouseX,

@@ -47,6 +47,12 @@ export default class ServerComm {
    * Called as middleware in the Redux store. Sends websocket updates on action dispatch.
    */
   socketEmit = store => next => (action) => {
+    // This action has to be performed first in order to get the box data
+    if (action.type === 'DELETE_BOX') {
+      console.log(action)
+      console.log(store.getState().boardReducer.boxes[action.uuid])
+    }
+
     // We have to perform the action first so that all state changes are propagated after state is modified
     const result = next(action);
     // Don't broadcast if the received message has an originating socket
@@ -144,7 +150,6 @@ export default class ServerComm {
    * @param {string} name - the human-memorable name
    */
   getBoardData = (id, name) => {
-    console.log('emitting')
     this.comm.emit('getBoardData', { id, name });
   };
 
@@ -153,5 +158,12 @@ export default class ServerComm {
    */
   createBoard = () => {
     this.comm.emit('createBoard');
+  }
+
+  /**
+   * Removes a given image from an S3 bucket. Called when an image box is deleted.
+   */
+  removeFromS3 = (key) => {
+    this.comm.emit('deleteImage', key)
   }
 }

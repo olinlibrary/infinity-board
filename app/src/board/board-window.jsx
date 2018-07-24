@@ -5,9 +5,6 @@ import uuidv4 from 'uuid/v4';
 import ReactS3Uploader from 'react-s3-uploader';
 
 class BoardWindow extends React.Component {
-  // constructor(props) {
-  //   super(props);
-  // }
 
   /**
    * Called once the component has rendered on the screen.
@@ -16,17 +13,6 @@ class BoardWindow extends React.Component {
     // We have to add document listeners so it will update pos even when
     document.addEventListener('mousedown', this.mouseDown);
     document.addEventListener('mousemove', this.mouseMove);
-    // window.addEventListener('beforeunload', (e) => {
-    //   e.preventDefault();
-    //   e.stopPropagation();
-    //   this.io.sendClientUpdate({
-    //     client: this.uuid,
-    //     x: 0,
-    //     y: 0,
-    //     color: 'transparent',
-    //   });
-    // });
-    // this.io.getBoardData(null, this.props.boardName);
   }
 
   componentWillUnmount() {
@@ -39,9 +25,13 @@ class BoardWindow extends React.Component {
    * @param e - the upload finish event
   */
   onUploadFinish = (e) => {
+    let imgUrl = e.publicUrl;
     // eslint-disable-next-line
-    const imgUrl = e.publicUrl;
-    this.generateBox('image', { src: imgUrl });
+    if (LOCALDEV) {
+      // If localdev, change the src for the image box
+      imgUrl = 'http://localhost:1234'.concat(imgUrl);
+    }
+    this.generateBox('image', { src: imgUrl, key: e.fileKey });
   };
 
   getBGStyle = () => {
@@ -62,12 +52,7 @@ class BoardWindow extends React.Component {
   */
   handleButtonClick = (boxType) => {
     if (boxType === 'image') {
-      // If running locally, mock the image box creation
-      if (LOCALDEV) {
-        this.generateBox(boxType, { src: "../../../favicon.png", isUpload: false })
-      } else {
-        this.input.click(); // Manually bring up file dialog
-      }
+      this.input.click(); // Manually bring up file dialog
     } else if (boxType === 'text') {
       this.generateBox(boxType, { text: '', editing: false });
     }
@@ -90,12 +75,6 @@ class BoardWindow extends React.Component {
         e.clientX,
         e.clientY,
       );
-      // this.io.sendClientUpdate({
-      //   client: this.uuid,
-      //   x: this.state.windowX - (window.innerWidth / 2),
-      //   y: this.state.windowY - (window.innerHeight / 2),
-      //   color: this.state.clientColor,
-      // });
     }
   };
 
@@ -145,6 +124,13 @@ class BoardWindow extends React.Component {
       }
     }
 
+    // If localdev, make changes to signing url
+    let signUrl = '/s3/sign';
+    // eslint-disable-next-line
+    if (LOCALDEV) {
+      signUrl = 'http://localhost:1234'.concat(signUrl);
+    }
+
     return (
       // eslint-disable-next-line
       <div className="View"
@@ -174,7 +160,7 @@ class BoardWindow extends React.Component {
             </button>
 
             <ReactS3Uploader
-              signingUrl="/s3/sign"
+              signingUrl={signUrl}
               signingUrlMethod="GET"
               accept="image/*"
               onFinish={this.onUploadFinish}
