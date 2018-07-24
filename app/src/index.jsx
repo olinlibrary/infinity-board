@@ -1,3 +1,5 @@
+/* eslint-disable */
+import SocketIO from 'socket.io-client';
 import ReactDOM from 'react-dom';
 import React from 'react';
 import {
@@ -10,6 +12,12 @@ import './App.css';
 import BoardList from './board-list';
 import ServerComm from './server-comm';
 
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import defaultReducer from './data/reducers';
+import BoardContainer from './containers/BoardContainer';
+import BoardWindowContainer from './containers/BoardWindowContainer';
+
 /**
  * The main React container for the app. It holds the state and passes it down
  * as props to its child components.
@@ -17,25 +25,35 @@ import ServerComm from './server-comm';
 class App extends React.Component {
   constructor() {
     super();
-
     this.state = {
       boards: {},
     };
-
-    this.serverComm = new ServerComm(window.SERVER_URI);
-    this.serverComm.connect();
+    this.comm = new ServerComm(window.SERVER_URI);
+    this.store = createStore(
+      defaultReducer,
+      { boardReducer: { boxOrder: [], }, boardWindowReducer: { mouseMove: false, }},
+      // Apply websocket middleware
+      applyMiddleware(this.comm.socketEmit)
+    );
+    // Initialize socket to work with the store
+    this.comm.initializeSocket(this.store);
   }
 
   componentDidMount() {
-    this.serverComm.setReceivedBoardListMessageHandler(this.setBoardList);
-    this.serverComm.getBoardList();
+    this.comm.setReceivedBoardListMessageHandler(this.setBoardList);
+    this.comm.getBoardList();
   }
 
   setBoardList = (boards) => {
     this.setState({ boards });
   };
 
+  setCurBoard = (name) => {
+    this.comm.setBoardName(name);
+  }
+
   render() {
+    // console.log(this.props.mouseMove)
     const boardObjects = Object.keys(this.state.boards).map(key => this.state.boards[key]);
     return (
       <BrowserRouter>
@@ -47,15 +65,24 @@ class App extends React.Component {
               render={({ history }) => (
                 <BoardList
                   boards={boardObjects}
-                  serverComm={this.serverComm}
+                  serverComm={this.comm}
                   history={history}
-                  createBoard={this.createBoard}
                 />
               )}
             />
             <Route
               path="/:boardName"
-              component={props => <Board boardName={props.match.params.boardName} />}
+              component={props =>
+                <Provider store={this.store}>
+                  <BoardWindowContainer>
+                    <BoardContainer
+                      boardName={props.match.params.boardName}
+                      comm={this.comm}
+                      setBoardName={this.setCurBoard}
+                    />
+                  </BoardWindowContainer>
+                </Provider>
+              }
             />
           </Switch>
         </div>

@@ -1,39 +1,68 @@
 import SocketIO from 'socket.io-client';
+import { SharedActionTypes } from './data/board-actions';
 
 /**
  * Enables communication with the InfinityBoard backend server, handling all data transfers.
  */
 export default class ServerComm {
   constructor(serverURL) {
-    this.serverURL = serverURL;
-    this.receivedUpdateMessageHandler = null;
-    this.receivedBoardListMessageHandler = null;
-    this.receivedBoardDataMessageHandler = null;
-    this.receivedClientUpdateMessageHandler = null;
+    this.comm = SocketIO(serverURL);
+    this.boardName = null;
+  }
+
+  setBoardName = (name) => {
+    this.boardName = name;
+  }
+
+  broadcastMessage = (action) => {
+    this.comm.emit(action.type, {
+      boardName: this.boardName,
+      originatingSocket: this.comm.id,
+      ...action
+    })
+  };
+
+
+  broadcastBoardState = (store) => {
+    this.comm.emit('updateBoard',  { boardName: this.boardName, store: store.getState() })
+  }
+
+
+  /**
+   * Called to initialize websocket handlers with store actions to dispatch
+   * @param store - the Redux store to pass in
+  */
+  initializeSocket = (store) => {
+    Object.keys(SharedActionTypes).forEach(type =>
+      this.comm.on(type, (payload) => {
+        store.dispatch({ type, ...payload });
+      }));
+
+    this.comm.on('boardListUpdate', msg => this.receivedBoardListUpdate(msg, this.comm));
+    this.comm.on('boardData', msg => this.receivedFullBoardDataMessage(msg, this.comm));
+    this.comm.on('clientUpdate', msg => this.receivedClientUpdateMessage(msg, this.comm, store));
   }
 
   /**
-   * Called when a WebSockets connection is established with the server.
+   * Called as middleware in the Redux store. Sends websocket updates on action dispatch.
    */
-  connect = () => {
-    this.io = SocketIO(this.serverURL);
-    this.io.on('boardUpdate', msg => this.receivedBoardUpdateMessage(msg, this.io));
-    this.io.on('boardListUpdate', msg => this.receivedBoardListUpdate(msg, this.io));
-    this.io.on('boardData', msg => this.receivedFullBoardDataMessage(msg, this.io));
-    this.io.on('clientUpdate', msg => this.receivedClientUpdateMessage(msg, this.io));
-  };
-
-
-  /**
-   * Called when a 'message' socket.io event is received.
-   * @param msg - the update message payload from the server
-   * @param socket - the socket.io connection to the server
-   */
-  receivedBoardUpdateMessage = (msg, socket) => {
-    if (this.receivedUpdateMessageHandler) {
-      this.receivedUpdateMessageHandler(msg, socket);
+  socketEmit = store => next => (action) => {
+    // We have to perform the action first so that all state changes are propagated after state is modified
+    const result = next(action);
+    // Don't broadcast if the received message has an originating socket
+    if (Object.values(SharedActionTypes).indexOf(action.type) !== -1 && !('originatingSocket' in action)) {
+      // Broadcast the message
+      this.broadcastMessage(action);
+      // Broadcast updated board state to server
+      this.broadcastBoardState(store);
+    } else if (action.type === 'SET_WINDOW_POS') {
+      this.sendClientUpdate({
+        x: action.xVal - (action.innerWidth / 2),
+        y: action.yVal - (action.innerHeight / 2)})
     }
-  };
+
+    return result
+  }
 
   /**
    * Called when a complete data for a board is received from the server (a 'boardUpdate' event).
@@ -41,6 +70,8 @@ export default class ServerComm {
    * @param socket - the socket.io connection to the server
    */
   receivedFullBoardDataMessage = (data, socket) => {
+    // console.log("Board data")
+    // console.log(data)
     if (this.receivedBoardDataMessageHandler) {
       this.receivedBoardDataMessageHandler(data, socket);
     }
@@ -62,18 +93,10 @@ export default class ServerComm {
    * @param msg - the message payload
    * @param socket - the socket.io connection to the server
    */
-  receivedClientUpdateMessage = (msg, socket) => {
-    if (this.receivedClientUpdateMessageHandler) {
-      this.receivedClientUpdateMessageHandler(msg, socket);
-    }
-  };
-
-  /**
-   * Registers a function to be called when a board update message is received.
-   * @param callback - the function to call when an 'update' message is received
-   */
-  setReceivedUpdateMessageHandler = (callback) => {
-    this.receivedUpdateMessageHandler = callback;
+  receivedClientUpdateMessage = (msg, socket, store) => {
+    // console.log('UPDATED CLIENTS')
+    // console.log(msg)
+    store.dispatch({ type: 'UPDATE_CLIENTS', clients: msg })
   };
 
   /**
@@ -101,26 +124,18 @@ export default class ServerComm {
   };
 
   /**
-   * Broadcasts a board change/update event to the server.
-   * @param data - the data to change (e.g. modified board elements)
-   */
-  sendUpdateMessage = (data) => {
-    this.io.emit('boardUpdate', data);
-  };
-
-  /**
    * Broadcasts a client list update event to the server.
    * @param data - the data to change (e.g. client positions)
    */
   sendClientUpdate = (data) => {
-    this.io.emit('clientUpdate', data);
+    this.comm.emit('clientUpdate', data);
   };
 
   /**
    * Requests a list of boards from the server.
    */
   getBoardList = () => {
-    this.io.emit('getBoardList');
+    this.comm.emit('getBoardList');
   };
 
   /**
@@ -129,13 +144,14 @@ export default class ServerComm {
    * @param {string} name - the human-memorable name
    */
   getBoardData = (id, name) => {
-    this.io.emit('getBoardData', { id, name });
+    console.log('emitting')
+    this.comm.emit('getBoardData', { id, name });
   };
 
   /**
    * Creates a new board. The server will emit an event when the creation is completed.
    */
   createBoard = () => {
-    this.io.emit('createBoard');
+    this.comm.emit('createBoard');
   }
 }

@@ -98,7 +98,7 @@ export default class DatabaseConnection {
         name = Names.getRandomName();
       }
       const obj = {
-        created: now, lastUsed: now, name, elements: {}, zIndex: 1,
+        created: now, lastUsed: now, name, store: {},
       };
       this.db.collection('boards').insertOne(obj, (err, res) => {
         if (err) {
@@ -137,11 +137,10 @@ export default class DatabaseConnection {
    * Saves a board to the database (creation or update).
    * @param {Board} board - a full Board object.
    */
-  saveBoard(board) {
-    // console.log(board)
-    const query = { _id: ObjectId(board._id) };
-    const updatedVals = { $set: { elements: board.elements, zIndex: board.zIndex } };
-    return this.db.collection('boards').updateOne(query, updatedVals, (err, res) => {
+  saveBoard(_id, boardStore) {
+    const query = { _id: ObjectId(_id) };
+    const updatedVals = { $set: { store: boardStore} };
+    this.db.collection('boards').updateOne(query, updatedVals, (err, res) => {
       if (err) throw err;
     });
   }

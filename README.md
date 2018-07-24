@@ -123,7 +123,7 @@ yarn run server
 In a separate terminal, simply run the following to launch the web app:
 
 ```bash
-yarn run start
+yarn run start --env.dev
 ```
 
 Now the frontend will be accessible from `http://localhost:8080/`.

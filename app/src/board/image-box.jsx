@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import DraggableBox from './draggable-box';
+import Box from './box';
 
 /**
  * A board element for displaying images.
@@ -8,11 +8,6 @@ import DraggableBox from './draggable-box';
 export default class ImageBox extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      width: 0,
-      height: 0,
-      isLoaded: false,
-    };
     this.onImgLoad = this.onImgLoad.bind(this);
   }
 
@@ -24,11 +19,12 @@ export default class ImageBox extends React.Component {
       this.props.uuid,
       img.offsetWidth,
       img.offsetHeight,
-      this.props.isUpload,
     );
     // eslint-disable-next-line
     console.log("Image loaded.");
-    this.setState({ isLoaded: true });
+    this.props.setImgLoaded(this.props.uuid, true);
+    // Update the image aspect ratio
+    this.props.setImgAspect(this.props.uuid, img.offsetWidth, img.offsetHeight);
   }
 
   render() {
@@ -38,14 +34,13 @@ export default class ImageBox extends React.Component {
       opacity: this.props.opacity,
       visibility: 'visible',
     };
-    const loaded = this.state.isLoaded;
+    const loaded = this.props.isLoaded;
     return (
       <div>
-        <DraggableBox
+        <Box
           padding={0}
-          textCallback={this.textFunc}
-          defaultWidth={this.state.width}
-          defaultHeight={this.state.height}
+          defaultWidth={0}
+          defaultHeight={0}
           visibility="hidden"
           {...other}
         >
@@ -55,23 +50,23 @@ export default class ImageBox extends React.Component {
                 <img src={src} onLoad={this.onImgLoad} style={{ visibility: 'hidden' }} alt="" />
               </div>
             )}
-        </DraggableBox>
+        </Box>
       </div>);
   }
 }
 
 ImageBox.propTypes = {
   src: PropTypes.string.isRequired,
-  imgCallback: PropTypes.func,
+  imgCallback: PropTypes.func.isRequired,
+  setImgLoaded: PropTypes.func.isRequired,
   uuid: PropTypes.string.isRequired,
-  w: PropTypes.number.isRequired,
-  h: PropTypes.number.isRequired,
-  isUpload: PropTypes.bool,
   opacity: PropTypes.number,
+  setImgAspect: PropTypes.func.isRequired,
+
+  isLoaded: PropTypes.bool,
 };
 
 ImageBox.defaultProps = {
   opacity: 1,
-  imgCallback: () => {},
-  isUpload: false,
+  isLoaded: false,
 };

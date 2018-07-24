@@ -24,14 +24,27 @@ export default class BoardManager {
     this.createBoard = this.createBoard.bind(this);
     this.receivedBoardUpdate = this.receivedBoardUpdate.bind(this);
     this.handleBoardListRequest = this.handleBoardListRequest.bind(this);
+    this.handleBoardUpdate = this.handleBoardUpdate.bind(this);
     this.getBoardList = this.getBoardList.bind(this);
     this.getBoardData = this.getBoardData.bind(this);
+    this.saveBoardsToDb = this.saveBoardsToDb.bind(this);
 
     // Register WebSocket message handlers
     this.wsServer.registerMessageHandler('createBoard', this.createBoard);
-    this.wsServer.registerMessageHandler('boardUpdate', this.receivedBoardUpdate);
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
     this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
+    this.wsServer.registerMessageHandler('updateBoard', this.handleBoardUpdate);
+
+    // Register the handler for board update messages
+    this.wsServer.registerUpdateHandler(this.receivedBoardUpdate);
+
+    // Get the last time the database was updated
+    this.dbLastUpdated = null;
+
+    // Keep track of the current state of boards (for database saving)
+    this.curBoards = {};
+
+    setInterval(this.saveBoardsToDb, 5000);
   }
 
   /**
@@ -69,29 +82,39 @@ export default class BoardManager {
 
   /**
    * Called when a boardUpdate message is received from one of the WebSocket clients.
-   * @param {object} element - the updated board element from the client
-   * @param socket - the socket.io connection
+   * @param type - the type of the message (defined by the Redux action)
+   * @param {object} payload - the payload of the message
    */
-  receivedBoardUpdate(element, socket) {
-    const boards = this.getBoardList();
-    const boardData = boards[element.boardName];
-    if (!boardData) return;
-
-    if (element.action === 'delete') { // Delete the box from the element stored in DB
-      delete boardData.elements[element.uuid];
-    } else {
-      boardData.elements[element.uuid] = {
-        state: element.state,
-        type: element.type,
-      };
-      boardData.zIndex = element.zIndex;
-    }
-
+  receivedBoardUpdate(type, payload, originatingSocket) {
     // Broadcast the update to the other connected clients
-    this.wsServer.broadcastBoardUpdate(element, socket);
+    this.wsServer.broadcastBoardUpdate(type, payload, originatingSocket);
+  }
 
-    // Save the board to the database
-    this.dbConn.saveBoard(boardData);
+  /*
+  * Handles a full board store update from a client.
+  *
+  */
+  handleBoardUpdate(data) {
+    // Remove elements of state that shouldn't be shared
+    // TODO: make curDragging not be shared state
+    if (data.store.boardReducer.hasOwnProperty('curDragging')) {
+      delete data.store.boardReducer.curDragging;
+    }
+    this.curBoards[data.boardName] = data;
+  }
+
+  /*
+  * Called periodically. Handles saving of all boards to the database.
+  */
+  saveBoardsToDb() {
+    const allKeys = Object.keys(this.curBoards);
+    for (let i = 0; i < allKeys.length; i++) {
+      const board = this.curBoards[allKeys[i]]
+      const reducer = board.store.boardReducer;
+      this.dbConn.saveBoard(board.boardName, reducer);
+      // Perform cleanup on boards to avoid saving boards that aren't being used
+      delete this.curBoards[allKeys[i]];
+    }
   }
 
   /**
@@ -113,6 +136,8 @@ export default class BoardManager {
    * @private
    */
   fetchBoardsFromDb() {
+    // Update board
+    this.saveBoardsToDb();
     this.dbConn.listBoards().then((boards) => {
       this.boards = boards;
     });
@@ -123,6 +148,7 @@ export default class BoardManager {
    * @return {{object}} the list of boards
    */
   getBoardList() {
+    this.saveBoardsToDb();
     const map = {};
     this.boards.forEach((board) => {
       // eslint-disable-next-line no-underscore-dangle
@@ -139,6 +165,7 @@ export default class BoardManager {
    * the current client is viewing
    */
   getBoardData(query, socket, registerSocketWithBoard) {
+    this.saveBoardsToDb();
     this.dbConn.getBoard(query.name, query.id).then((board) => {
       // eslint-disable-next-line no-underscore-dangle
       registerSocketWithBoard(socket, board._id);
