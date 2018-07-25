@@ -110,7 +110,6 @@ Board.propTypes = {
   // callbacks
   updateText: PropTypes.func.isRequired,
   setEditing: PropTypes.func.isRequired,
-  mouseMove: PropTypes.func.isRequired,
   setImgAspect: PropTypes.func.isRequired,
   setImgLoaded: PropTypes.func.isRequired,
   setBoardName: PropTypes.func.isRequired,
@@ -127,7 +126,7 @@ Board.propTypes = {
 
   // Board properties
   // eslint-disable-next-line
-  comm: Proptyes.object.isRequired,
+  comm: PropTypes.object.isRequired,
   boardName: PropTypes.string,
 
   // Board state
@@ -140,10 +139,13 @@ Board.propTypes = {
   windowY: PropTypes.number,
   overDelete: PropTypes.bool,
   curDragging: PropTypes.string,
+  mouseMove: PropTypes.bool,
+
 };
 
 Board.defaultProps = {
   overDelete: false,
+  mouseMove: false,
   cursor: 'move',
   boxes: {},
   windowX: 0,
