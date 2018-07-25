@@ -15,37 +15,37 @@ function boardWindowReducer(state = {}, action) {
         {},
         state,
         { windowDrag: action.val },
-      )
+      );
     case WindowActionTypes.SET_PREV_WINDOW_POSITION:
       return Object.assign(
         {},
         state,
         { prevX: action.xVal, prevY: action.yVal },
-      )
+      );
     case WindowActionTypes.SET_WINDOW_POS:
       return Object.assign(
         {},
         state,
         { windowX: action.xVal, windowY: action.yVal },
-      )
+      );
     case WindowActionTypes.SET_OVER_DELETE:
       return Object.assign(
         {},
         state,
         { overDelete: action.val },
-      )
+      );
     case WindowActionTypes.SET_MOUSE_MOVE:
       return Object.assign(
         {},
         state,
         { mouseMove: action.val },
-      )
+      );
     case WindowActionTypes.UPDATE_CLIENTS:
       return Object.assign(
         {},
         state,
-        { clients: action.clients }
-      )
+        { clients: action.clients },
+      );
     default:
       return state;
   }
@@ -53,7 +53,7 @@ function boardWindowReducer(state = {}, action) {
 
 function boardReducer(state = {}, action) {
   const curBoxes = Object.assign({}, state.boxes);
-  let newBoxOrder = state.boxOrder;
+  const newBoxOrder = state.boxOrder;
   const first = action.uuid;
   switch (action.type) {
     case BoardActionTypes.SET_POSITION:
@@ -63,14 +63,14 @@ function boardReducer(state = {}, action) {
         {},
         state,
         { boxes: curBoxes },
-      )
+      );
     case BoardActionTypes.SET_DRAGGING:
       curBoxes[action.uuid].dragging = action.value;
       return Object.assign(
         {},
         state,
         { boxes: curBoxes },
-      )
+      );
     case BoardActionTypes.SET_MOUSE_CLICK_POSITION:
       curBoxes[action.uuid].mouseX = action.xPos;
       curBoxes[action.uuid].mouseY = action.yPos;
@@ -78,7 +78,7 @@ function boardReducer(state = {}, action) {
         {},
         state,
         { boxes: curBoxes },
-      )
+      );
     case BoardActionTypes.GENERATE_BOX:
       newBoxOrder.push(action.uuid); // Move new box to the front
       curBoxes[action.uuid] = {
@@ -89,19 +89,19 @@ function boardReducer(state = {}, action) {
         dragging: '',
         color: action.color,
         type: action.boxType,
-        ...action.optionalArgs
-      }
+        ...action.optionalArgs,
+      };
       return Object.assign(
         {},
         state,
         { boxes: curBoxes, boxOrder: newBoxOrder },
-      )
+      );
     case BoardActionTypes.SET_CUR_DRAGGING:
       return Object.assign(
         {},
         state,
         { curDragging: action.uuid },
-      )
+      );
     case BoardActionTypes.RESIZE_BOX:
       curBoxes[action.uuid].w = action.wVal;
       curBoxes[action.uuid].h = action.hVal;
@@ -109,14 +109,14 @@ function boardReducer(state = {}, action) {
         {},
         state,
         { boxes: curBoxes },
-      )
+      );
     case BoardActionTypes.SET_TAB_VISIBILITY:
       curBoxes[action.uuid].tabVisibility = action.visibility;
       return Object.assign(
         {},
         state,
         { boxes: curBoxes },
-      )
+      );
     case BoardActionTypes.DELETE_BOX:
       delete curBoxes[action.uuid];
       newBoxOrder.splice(-1, 1);
@@ -124,51 +124,50 @@ function boardReducer(state = {}, action) {
         {},
         state,
         { boxes: curBoxes, boxOrder: newBoxOrder },
-      )
+      );
     case BoardActionTypes.UPDATE_TEXT:
       curBoxes[action.uuid].text = action.text;
       return Object.assign(
         {},
         state,
         { boxes: curBoxes },
-      )
+      );
     case BoardActionTypes.SET_EDITING:
       curBoxes[action.uuid].editing = action.val;
       return Object.assign(
         {},
         state,
         { boxes: curBoxes },
-      )
+      );
     case BoardActionTypes.SET_IMG_LOADED:
       curBoxes[action.uuid].isLoaded = action.val;
       return Object.assign(
         {},
         state,
         { boxes: curBoxes },
-      )
+      );
     case BoardActionTypes.SET_IMG_ASPECT:
       curBoxes[action.uuid].aspect = action.w / action.h;
       return Object.assign(
         {},
         state,
         { boxes: curBoxes },
-      )
+      );
     case BoardActionTypes.SET_FRONT_BOX:
       newBoxOrder.push(newBoxOrder.splice(newBoxOrder.indexOf(first), 1)[0]);
       return Object.assign(
         {},
         state,
         { boxOrder: newBoxOrder },
-      )
+      );
     case BoardActionTypes.UPDATE_STORE:
-      console.log(action.store)
       return Object.assign(
         {},
         state,
         action.store,
-      )
+      );
     default:
-      return state
+      return state;
   }
 }
 

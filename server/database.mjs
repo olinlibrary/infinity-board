@@ -139,7 +139,7 @@ export default class DatabaseConnection {
    */
   saveBoard(_id, boardStore) {
     const query = { _id: ObjectId(_id) };
-    const updatedVals = { $set: { store: boardStore} };
+    const updatedVals = { $set: { store: boardStore } };
     this.db.collection('boards').updateOne(query, updatedVals, (err, res) => {
       if (err) throw err;
     });

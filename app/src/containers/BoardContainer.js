@@ -1,4 +1,4 @@
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import {
   setPosition,
   setDragging,
@@ -13,9 +13,9 @@ import {
   setFrontBox,
   updateStore,
   setImgAspect,
-} from '../data/board-actions'
-import { setCursor } from '../data/window-actions'
-import Board from '../board/board'
+} from '../data/board-actions';
+import { setCursor } from '../data/window-actions';
+import Board from '../board/board';
 
 // Maps the state to props
 const mapStateToProps = (state, ownProps) => ({
@@ -40,55 +40,55 @@ const mapStateToProps = (state, ownProps) => ({
 // Defines callbacks to pass a props
 const mapDispatchToProps = (dispatch, ownProps) => ({
   setBoardName: (name) => {
-    ownProps.setBoardName(name)
+    ownProps.setBoardName(name);
   },
   moveCallback: (uuid, xPos, yPos) => {
-    dispatch(setPosition(uuid, xPos, yPos))
+    dispatch(setPosition(uuid, xPos, yPos));
   },
   clickCallback: (uuid, draggingState) => {
-    dispatch(setDragging(uuid, draggingState))
+    dispatch(setDragging(uuid, draggingState));
   },
   setMouseDown: (uuid, xPos, yPos) => {
-    dispatch(setMouseClickPosition(uuid, xPos, yPos))
+    dispatch(setMouseClickPosition(uuid, xPos, yPos));
   },
   setCurDragging: (uuid) => {
-    dispatch(setCurDragging(uuid))
+    dispatch(setCurDragging(uuid));
   },
   resizeCallback: (uuid, wVal, hVal) => {
-    dispatch(resizeBox(uuid, wVal, hVal))
+    dispatch(resizeBox(uuid, wVal, hVal));
   },
   visibilityCallback: (uuid, visibility) => {
-    dispatch(setTabVisibility(uuid, visibility))
+    dispatch(setTabVisibility(uuid, visibility));
   },
   cursorCallback: (cursor) => {
-    dispatch(setCursor(cursor))
+    dispatch(setCursor(cursor));
   },
   deleteBox: (uuid) => {
-    dispatch(deleteBox(uuid))
+    dispatch(deleteBox(uuid));
   },
   updateText: (uuid, text) => {
-    dispatch(updateText(uuid, text))
+    dispatch(updateText(uuid, text));
   },
   setEditing: (uuid, val) => {
-    dispatch(setEditing(uuid, val))
+    dispatch(setEditing(uuid, val));
   },
   setImgLoaded: (uuid, val) => {
-    dispatch(setImgLoaded(uuid, val))
+    dispatch(setImgLoaded(uuid, val));
   },
   setFrontBox: (uuid) => {
-    dispatch(setFrontBox(uuid))
+    dispatch(setFrontBox(uuid));
   },
   setImgAspect: (uuid, w, h) => {
-    dispatch(setImgAspect(uuid, w, h))
+    dispatch(setImgAspect(uuid, w, h));
   },
   updateStore: (store) => {
-    dispatch(updateStore(store))
-  }
+    dispatch(updateStore(store));
+  },
 });
 
 const BoardContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
-)(Board)
+  mapDispatchToProps,
+)(Board);
 
 export default BoardContainer;

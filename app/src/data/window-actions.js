@@ -21,6 +21,7 @@ export function setCursor(cursor) {
 }
 
 export function setWindowPos(xVal, yVal, innerWidth, innerHeight) {
+  // eslint-disable-next-line
   return { type: WindowActionTypes.SET_WINDOW_POS, xVal, yVal, innerWidth, innerHeight };
 }
 
