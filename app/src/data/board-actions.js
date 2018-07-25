@@ -1,3 +1,4 @@
+/* eslint-disable */
 
 export const BoardActionTypes = {
   SET_MOUSE_CLICK_POSITION: 'SET_MOUSE_CLICK_POSITION',
@@ -55,7 +56,7 @@ export function resizeBox(uuid, wVal, hVal) {
 }
 
 export function setTabVisibility(uuid, visibility) {
-  return { type: BoardActionTypes.SET_TAB_VISIBILITY, uuid, visibility}
+  return { type: BoardActionTypes.SET_TAB_VISIBILITY, uuid, visibility};
 }
 
 export function setCursor(cursor) {

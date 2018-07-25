@@ -43,6 +43,7 @@ export default class BoardList extends React.Component {
           <div className="board-list-header">
             <span>InfinityBoard</span>
           </div>
+          {/* eslint-disable-next-line */}
           <div className="add-button" onClick={this.createBoard} onKeyDown={this.onAddButtonKeyDown}>
             +
           </div>

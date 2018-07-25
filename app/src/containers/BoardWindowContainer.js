@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import BoardWindow from '../board/board-window'
+import BoardWindow from '../board/board-window';
 import {
   setWindowDrag,
   setPrevWindowPosition,
@@ -7,9 +7,8 @@ import {
   setWindowPos,
   setOverDelete,
   setMouseMove,
-  updateClients,
-} from '../data/window-actions'
-import { generateBox } from '../data/board-actions'
+} from '../data/window-actions';
+import { generateBox } from '../data/board-actions';
 
 const mapStateToProps = state => ({
   cursor: state.boardWindowReducer.cursor,
@@ -43,8 +42,8 @@ const mapDispatchToProps = dispatch => ({
   },
   // Board actions
   generateBox: (uuid, color, boxType, optionalArgs) => {
-    dispatch(generateBox(uuid, color, boxType, optionalArgs))
-  }
+    dispatch(generateBox(uuid, color, boxType, optionalArgs));
+  },
 });
 
 const BoardWindowContainer = connect(

@@ -14,17 +14,23 @@ export default class ServerComm {
     this.boardName = name;
   }
 
+  /**
+   * Broadcasts a Redux action from the websocket.
+   * @param action: the Redux action to broadcast.
+  */
   broadcastMessage = (action) => {
     this.comm.emit(action.type, {
       boardName: this.boardName,
       originatingSocket: this.comm.id,
-      ...action
-    })
+      ...action,
+    });
   };
 
-
+  /**
+   * Broadcasts the updated board state via the websocket.
+  */
   broadcastBoardState = (store) => {
-    this.comm.emit('updateBoard',  { boardName: this.boardName, store: store.getState() })
+    this.comm.emit('updateBoard', { boardName: this.boardName, store: store.getState() });
   }
 
 
@@ -49,11 +55,11 @@ export default class ServerComm {
   socketEmit = store => next => (action) => {
     // This action has to be performed first in order to get the box data
     if (action.type === 'DELETE_BOX') {
-      const curBox = store.getState().boardReducer.boxes[action.uuid]
-      this.removeFromS3(curBox.key)
+      const curBox = store.getState().boardReducer.boxes[action.uuid];
+      this.removeFromS3(curBox.key);
     }
 
-    // We have to perform the action first so that all state changes are propagated after state is modified
+    // Action must be performed before propagating state
     const result = next(action);
     // Don't broadcast if the received message has an originating socket
     if (Object.values(SharedActionTypes).indexOf(action.type) !== -1 && !('originatingSocket' in action)) {
@@ -64,10 +70,10 @@ export default class ServerComm {
     } else if (action.type === 'SET_WINDOW_POS') {
       this.sendClientUpdate({
         x: action.xVal - (action.innerWidth / 2),
-        y: action.yVal - (action.innerHeight / 2)})
+        y: action.yVal - (action.innerHeight / 2),
+      });
     }
-
-    return result
+    return result;
   }
 
   /**
@@ -100,9 +106,7 @@ export default class ServerComm {
    * @param socket - the socket.io connection to the server
    */
   receivedClientUpdateMessage = (msg, socket, store) => {
-    // console.log('UPDATED CLIENTS')
-    // console.log(msg)
-    store.dispatch({ type: 'UPDATE_CLIENTS', clients: msg })
+    store.dispatch({ type: 'UPDATE_CLIENTS', clients: msg });
   };
 
   /**
@@ -162,8 +166,9 @@ export default class ServerComm {
 
   /**
    * Removes a given image from an S3 bucket. Called when an image box is deleted.
+   * @param {string} key: The key to the object in the S3 bucket.
    */
   removeFromS3 = (key) => {
-    this.comm.emit('deleteImage', key)
+    this.comm.emit('deleteImage', key);
   }
 }

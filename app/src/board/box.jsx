@@ -8,28 +8,30 @@ class Box extends React.Component {
   componentDidMount() {
     // We have to add document listeners so it will update pos even when
     document.addEventListener('mousemove', this.mouseMove);
-    document.addEventListener('mouseup', this.mouseUp)
+    document.addEventListener('mouseup', this.mouseUp);
   }
 
   componentWillUnmount() {
     // Remove event listeners on box deletion/unmounting
     document.removeEventListener('mousemove', this.mouseMove);
-    document.removeEventListener('mouseup', this.mouseUp)
+    document.removeEventListener('mouseup', this.mouseUp);
   }
-    /**
-      Handles the resizing of the given box.
-      @param mouseVal: the position value (x or y) for the mouse
-      @param elemVal: the position value for the element
-      @param min: the minimum width or height of the box
-      @return the resulting width or height value
-    */
-    getResize = (mouseVal, elemVal, min) => {
-      const newSize = mouseVal - elemVal;
-      if (newSize >= min) {
-        return newSize;
-      }
-      return min;
-    };
+
+  /**
+    Handles the resizing of the given box.
+    @param mouseVal: the position value (x or y) for the mouse
+    @param elemVal: the position value for the element
+    @param min: the minimum width or height of the box
+    @return the resulting width or height value
+  */
+  getResize = (mouseVal, elemVal, min) => {
+    const newSize = mouseVal - elemVal;
+    if (newSize >= min) {
+      return newSize;
+    }
+    return min;
+  };
+
   /**
     Gives the CSS styling for the given box.
     @return boxStyle - the JS object containing the correct styling for the box.
@@ -44,24 +46,22 @@ class Box extends React.Component {
       height: `${this.props.h - (2 * this.props.padding)}px`,
       zIndex: 1,
       padding: this.props.padding,
-      visibility: this.props.visibility
+      visibility: this.props.visibility,
     };
     return boxStyle;
   };
 
   /**
     Returns the correct cursor given the state of the box.
+    @param e: A mouse event
     @return the css property name for the cursor
   */
   getCursor = (e) => {
     if (this.props.dragging === 'drag') {
-      // console.log("move")
       return 'move';
     } else if (this.props.dragging === 'resize' || this.cursorInDraggingPosition(e)) {
-      // console.log("resize")/
       return 'se-resize';
     }
-    // console.log("default")
     return 'default';
   };
 
@@ -70,20 +70,22 @@ class Box extends React.Component {
   whether we're resizing or dragging.
   */
   mouseDown = (e) => {
+    // Avoid side effects of JS event
     e.preventDefault();
     e.stopPropagation();
+
     if (e.button === 0) {
       this.props.setCurDragging(this.props.uuid);
       // Callback for pushing box to front (also sent via websocket)
       this.props.setFrontBox(this.props.uuid);
+      // Determine whether a drag or resize will occur based on mouse pos
       if (this.cursorInDraggingPosition(e)) {
-        this.props.clickCallback(this.props.uuid, 'resize')
+        this.props.clickCallback(this.props.uuid, 'resize');
       } else {
-        this.props.clickCallback(this.props.uuid, 'drag')
+        this.props.clickCallback(this.props.uuid, 'drag');
       }
       // Defines the position of the mouse click relative to the top left corner of the box
-      this.props.setMouseDown(this.props.uuid, this.props.x - e.screenX, this.props.y - e.screenY)
-      // this.props.cursorCallback(this.getCursor(e));
+      this.props.setMouseDown(this.props.uuid, this.props.x - e.screenX, this.props.y - e.screenY);
     }
   }
 
@@ -94,7 +96,7 @@ class Box extends React.Component {
   mouseMove = (e) => {
     // If the mouse is currently over the box, change the cursor
     if (this.props.tabVisibility === 1) {
-      this.props.cursorCallback(this.getCursor(e))
+      this.props.cursorCallback(this.getCursor(e));
     }
 
     // If dragging is happening, then move the box
@@ -102,13 +104,14 @@ class Box extends React.Component {
       this.props.moveCallback(
         this.props.uuid,
         e.screenX + this.props.mouseX,
-        e.screenY + this.props.mouseY
+        e.screenY + this.props.mouseY,
       );
     } else if (this.props.dragging === 'resize') {
-
       let xResize = this.getResize(e.clientX, this.props.renderX, this.props.minWidth);
       let yResize = this.getResize(e.clientY, this.props.renderY, this.props.minHeight);
+      // Only enforce aspet ratio for images
       if (this.props.aspect !== 0) {
+        // Pick a driving dimension based on aspect ratio
         if (this.props.aspect < 1) {
           yResize = xResize / this.props.aspect;
         } else {
@@ -123,17 +126,16 @@ class Box extends React.Component {
   /*
     Handles actions that occur on mouseUp events
   */
-  mouseUp = (e) => {
-
+  mouseUp = () => {
     // Check to ensure this event is firing on the correct box
     if (this.props.dragging !== '') {
-      this.props.setCurDragging('')
+      // Reset dragging-related state variables
+      this.props.setCurDragging('');
       this.props.clickCallback(this.props.uuid, '');
       if (this.props.overDelete) {
-        this.props.deleteBox(this.props.uuid)
+        this.props.deleteBox(this.props.uuid);
       }
     }
-
   };
 
   /**
@@ -141,6 +143,7 @@ class Box extends React.Component {
   @return a bool indicating whether the mouse is in dragging position
   */
   cursorInDraggingPosition = (e) => {
+    // Get x and y distances from the box corner
     const cornerX = (e.clientX - this.props.renderX - this.props.w) ** 2;
     const cornerY = (e.clientY - this.props.renderY - this.props.h) ** 2;
     const dist = Math.sqrt(cornerX + cornerY);
@@ -152,18 +155,24 @@ class Box extends React.Component {
     return (
       // eslint-disable-next-line
       <div style={{ opacity: boxOpacity }}>
+        {/* eslint-disable-next-line */}
         <div
+          role="textbox"
           className="Box"
           onMouseDown={this.mouseDown}
           style={this.getBoxStyle()}
-          onMouseEnter={() => { this.props.visibilityCallback(this.props.uuid, 1) }}
-          onMouseLeave={() => { this.props.visibilityCallback(this.props.uuid, 0) }}
+          onMouseEnter={() => { this.props.visibilityCallback(this.props.uuid, 1); }}
+          onMouseLeave={() => { this.props.visibilityCallback(this.props.uuid, 0); }}
         >
+          {/* eslint-disable-next-line */}
           {this.props.children}
-          <div className="pull-tab"
+          <div
+            className="pull-tab"
             style={{
             zIndex: 2,
-            opacity: this.props.tabVisibility }} />
+            opacity: this.props.tabVisibility,
+            }}
+          />
         </div>
       </div>
     );
@@ -180,6 +189,7 @@ Box.propTypes = {
   cursorCallback: PropTypes.func.isRequired,
   deleteBox: PropTypes.func.isRequired,
   setFrontBox: PropTypes.func.isRequired,
+  visibilityCallback: PropTypes.func.isRequired,
 
   // Box attributes
   color: PropTypes.string.isRequired,
@@ -203,7 +213,6 @@ Box.propTypes = {
   minWidth: PropTypes.number,
   minHeight: PropTypes.number,
   overDelete: PropTypes.bool,
-  isLoaded: PropTypes.bool,
 };
 
 Box.defaultProps = {
@@ -223,8 +232,7 @@ Box.defaultProps = {
   overDelete: false,
   visibility: 'visible',
   aspect: 0,
-  isLoaded: false,
-}
+};
 
 
 export default Box;

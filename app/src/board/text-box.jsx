@@ -7,7 +7,6 @@ import TextField from './text-field';
  * A board component for displaying editable text.
  */
 export default class TextBox extends React.Component {
-
   /**
    * Handles click events by changing the editing state.
    */
@@ -19,7 +18,7 @@ export default class TextBox extends React.Component {
   };
 
   render() {
-    // console.log(this.props.editing)
+    // Absorb some of the props
     const {
       editCallback,
       text,
@@ -27,6 +26,7 @@ export default class TextBox extends React.Component {
       ...other
     } = this.props;
     return (
+      // eslint-disable-next-line
       <div onMouseUp={this.setEditingState}>
         <Box
           uuid={uuid}
@@ -37,7 +37,7 @@ export default class TextBox extends React.Component {
             editCallback={editCallback}
             value={text}
             uuid={uuid}
-            blurFunc={() => { this.props.setEditing(this.props.uuid, false) }}
+            blurFunc={() => { this.props.setEditing(this.props.uuid, false); }}
           />
         </Box>
       </div>

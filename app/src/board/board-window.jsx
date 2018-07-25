@@ -5,19 +5,18 @@ import uuidv4 from 'uuid/v4';
 import ReactS3Uploader from 'react-s3-uploader';
 
 class BoardWindow extends React.Component {
-
   /**
    * Called once the component has rendered on the screen.
    */
   componentDidMount() {
     // We have to add document listeners so it will update pos even when
     document.addEventListener('mousedown', this.mouseDown);
-    document.addEventListener('mousemove', this.mouseMove);
+    document.addEventListener('mousemove', () => this.props.setMouseMove(true));
   }
 
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.mouseDown);
-    document.removeEventListener('mousemove', this.mouseMove);
+    document.removeEventListener('mousemove', () => this.props.setMouseMove(true));
   }
 
   /**
@@ -34,21 +33,26 @@ class BoardWindow extends React.Component {
     this.generateBox('image', { src: imgUrl, key: e.fileKey });
   };
 
-  getBGStyle = () => {
-    return { // Set the position for the grid background
-      // eslint-disable-next-line
-      backgroundPosition: String(this.props.windowX % 50) + 'px ' +  String(this.props.windowY % 50) + 'px',
-    };
-  }
+  /**
+   * Returns the background grid style based on window position
+  */
+  getBGStyle = () => ({ // Set the position for the grid background
+    // eslint-disable-next-line
+    backgroundPosition: String(this.props.windowX % 50) + 'px ' +  String(this.props.windowY % 50) + 'px',
+  });
 
-  // Creates a new box
+  /**
+   * Generates a new box of the given type.
+   * @param boxType: the type of box (text, image, etc.)
+   * @param optionalArgs: additional args to pass in, which are added to the box state.
+  */
   generateBox = (boxType, optionalArgs = {}) => {
-    // console.log(optionalArgs)
     this.props.generateBox(uuidv4(), randomColor(), boxType, optionalArgs);
   }
 
   /**
   * Handles the clicking of the box generation buttons.
+  * @param {string} boxType: The type of box to create (image, text, etc.)
   */
   handleButtonClick = (boxType) => {
     if (boxType === 'image') {
@@ -63,14 +67,14 @@ class BoardWindow extends React.Component {
   */
   dragWindow = (e) => {
     if (this.props.windowDrag) {
-      const curX = this.props.windowX;
-      const curY = this.props.windowY;
+      // Only drag if mouse is currently down
       this.props.setWindowPos(
-        curX + (e.clientX - this.props.prevX),
-        curY + (e.clientY - this.props.prevY),
+        this.props.windowX + (e.clientX - this.props.prevX),
+        this.props.windowY + (e.clientY - this.props.prevY),
         window.innerWidth,
         window.innerHeight,
       );
+      // Set prev window position in order to determine amount of window movement
       this.props.setPrevWindowPosition(
         e.clientX,
         e.clientY,
@@ -92,9 +96,6 @@ class BoardWindow extends React.Component {
     this.props.setMouseMove(false);
   };
 
-  mouseMove = () => {
-    this.props.setMouseMove(true);
-  }
 
   /**
    * Stops movement of the board window.
@@ -111,6 +112,7 @@ class BoardWindow extends React.Component {
     const clientBoxes = [];
     for (let i = 0; i < allClients.length; i++) {
       const curKey = allClients[i];
+      // Don't render our own client indicator
       if (curKey !== this.uuid) {
         const xVal = -this.props.clients[curKey].x + this.props.windowX;
         const yVal = -this.props.clients[curKey].y + this.props.windowY;
@@ -140,6 +142,7 @@ class BoardWindow extends React.Component {
       >
         <div>
           {clientBoxes}
+          {/* eslint-disable-next-line */}
           {this.props.children}
         </div>
         <div className="View" style={this.getBGStyle()} id="bg" ref={(view) => { this.view = view; }} />
@@ -181,19 +184,19 @@ class BoardWindow extends React.Component {
         </div>
 
       </div>
-    )
+    );
   }
 }
 
 BoardWindow.propTypes = {
   // Callback props
-  // eslint-disable-next-line
   setWindowDrag: PropTypes.func.isRequired,
   setPrevWindowPosition: PropTypes.func.isRequired,
   setCursor: PropTypes.func.isRequired,
   setWindowPos: PropTypes.func.isRequired,
   generateBox: PropTypes.func.isRequired,
   setOverDelete: PropTypes.func.isRequired,
+  setMouseMove: PropTypes.func.isRequired,
 
   // State props
   windowDrag: PropTypes.bool,
@@ -214,7 +217,6 @@ BoardWindow.defaultProps = {
   prevY: 0,
   cursor: 'default',
   clients: {},
-}
-
+};
 
 export default BoardWindow;
