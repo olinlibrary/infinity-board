@@ -150,6 +150,6 @@ Board.defaultProps = {
   windowY: 0,
   boardName: '',
   curDragging: '',
-}
+};
 
 export default Board;

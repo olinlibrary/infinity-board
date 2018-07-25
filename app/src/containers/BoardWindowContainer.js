@@ -48,7 +48,7 @@ const mapDispatchToProps = dispatch => ({
 
 const BoardWindowContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
-)(BoardWindow)
+  mapDispatchToProps,
+)(BoardWindow);
 
 export default BoardWindowContainer;

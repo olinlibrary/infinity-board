@@ -63,8 +63,8 @@ export default class WebSocketServer {
     // Set up the handler for Redux actions for the socket
     Object.keys(this.SharedActionTypes).forEach(type =>
       socket.on(type, (payload) => {
-        this.updateHandler(type, payload, socket)
-      }))
+        this.updateHandler(type, payload, socket);
+      }));
     // Dot indicating where other people are looking
     socket.on('clientUpdate', data => this.broadcastClientUpdate(data, socket));
 
@@ -84,7 +84,7 @@ export default class WebSocketServer {
    * with information about the new or modified board element.
    */
   broadcastBoardUpdate(type, payload, originatingSocket) {
-    const newPayload = Object.assign({}, payload)
+    const newPayload = Object.assign({}, payload);
     const clientsUsingBoard = this.boardToClientsViewingMap[newPayload.boardName];
     // console.log(newPayload)
     if (clientsUsingBoard) {
@@ -107,7 +107,7 @@ export default class WebSocketServer {
       const newClientList = Object.assign(
         {},
         this.boardToClientPosMap[board][originatingSocket.id],
-        data
+        data,
       );
       this.boardToClientPosMap[board][originatingSocket.id] = newClientList;
 
@@ -115,8 +115,8 @@ export default class WebSocketServer {
       this.boardToClientsViewingMap[board].forEach((socket) => {
         if (socket !== originatingSocket) {
           if (socket.connected) {
-            let newList = Object.assign({}, this.boardToClientPosMap[board]);
-            delete newList[socket.id]
+            const newList = Object.assign({}, this.boardToClientPosMap[board]);
+            delete newList[socket.id];
             socket.emit('clientUpdate', newList);
           } else {
             this.deregisterClientFromBoards(socket); // Socket no longer connected

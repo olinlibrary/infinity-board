@@ -40,7 +40,7 @@ module.exports = (env = {}) => {
       extensions: ['.js', '.jsx'],
     },
     plugins: [
-      new webpack.DefinePlugin({ LOCALDEV: JSON.stringify(dev) })
+      new webpack.DefinePlugin({ LOCALDEV: JSON.stringify(dev) }),
     ],
-}
+  };
 };

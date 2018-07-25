@@ -36,7 +36,7 @@ export default class BoardManager {
     this.wsServer.registerMessageHandler('getBoardList', this.handleBoardListRequest);
     this.wsServer.registerMessageHandler('getBoardData', this.getBoardData);
     this.wsServer.registerMessageHandler('updateBoard', this.handleBoardUpdate);
-    this.wsServer.registerMessageHandler('deleteImage', this.deleteImage)
+    this.wsServer.registerMessageHandler('deleteImage', this.deleteImage);
 
     // Register the handler for board update messages
     this.wsServer.registerUpdateHandler(this.receivedBoardUpdate);
@@ -96,10 +96,11 @@ export default class BoardManager {
   *
   */
   handleBoardUpdate(data) {
+    const newData = Object.assign({}, data);
     // Remove elements of state that shouldn't be shared
-    // TODO: make curDragging not be shared state
-    if (data.store.boardReducer.hasOwnProperty('curDragging')) {
-      delete data.store.boardReducer.curDragging;
+    // eslint-disable-next-line
+    if (newData.store.boardReducer.hasOwnProperty('curDragging')) {
+      delete newData.store.boardReducer.curDragging;
     }
     this.curBoards[data.boardName] = data;
   }
@@ -110,7 +111,7 @@ export default class BoardManager {
   saveBoardsToDb() {
     const allKeys = Object.keys(this.curBoards);
     for (let i = 0; i < allKeys.length; i++) {
-      const board = this.curBoards[allKeys[i]]
+      const board = this.curBoards[allKeys[i]];
       const reducer = board.store.boardReducer;
       this.dbConn.saveBoard(board.boardName, reducer);
       // Perform cleanup on boards to avoid saving boards that aren't being used
@@ -174,11 +175,16 @@ export default class BoardManager {
     });
   }
 
+  /**
+   * Deletes a requested image from the S3 bucket.
+   * @param {string} key: The key to the object in the S3 bucket.
+  */
   deleteImage(key) {
     const params = { Bucket: process.env.AWS_S3_BUCKET_NAME, Key: key };
 
-    this.S3Client.deleteObject(params, (err, data) => {
+    this.S3Client.deleteObject(params, (err) => {
+      // eslint-disable-next-line
       if (err) console.log(err, err.stack);
-    })
+    });
   }
 }
