@@ -129,15 +129,16 @@ class Box extends React.Component {
     Handles actions that occur on mouseUp events
   */
   mouseUp = () => {
+    
     // Check to ensure this event is firing on the correct box
-    if (this.props.dragging !== '') {
-      // Reset dragging-related state variables
-      this.props.setCurDragging('');
+    if (this.props.dragging !== '' && this.props.curDragging === this.props.uuid) {
       this.props.clickCallback(this.props.uuid, '');
       if (this.props.overDelete) {
         this.props.deleteBox(this.props.uuid);
       }
     }
+    // Reset dragging-related state variables (after you check it!)
+    this.props.setCurDragging('');
   };
 
   /**
