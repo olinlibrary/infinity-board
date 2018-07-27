@@ -74,7 +74,7 @@ class Box extends React.Component {
     e.preventDefault();
     e.stopPropagation();
 
-    if (e.button === 0) {
+    if (e.button === 0 && this.props.dragging === '') {
       this.props.setCurDragging(this.props.uuid);
       // Callback for pushing box to front (also sent via websocket)
       this.props.setFrontBox(this.props.uuid);
