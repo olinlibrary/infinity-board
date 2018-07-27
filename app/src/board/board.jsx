@@ -83,6 +83,7 @@ class Board extends React.Component {
       boxProps.visibilityCallback = this.props.visibilityCallback;
       boxProps.deleteBox = this.props.deleteBox;
       boxProps.setFrontBox = this.props.setFrontBox;
+      boxProps.curDragging = this.props.curDragging;
 
       // Callbacks specific to certain box types
       if (boxProps.type === 'text') {

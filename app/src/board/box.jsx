@@ -100,26 +100,28 @@ class Box extends React.Component {
     }
 
     // If dragging is happening, then move the box
-    if (this.props.dragging === 'drag') {
-      this.props.moveCallback(
-        this.props.uuid,
-        e.screenX + this.props.mouseX,
-        e.screenY + this.props.mouseY,
-      );
-    } else if (this.props.dragging === 'resize') {
-      let xResize = this.getResize(e.clientX, this.props.renderX, this.props.minWidth);
-      let yResize = this.getResize(e.clientY, this.props.renderY, this.props.minHeight);
-      // Only enforce aspet ratio for images
-      if (this.props.aspect !== 0) {
-        // Pick a driving dimension based on aspect ratio
-        if (this.props.aspect < 1) {
-          yResize = xResize / this.props.aspect;
-        } else {
-          xResize = yResize * this.props.aspect;
+    if (this.props.curDragging === this.props.uuid) {
+      if (this.props.dragging === 'drag') {
+        this.props.moveCallback(
+          this.props.uuid,
+          e.screenX + this.props.mouseX,
+          e.screenY + this.props.mouseY,
+        );
+      } else if (this.props.dragging === 'resize') {
+        let xResize = this.getResize(e.clientX, this.props.renderX, this.props.minWidth);
+        let yResize = this.getResize(e.clientY, this.props.renderY, this.props.minHeight);
+        // Only enforce aspet ratio for images
+        if (this.props.aspect !== 0) {
+          // Pick a driving dimension based on aspect ratio
+          if (this.props.aspect < 1) {
+            yResize = xResize / this.props.aspect;
+          } else {
+            xResize = yResize * this.props.aspect;
+          }
         }
+        // Resize the current box
+        this.props.resizeCallback(this.props.uuid, xResize, yResize);
       }
-      // Resize the current box
-      this.props.resizeCallback(this.props.uuid, xResize, yResize);
     }
   }
 
