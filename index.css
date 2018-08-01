@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css?family=Comfortaa|Montserrat');
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#root {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    background-color: #1282a2;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.title-wrapper {
+    width: 300px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.title-text {
+    font-family: Comfortaa, Arial sans-serif;
+    font-size: 3rem;
+    color: white;
+}
+
+.loading-wrapper {
+    padding: 50px;
+}
+
+.loading-symbol {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: white;
+}
