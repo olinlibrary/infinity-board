@@ -5,7 +5,8 @@ html, body {
     margin: 0;
 }
 
-#root {
+#background {
+    z-index: 0;
     height: 100%;
     display: flex;
     align-items: center;
