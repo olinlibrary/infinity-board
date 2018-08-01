@@ -4,7 +4,6 @@ export default `
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="index.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -16,15 +15,9 @@ export default `
 <noscript>
     You need to enable JavaScript to run this app.
 </noscript>
-<div id="background">
-    <div class="title-wrapper">
-            <div class="title-text">InfinityBoard</div>
-            <div class="loading-wrapper">
-                <div class="loading-symbol" />
-            </div>
-    </div>
+
+<div id="root">
 </div>
-<div id="root"></div>
 <script type="text/javascript">
     window.SERVER_URI = '${SERVER_URI}';
     window.AWS_IDENTITY_POOL_ID = '${process.env.AWS_IDENTITY_POOL_ID}';
