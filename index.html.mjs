@@ -16,15 +16,15 @@ export default `
 <noscript>
     You need to enable JavaScript to run this app.
 </noscript>
-
-<div id="root">
+<div id="background">
     <div class="title-wrapper">
-        <div class="title-text">InfinityBoard</div>
-        <div class="loading-wrapper">
-            <div class="loading-symbol"></div>
-        </div>
+            <div class="title-text">InfinityBoard</div>
+            <div class="loading-wrapper">
+                <div class="loading-symbol" />
+            </div>
     </div>
 </div>
+<div id="root"></div>
 <script type="text/javascript">
     window.SERVER_URI = '${SERVER_URI}';
     window.AWS_IDENTITY_POOL_ID = '${process.env.AWS_IDENTITY_POOL_ID}';
