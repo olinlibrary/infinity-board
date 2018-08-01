@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css?family=Comfortaa|Montserrat');
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#root {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    background-color: #1282a2;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.title-wrapper {
+    width: 300px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.title-text {
+    font-family: Comfortaa, Arial sans-serif;
+    font-size: 3rem;
+    color: white;
+}
+
+.loading-wrapper {
+    position: relative;
+    left: -50px;
+    top: 150px;
+}
+
+.loading-symbol {
+    left: -100px;
+    top: -100px;
+    -webkit-animation: xAxis 2.5s infinite cubic-bezier(0.02, 0.01, 0.21, 1);
+    animation: xAxis 2.5s infinite cubic-bezier(0.02, 0.01, 0.21, 1);
+}
+  
+.loading-symbol::after {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    -webkit-animation: yAxis 2.5s infinite cubic-bezier(0.3, 0.27, 0.07, 1.64);
+    animation: yAxis 2.5s infinite cubic-bezier(0.3, 0.27, 0.07, 1.64);
+}
+
+@-webkit-keyframes yAxis {
+    50% {
+        -webkit-animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+        animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+        -webkit-transform: translateY(-100px);
+        transform: translateY(-100px);
+    }
+}
+  
+@keyframes yAxis {
+    50% {
+        -webkit-animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+        animation-timing-function: cubic-bezier(0.02, 0.01, 0.21, 1);
+        -webkit-transform: translateY(-100px);
+        transform: translateY(-100px);
+    }
+}
+
+@-webkit-keyframes xAxis {
+    50% {
+        -webkit-animation-timing-function: cubic-bezier(0.3, 0.27, 0.07, 1.64);
+        animation-timing-function: cubic-bezier(0.3, 0.27, 0.07, 1.64);
+        -webkit-transform: translateX(100px);
+        transform: translateX(100px);
+    }
+}
+
+@keyframes xAxis {
+    50% {
+        -webkit-animation-timing-function: cubic-bezier(0.3, 0.27, 0.07, 1.64);
+        animation-timing-function: cubic-bezier(0.3, 0.27, 0.07, 1.64);
+        -webkit-transform: translateX(100px);
+        transform: translateX(100px);
+    }
+}
+  
+  

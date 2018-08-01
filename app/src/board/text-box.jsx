@@ -11,7 +11,7 @@ export default class TextBox extends React.Component {
    * Handles click events by changing the editing state.
    */
   setEditingState = () => {
-    if (!this.props.mouseMove && !this.props.editing) {
+    if (!this.props.mouseMove && !this.props.editing && this.props.dragging === '') {
       const editingState = !this.props.editing;
       this.props.setEditing(this.props.uuid, editingState);
     }
